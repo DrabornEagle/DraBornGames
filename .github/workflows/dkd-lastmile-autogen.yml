@@ -1,0 +1,68 @@
+name: DKD Last Mile autogen
+
+on:
+  push:
+    branches:
+      - main
+      - work/DraBornGo-LastMile-v0.2
+    paths:
+      - 'DraBornGo-LastMile/game/**'
+      - 'DraBornGo-LastMile/scripts/dkd-build-game.mjs'
+      - 'DraBornGo-LastMile/package.json'
+      - 'DraBornGo-LastMile/app.json'
+      - '.github/workflows/dkd-lastmile-autogen.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dkd-lastmile-autogen-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dkd-autogen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: DraBornGo-LastMile
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: DraBornGo-LastMile/package-lock.json
+      - name: Keep lockfile package version aligned
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          const lock = JSON.parse(fs.readFileSync('package-lock.json', 'utf8'));
+          lock.version = pkg.version;
+          if (lock.packages && lock.packages['']) lock.packages[''].version = pkg.version;
+          fs.writeFileSync('package-lock.json', JSON.stringify(lock, null, 2) + '\n');
+          NODE
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build:game
+      - run: npm test
+      - run: npm run typecheck
+      - name: Expo SDK dependency versions
+        run: EXPO_OFFLINE=1 npx expo install --check
+      - name: JavaScript whitespace check
+        run: git diff --check
+      - name: Commit deterministic generated files
+        run: |
+          git config user.name 'DKD Last Mile Bot'
+          git config user.email 'dkd-lastmile-bot@users.noreply.github.com'
+          git add package-lock.json assets/dkd-lastmile.html src/generated/dkd-game-html.ts
+          if git diff --cached --quiet; then
+            echo 'Generated files already current.'
+            exit 0
+          fi
+          git commit -m 'build(lastmile): regenerate v0.2 Expo Go bundle'
+          git push origin HEAD:${{ github.ref_name }}
