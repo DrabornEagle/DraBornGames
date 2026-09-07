@@ -1,5 +1,5 @@
 export class dkd_Audio {
-  constructor(dkd_state) { this.dkd_state = dkd_state; this.dkd_context = null; this.dkd_track = 0; this.dkd_beat = 0; this.dkd_nextBeat = 0; this.dkd_muted = false; this.dkd_tracks = ['Midnight Dispatch', 'Rain on Asphalt', 'Last Light', 'After the Signal', 'Home Before Dawn']; }
+  constructor(dkd_state) { this.dkd_state = dkd_state; this.dkd_context = null; this.dkd_track = 0; this.dkd_beat = 0; this.dkd_nextBeat = 0; this.dkd_muted = false; this.dkd_tracks = ['Gece Yarısı Siparişi', 'Asfaltta Yağmur', 'Son Işık', 'Sinyalin Ardından', 'Şafaktan Önce Evde']; }
   dkd_start() {
     if (!this.dkd_context) {
       const dkd_Context = window.AudioContext || window.webkitAudioContext; if (!dkd_Context) return;

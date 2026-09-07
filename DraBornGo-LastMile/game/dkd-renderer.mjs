@@ -70,7 +70,7 @@ export class dkd_Scene {
   }
   dkd_sign(dkd_text, dkd_width = 6, dkd_color = '#e4ff5e', dkd_height = 1.1) {
     const dkd_canvas = document.createElement('canvas'); dkd_canvas.width = 1024; dkd_canvas.height = 180; const dkd_context = dkd_canvas.getContext('2d'); dkd_context.fillStyle = '#17252d'; dkd_context.fillRect(0, 0, 1024, 180); dkd_context.fillStyle = dkd_color; dkd_context.font = 'bold 75px sans-serif'; dkd_context.textAlign = 'center'; dkd_context.textBaseline = 'middle'; dkd_context.fillText(dkd_text.slice(0, 32), 512, 91, 970);
-    if (this.dkd_state.dkd_profile && dkd_text === this.dkd_state.dkd_profile.dkd_company.toUpperCase()) {
+    if (this.dkd_state.dkd_profile && dkd_text === this.dkd_state.dkd_profile.dkd_company.toLocaleUpperCase('tr-TR')) {
       dkd_context.clearRect(0, 0, 1024, 180); dkd_context.fillStyle = '#17252d'; dkd_context.fillRect(0, 0, 1024, 180); dkd_context.fillStyle = dkd_color;
       dkd_context.beginPath();
       if (this.dkd_state.dkd_brand.dkd_logo === 'eagle') { dkd_context.moveTo(25, 55); dkd_context.lineTo(78, 76); dkd_context.lineTo(110, 43); dkd_context.lineTo(141, 76); dkd_context.lineTo(195, 55); dkd_context.lineTo(164, 115); dkd_context.lineTo(131, 105); dkd_context.lineTo(110, 143); dkd_context.lineTo(88, 105); dkd_context.lineTo(57, 115); }
@@ -88,8 +88,8 @@ export class dkd_Scene {
     for (let dkd_index = 0; dkd_index < 7; dkd_index++) this.dkd_box(this.dkd_hub, [6, .06, .15], [5.5, .025, -4 + dkd_index * 1.6], dkd_yellow, -.45);
     for (let dkd_index = 0; dkd_index < 8; dkd_index++) this.dkd_box(this.dkd_hub, [5.5, .09, .1], [4.5, 1 + dkd_index * .55, -6.76], this.dkd_material('#58646c'));
     this.dkd_box(this.dkd_hub, [5.7, 5.5, .25], [4.5, 2.8, -6.82], dkd_metal);
-    this.dkd_companySign = this.dkd_sign(this.dkd_state.dkd_profile?.dkd_company?.toUpperCase() || 'YOUR NEXT CHAPTER', 10, this.dkd_state.dkd_brand.dkd_color, 1.75); this.dkd_companySign.position.set(-.5, 6.8, -6.72); this.dkd_hub.add(this.dkd_companySign);
-    const dkd_garageSign = this.dkd_sign('LAST MILE / DISPATCH HQ', 5.5, '#bac4cc', .75); dkd_garageSign.position.set(-4.5, 4.7, -6.69); this.dkd_hub.add(dkd_garageSign);
+    this.dkd_companySign = this.dkd_sign(this.dkd_state.dkd_profile?.dkd_company?.toLocaleUpperCase('tr-TR') || 'YENİ HİKÂYEN', 10, this.dkd_state.dkd_brand.dkd_color, 1.75); this.dkd_companySign.position.set(-.5, 6.8, -6.72); this.dkd_hub.add(this.dkd_companySign);
+    const dkd_garageSign = this.dkd_sign('SON KİLOMETRE / KURYE MERKEZİ', 5.5, '#bac4cc', .75); dkd_garageSign.position.set(-4.5, 4.7, -6.69); this.dkd_hub.add(dkd_garageSign);
     this.dkd_box(this.dkd_hub, [4, .25, 1.6], [-5, 1.5, -4.5], dkd_concrete); this.dkd_box(this.dkd_hub, [.2, 1.5, 1.3], [-6.6, .75, -4.5], dkd_metal); this.dkd_box(this.dkd_hub, [.2, 1.5, 1.3], [-3.4, .75, -4.5], dkd_metal);
     this.dkd_box(this.dkd_hub, [.5, .07, .9], [-4.5, 1.67, -4.2], this.dkd_material('#63bebb', .2, .5));
     for (let dkd_index = 0; dkd_index < 5; dkd_index++) this.dkd_box(this.dkd_hub, [.8, .65, .7], [-7.8 + (dkd_index % 2) * 1, .35 + Math.floor(dkd_index / 2) * .7, -4.5], this.dkd_material('#ac9170'));
@@ -107,7 +107,7 @@ export class dkd_Scene {
     this.dkd_box(this.dkd_hubLevels[2], [18, .06, .06], [.2, 6.4, -3.6], dkd_yellow);
     this.dkd_hubLevels.forEach((dkd_group, dkd_index) => { dkd_group.visible = this.dkd_state.dkd_garage > dkd_index; });
     this.dkd_vault = new dkd_three.Group(); this.dkd_scene.add(this.dkd_vault); this.dkd_box(this.dkd_vault, [28, .3, 28], [0, -.2, 0], this.dkd_material('#303d49', .25, .4)); this.dkd_box(this.dkd_vault, [25, 10, .5], [0, 4.8, -8], this.dkd_material('#101d2a'));
-    const dkd_vaultSign = this.dkd_sign('THE VAULT', 9, '#e4ff5e', 1.6); dkd_vaultSign.position.set(0, 7, -7.6); this.dkd_vault.add(dkd_vaultSign);
+    const dkd_vaultSign = this.dkd_sign('ÖDÜL KASASI', 9, '#e4ff5e', 1.6); dkd_vaultSign.position.set(0, 7, -7.6); this.dkd_vault.add(dkd_vaultSign);
     for (let dkd_index = 0; dkd_index < 3; dkd_index++) {
       const dkd_column = (dkd_index - 1) * 5.8; this.dkd_box(this.dkd_vault, [4.2, 1.5, 3.5], [dkd_column, .75, -2.5], this.dkd_material('#69777e', .35, .5)); this.dkd_box(this.dkd_vault, [4.3, .09, 3.6], [dkd_column, 1.53, -2.5], dkd_yellow);
       if (dkd_index === 1) { this.dkd_box(this.dkd_vault, [2.9, 1.9, .12], [dkd_column, 3.3, -2.8], this.dkd_material('#27363d', .25, .65)); this.dkd_box(this.dkd_vault, [2.55, 1.55, .13], [dkd_column, 3.3, -2.72], new dkd_three.MeshBasicMaterial({ color: '#6089a5' })); this.dkd_box(this.dkd_vault, [2.9, .12, 1.9], [dkd_column, 2.3, -2], dkd_metal); }
@@ -139,7 +139,7 @@ export class dkd_Scene {
     for (const dkd_side of [-1, 1]) { this.dkd_cylinder(this.dkd_bike, .042, .85, [dkd_side * .15, .81, .99], dkd_steel, [-.20, 0, 0]); this.dkd_cylinder(this.dkd_bike, .04, .35, [dkd_side * .46, 1.34, .72], dkd_rubber, [0, 0, Math.PI / 2]); this.dkd_cylinder(this.dkd_bike, .018, .3, [dkd_side * .47, 1.56, .81], dkd_steel, [0, 0, -.25 * dkd_side]); this.dkd_box(this.dkd_bike, [.17, .10, .07], [dkd_side * .51, 1.71, .82], dkd_steel); }
     this.dkd_box(this.dkd_bike, [.42, .15, .035], [0, .89, -1.04], new dkd_three.MeshBasicMaterial({ color: '#de5f43' }));
     this.dkd_box(this.dkd_bike, [.66, .63, .68], [0, 1.38, -.92], dkd_paint); this.dkd_box(this.dkd_bike, [.68, .08, .70], [0, 1.72, -.92], dkd_dark);
-    const dkd_companyLogo = this.dkd_sign((this.dkd_state.dkd_profile?.dkd_company || 'LAST MILE').toUpperCase(), .58, '#15262b', .21); dkd_companyLogo.position.set(0, 1.4, -1.27); dkd_companyLogo.rotation.y = Math.PI; this.dkd_bike.add(dkd_companyLogo);
+    const dkd_companyLogo = this.dkd_sign((this.dkd_state.dkd_profile?.dkd_company || 'SON KİLOMETRE').toLocaleUpperCase('tr-TR'), .58, '#15262b', .21); dkd_companyLogo.position.set(0, 1.4, -1.27); dkd_companyLogo.rotation.y = Math.PI; this.dkd_bike.add(dkd_companyLogo);
     this.dkd_box(this.dkd_bike, [.40, .55, .3], [0, 1.32, -.16], dkd_jacket); this.dkd_box(this.dkd_bike, [.27, .06, .02], [0, 1.33, -.321], new dkd_three.MeshBasicMaterial({ color: '#dbe4b7' }));
     for (const dkd_side of [-1, 1]) {
       const dkd_upperArm = this.dkd_cylinder(this.dkd_bike, .085, .43, [dkd_side * .29, 1.4, .10], dkd_jacket, [1.02, 0, -.35 * dkd_side]);
@@ -219,5 +219,5 @@ export class dkd_Scene {
     this.dkd_renderer.render(this.dkd_scene, this.dkd_camera);
   }
   dkd_photo() { this.dkd_renderer.render(this.dkd_scene, this.dkd_camera); return this.dkd_renderer.domElement.toDataURL('image/jpeg', .9); }
-  dkd_refreshBrand(dkd_kind = this.dkd_bikeKind) { this.dkd_hubLevels.forEach((dkd_group, dkd_index) => { dkd_group.visible = this.dkd_state.dkd_garage > dkd_index; }); this.dkd_buildBike(dkd_kind); this.dkd_hub.remove(this.dkd_companySign); this.dkd_companySign.geometry.dispose(); this.dkd_companySign.material.map.dispose(); this.dkd_companySign.material.dispose(); this.dkd_companySign = this.dkd_sign(this.dkd_state.dkd_profile?.dkd_company?.toUpperCase() || 'LAST MILE', 10, this.dkd_state.dkd_brand.dkd_color, 1.75); this.dkd_companySign.position.set(-.5, 6.8, -6.72); this.dkd_hub.add(this.dkd_companySign); }
+  dkd_refreshBrand(dkd_kind = this.dkd_bikeKind) { this.dkd_hubLevels.forEach((dkd_group, dkd_index) => { dkd_group.visible = this.dkd_state.dkd_garage > dkd_index; }); this.dkd_buildBike(dkd_kind); this.dkd_hub.remove(this.dkd_companySign); this.dkd_companySign.geometry.dispose(); this.dkd_companySign.material.map.dispose(); this.dkd_companySign.material.dispose(); this.dkd_companySign = this.dkd_sign(this.dkd_state.dkd_profile?.dkd_company?.toLocaleUpperCase('tr-TR') || 'SON KİLOMETRE', 10, this.dkd_state.dkd_brand.dkd_color, 1.75); this.dkd_companySign.position.set(-.5, 6.8, -6.72); this.dkd_hub.add(this.dkd_companySign); }
 }

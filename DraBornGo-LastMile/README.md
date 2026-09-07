@@ -1,8 +1,8 @@
-# DraBornGo / LAST MILE
+# DraBornGo / Son Kilometre
 
-**v0.100.0 — Expo Go SDK 57 için oynanabilir, yerel verili geliştirme demosu.**
+**v0.101.0 — Expo Go SDK 57 için oynanabilir, yerel verili geliştirme demosu.**
 
-Eski scooter ve küçük şirketle başla; Ankara yollarında paket taşı, hava ve trafikle mücadele et, araçlarını geliştir, VIP hikâyelerini tamamla ve Final Contract’a ulaş. Dikey 3D sürüş ile işletim sistemi biçimindeki kurye telefonu aynı uygulamada çalışır.
+Eski scooter ve küçük şirketle başla; Ankara yollarında paket taşı, hava ve trafikle mücadele et, araçlarını geliştir, özel müşteri hikâyelerini tamamla ve Final Görevi’ne ulaş. Dikey 3D sürüş ile işletim sistemi biçimindeki kurye telefonu aynı uygulamada çalışır.
 
 Bu teslim **tam üretim sürümü değildir**. Supabase, hesap sunucusu, gerçek ödeme, canlı AI, çevrimiçi sıralama, sunucu anti-cheat ve fiziksel ödül dağıtımı bağlı değildir. APK/AAB üretilmez. Bunların yerine açıkça etiketlenmiş demo akışları bulunur. [50 maddelik kapsam](docs/DKD-KAPSAM.md) mevcut davranışı ve üretim için kalan işleri tek tek gösterir.
 
@@ -36,23 +36,29 @@ Yerel değişiklikler otomatik olarak uzak depoya gönderilmez: güncelleme önc
 ## İlk oyun ve hızlı test
 
 1. Şirketini oluştur; demo ad ve telefon kullanabilirsin. Fotoğraf isteğe bağlıdır. Renk, logo ve kıyafet seç.
-2. Ankara’yı ve Phone / MSI / Tablet Contract hedefini seç.
+2. Ankara’yı ve Telefon / MSI / Tablet hedefini seç.
 3. Eğitim teslimatında sağdaki **GAZ**’a basılı tut. Varsayılan direksiyon yardımcısı rotayı izler; soldaki yön pedi müdahale eder. Teslimat alanında **FREN** ile dur ve paketi teslim et.
-4. Eğitimden sonra **ücretsiz demo kariyerini aç**. Dispatch’ten işleri kabul et/reddet; güvenli veya kısa rota seç.
-5. **Telefon → Ayarlar → Test kariyeri** ana kariyerden ayrı bir kayıt açar. Test bütçesi ve VIP token hazırdır. İstersen **Final test verisini hazırla** ile Final kilitlerini test kaydında aç.
-6. Contracts içinden VIP seçimi, altı bölüm, Black Contract veya Final’i dene. Ana kariyere dönünce test bakiyesi ve skorları ana kayda geçmez.
+4. Eğitimden sonra **ücretsiz demo kariyerini aç**. Siparişler’den işleri kabul et/reddet; güvenli veya kısa rota seç.
+5. **Telefon → Ayarlar → Test kariyeri** ana kariyerden ayrı bir kayıt açar. Test bütçesi ve özel müşteri hakkı hazırdır. İstersen **Final test verisini hazırla** ile Final kilitlerini test kaydında aç.
+6. Görevler içinden özel müşteri seçimi, altı bölüm, Gizli Görev veya Final’i dene. Ana kariyere dönünce test bakiyesi ve skorları ana kayda geçmez.
 
 Telefon/menü açılınca simülasyon duraklar. Arka plana geçiş ve Android geri tuşu da sürüşü duraklatır. Uygulama tamamen kapanırsa aktif teslimat sürdürülmez; son kaydedilmiş kariyer açılır.
+
+## v0.101 yenilikleri
+
+Oyun içi ekranlar, paket/araç adları, hikâyeler, müzik adları, bildirimler, 3D tabelalar ve paylaşım kartları Türkçeleştirildi. Tüm ücretler ve bakiyeler `1.250 TL` biçimindedir; bunlar gerçek para olmayan oyun bakiyeleridir. Mevcut kayıt bakiyeleri ve ilerleme korunur.
+
+Ana menü, telefon, siparişler, garaj, ödül kasası ve sonuç ekranları mavi, turkuaz, pembe, mor ve sıcak tonlarla yenilendi. Açılış, uygulama simgeleri, kartlar, ilerleme çubukları ve alt pencereler kısa animasyonlar kullanır. **Ayarlar → Arayüz animasyonları** hareketi kapatır; cihazın azaltılmış hareket tercihi de uygulanır.
 
 ## Bu sürümde
 
 - OSM’den alınan **1.476 nokta / 1.562 yol parçası** ile Ankara merkezinde yaklaşık 1,5 × 1,7 km alan; tek yönler ve kapanışlara uyan rotalama. Binalar, müşteriler ve teslimat girişleri kurgusaldır.
-- Three.js/WebGL2 ile gerçek zamanlı 3D şehir, kurye, scooter/motosiklet/araç varyantları, garaj, Vault; trafik, paket hasarı, yakıt, bakım, sıcaklık ve hava etkileri.
+- Three.js/WebGL2 ile gerçek zamanlı 3D şehir, kurye, scooter/motosiklet/araç varyantları, garaj, Ödül Kasası; trafik, paket hasarı, yakıt, bakım, sıcaklık ve hava etkileri.
 - 14 paket sınıfı, 10 araç, oyun parasıyla geliştirme/kozmetik, şirket markası, fotoğraf ve paylaşılabilir şirket/teslimat kartları.
-- 16 uygulamalı kurye telefonu, Dispatch, navigasyon, cüzdan, yorumlar, itibar, günlük görevler ve kozmetik streak ödülleri.
-- 10 yetişkin kurgusal müşteri, dört VIP’nin altışar bölümü, üç Black Contract görevi; yazılmış diyaloglar ve cihazın Türkçe metin okuma desteğiyle görüşme demosu.
-- Dört sezon teması, standart araçla üç zorunlu durağı olan Final, yerel telemetri kontrolü, skor geçmişi ve önceki yerel Final kaydından Ghost.
-- Ayrı test kariyeri, JSON yedekleme/geri yükleme, düşük/dengeli/yüksek grafik ayarları, beş prosedürel müzik parçası ve motor/yağmur/korna efektleri.
+- 16 uygulamalı kurye telefonu, siparişler, navigasyon, cüzdan, yorumlar, itibar, günlük görevler ve giriş serisi ödülleri.
+- 10 yetişkin kurgusal müşteri, dört özel müşterinin altışar bölümü, üç Gizli Görev; yazılmış diyaloglar ve cihazın Türkçe metin okuma desteğiyle görüşme demosu.
+- Dört sezon teması, standart araçla üç zorunlu durağı olan Final, yerel telemetri kontrolü, skor geçmişi ve önceki yerel Final kaydından Hayalet Kurye.
+- Ayrı test kariyeri, JSON yedekleme/geri yükleme, düşük/dengeli/yüksek grafik ayarları, beş özgün müzik parçası ve motor/yağmur/korna efektleri.
 
 ## Geliştirme ve doğrulama
 

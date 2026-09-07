@@ -20,7 +20,7 @@ if (dkd_fs.existsSync(dkd_lock)) {
   const dkd_pid = Number(dkd_fs.readFileSync(dkd_lock, 'utf8'));
   let dkd_running = false;
   if (Number.isInteger(dkd_pid) && dkd_pid > 1) { try { process.kill(dkd_pid, 0); dkd_running = true; } catch {} }
-  if (dkd_running) { console.error('LAST MILE başlatıcısı zaten açık. Önce mevcut oturumda Ctrl+C kullan.'); process.exit(1); }
+  if (dkd_running) { console.error('SON KİLOMETRE başlatıcısı zaten açık. Önce mevcut oturumda Ctrl+C kullan.'); process.exit(1); }
   dkd_fs.unlinkSync(dkd_lock);
 }
 dkd_fs.writeFileSync(dkd_lock, String(process.pid), { flag: 'wx' });
@@ -43,7 +43,7 @@ async function dkd_dependencies() {
 }
 function dkd_startMetro() {
   if (dkd_stopping) return;
-  console.log('\nLAST MILE / Expo Go: exp://127.0.0.1:8081\nGitHub main her 30 saniyede kontrol edilir. Çıkış: Ctrl+C.');
+  console.log('\nSON KİLOMETRE / Expo Go: exp://127.0.0.1:8081\nGitHub main her 30 saniyede kontrol edilir. Çıkış: Ctrl+C.');
   dkd_metro = dkd_spawn(process.execPath, ['node_modules/expo/bin/cli', 'start', '--go', '--localhost', '--port', '8081'], { stdio: 'inherit', detached: true, env: { ...process.env, REACT_NATIVE_PACKAGER_HOSTNAME: '127.0.0.1', CI: '1' } });
   const dkd_child = dkd_metro;
   dkd_child.once('error', dkd_error => { console.error(dkd_error.message); void dkd_stop(1); });

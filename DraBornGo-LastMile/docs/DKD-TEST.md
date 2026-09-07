@@ -1,6 +1,10 @@
 # Doğrulama ve cihaz kabulü
 
-v0.100 doğrulaması Node tabanlı simülasyon/DOM/Git testleri, TypeScript kontrolü ve Android için Expo JavaScript paketlemesini kapsar. APK, emulator veya fiziksel telefon çalıştırması değildir.
+v0.101 doğrulaması Node tabanlı simülasyon/DOM/Git testleri, TypeScript kontrolü ve Android için Expo JavaScript paketlemesini kapsar. APK, emulator veya fiziksel telefon çalıştırması değildir.
+
+## v0.101 ek kontrolleri
+
+Ekran/katalog metinlerinde eski İngilizce terim ve para simgesi taraması; `12.500 TL`, negatif ve sıfır tutar gösterimi; skorların para olarak etiketlenmemesi; eski kayıt bakiyesi/şirket adının korunması; sistem hareket etiketlerinin çevirisi; animasyon tercihinin kapanıp kayıttan geri gelmesi.
 
 ## Otomatik kontroller
 

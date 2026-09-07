@@ -60,7 +60,7 @@ function dkd_Container() {
       const dkd_filename = dkd_name.replace(/[^a-zA-Z0-9._-]/g, '-').slice(0, 90);
       dkd_path = `${dkd_FileSystem.cacheDirectory}${dkd_filename}`;
       await dkd_FileSystem.writeAsStringAsync(dkd_path, dkd_text, { encoding: dkd_base64 ? dkd_FileSystem.EncodingType.Base64 : dkd_FileSystem.EncodingType.UTF8 });
-      await dkd_Sharing.shareAsync(dkd_path, { mimeType: dkd_mime, dialogTitle: 'LAST MILE dosyasını paylaş veya kaydet' });
+      await dkd_Sharing.shareAsync(dkd_path, { mimeType: dkd_mime, dialogTitle: 'SON KİLOMETRE dosyasını paylaş veya kaydet' });
     } finally {
       // Keep the private cache file available while the selected Android app reads its URI.
       // The next export reuses the same filename; Android may reclaim this cache.
@@ -92,11 +92,11 @@ function dkd_Container() {
         else await dkd_Haptics.impactAsync(dkd_Haptics.ImpactFeedbackStyle.Light);
       } else if (dkd_message.dkd_type === 'share-file') {
         if (typeof dkd_data?.dkd_data !== 'string' || !/^data:image\/(png|jpeg);base64,/.test(dkd_data.dkd_data)) throw new Error('Paylaşılacak görsel geçersiz.');
-        await dkd_share(dkd_data.dkd_data.split(',')[1], String(dkd_data.dkd_name || 'LAST-MILE.png'), String(dkd_data.dkd_mime || 'image/png'), true);
+        await dkd_share(dkd_data.dkd_data.split(',')[1], String(dkd_data.dkd_name || 'Son-Kilometre.png'), String(dkd_data.dkd_mime || 'image/png'), true);
       } else if (dkd_message.dkd_type === 'export-json') {
         if (typeof dkd_data?.dkd_text !== 'string') throw new Error('Yedek boş.');
         JSON.parse(dkd_data.dkd_text);
-        await dkd_share(dkd_data.dkd_text, String(dkd_data.dkd_name || 'LAST-MILE.json'), 'application/json');
+        await dkd_share(dkd_data.dkd_text, String(dkd_data.dkd_name || 'Son-Kilometre.json'), 'application/json');
       } else if (dkd_message.dkd_type === 'speak') {
         await dkd_Speech.stop();
         dkd_Speech.speak(String(dkd_data?.dkd_text || '').slice(0, 600), { language: 'tr-TR', rate: .95 });
@@ -111,12 +111,12 @@ function dkd_Container() {
     }
   };
 
-  return dkd_createElement(dkd_View, { style: { flex: 1, backgroundColor: '#090f16', paddingTop: dkd_insets.top, paddingBottom: dkd_insets.bottom } },
+  return dkd_createElement(dkd_View, { style: { flex: 1, backgroundColor: '#0c1224', paddingTop: dkd_insets.top, paddingBottom: dkd_insets.bottom } },
     dkd_createElement(dkd_StatusBar, { style: 'light' }),
     dkd_error ? dkd_createElement(dkd_View, { style: { flex: 1, padding: 24, justifyContent: 'center', gap: 18 } },
-      dkd_createElement(dkd_Text, { style: { color: '#e4ff5e', fontSize: 25, fontWeight: '800' }, selectable: true }, 'LAST MILE'),
+      dkd_createElement(dkd_Text, { style: { color: '#e4ff5e', fontSize: 25, fontWeight: '800' }, selectable: true }, 'SON KİLOMETRE'),
       dkd_createElement(dkd_Text, { style: { color: '#d9e1e5', fontSize: 16, lineHeight: 25 }, selectable: true }, dkd_error),
-      dkd_createElement(dkd_Pressable, { onPress: () => { dkd_setError(''); if (dkd_bootstrap === null) dkd_setStorageAttempt(dkd_previous => dkd_previous + 1); else { dkd_setBootstrap(dkd_latestSave.current || dkd_bootstrap); dkd_setReloadKey(dkd_previous => dkd_previous + 1); } }, style: { padding: 18, backgroundColor: '#e4ff5e', borderRadius: 12 } }, dkd_createElement(dkd_Text, { style: { color: '#122219', fontWeight: '700', textAlign: 'center' } }, 'Tekrar dene')))
+      dkd_createElement(dkd_Pressable, { onPress: () => { dkd_setError(''); if (dkd_bootstrap === null) dkd_setStorageAttempt(dkd_previous => dkd_previous + 1); else { dkd_setBootstrap(dkd_latestSave.current || dkd_bootstrap); dkd_setReloadKey(dkd_previous => dkd_previous + 1); } }, style: { padding: 18, backgroundColor: '#e4ff5e', borderRadius: 12 } }, dkd_createElement(dkd_Text, { style: { color: '#162c3d', fontWeight: '700', textAlign: 'center' } }, 'Tekrar dene')))
       : dkd_bootstrap === null ? dkd_createElement(dkd_ActivityIndicator, { size: 'large', color: '#e4ff5e', style: { flex: 1 } })
       : dkd_createElement(dkd_WebView, {
         key: dkd_reloadKey,
@@ -134,7 +134,7 @@ function dkd_Container() {
         allowFileAccess: false,
         allowUniversalAccessFromFileURLs: false,
         textZoom: 100,
-        style: { flex: 1, backgroundColor: '#090f16' },
+        style: { flex: 1, backgroundColor: '#0c1224' },
         onMessage: dkd_onMessage,
         onShouldStartLoadWithRequest: dkd_request => dkd_request.url === 'about:blank' || dkd_request.url.startsWith('data:text/html'),
         onError: () => dkd_setError('Oyun ekranı yüklenemedi. Yeniden açıp tekrar dene.'),

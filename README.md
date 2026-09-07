@@ -2,7 +2,7 @@
 
 DrabornEagle oyun projeleri.
 
-## DraBornGo / LAST MILE
+## DraBornGo / Son Kilometre
 
 [DraBornGo-LastMile](./DraBornGo-LastMile) — Android Expo Go SDK 57 üzerinde çalışan, yerel demo verili dikey 3D kurye kariyer oyunu.
 

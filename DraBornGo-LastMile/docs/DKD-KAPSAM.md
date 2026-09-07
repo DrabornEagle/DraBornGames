@@ -1,4 +1,6 @@
-# 50 maddelik tasarımın v0.100 karşılığı
+# 50 maddelik tasarımın durumu
+
+v0.101 arayüz güncellemesi: tüm oyun metinleri Türkçeleştirildi, tutarlar TL cinsinden oyun bakiyesi olarak gösteriliyor, renkli ve animasyonlu arayüz eklendi. Aşağıdaki tablo ilk v0.100 kapsamını ve üretim sınırlarını korur.
 
 Kapsam, 7 Eylül 2026 tarihindeki kaynak kodunu açıklar. **Oynanabilir** yerel uygulamada çalışan sistemi; **demo** sınırlı, kurgusal veya benzetilmiş karşılığı; **sonraki aşama** henüz uygulanmayan üretim işini ifade eder. Bu belge 50 maddenin üretim seviyesinde tamamlandığı iddiası değildir. Supabase ve APK bilerek kapsam dışında tutulur.
 
