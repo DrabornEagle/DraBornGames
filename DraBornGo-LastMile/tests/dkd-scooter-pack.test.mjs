@@ -30,7 +30,8 @@ function dkd_headerAt(dkd_bytes, dkd_view, dkd_offset) {
 }
 
 function dkd_findNextHeader(dkd_bytes, dkd_view, dkd_from) {
-  for (let dkd_offset = dkd_from; dkd_offset <= dkd_bytes.length - 35; dkd_offset++) {
+  const dkd_limit = Math.min(dkd_bytes.length - 35, dkd_from + 512);
+  for (let dkd_offset = dkd_from; dkd_offset <= dkd_limit; dkd_offset++) {
     const dkd_header = dkd_headerAt(dkd_bytes, dkd_view, dkd_offset);
     if (dkd_header) return dkd_header;
   }
@@ -54,15 +55,21 @@ test('v0.2 başlangıç scooter paketi telefon parserında taşmadan okunur', ()
       const dkd_recovered = dkd_findNextHeader(dkd_bytes, dkd_view, dkd_offset + 1);
       assert.ok(dkd_recovered, `mesh ${dkd_meshIndex} için sonraki geçerli başlık bulunamadı; offset=${dkd_offset}`);
       dkd_resyncBytes += dkd_recovered.dkd_offset - dkd_offset;
-      console.log(`DKD scooter yeniden eşitlendi: mesh=${dkd_meshIndex}, ${dkd_offset} -> ${dkd_recovered.dkd_offset}`);
       dkd_header = dkd_recovered;
     }
+
+    let dkd_cursor = dkd_header.dkd_offset + 35 + dkd_header.dkd_vertexCount * 6;
+    for (let dkd_index = 0; dkd_index < dkd_header.dkd_faceCount * 3; dkd_index++) {
+      const dkd_value = dkd_view.getUint16(dkd_cursor, true);
+      assert.ok(dkd_value < dkd_header.dkd_vertexCount, `mesh ${dkd_meshIndex} geçersiz indeks ${dkd_value}/${dkd_header.dkd_vertexCount}`);
+      dkd_cursor += 2;
+    }
+    assert.equal(dkd_cursor, dkd_header.dkd_end);
     dkd_headers.push(dkd_header);
     dkd_offset = dkd_header.dkd_end;
   }
 
-  console.log('DKD scooter başlıkları:', JSON.stringify(dkd_headers.map(dkd_header => [dkd_header.dkd_offset, dkd_header.dkd_vertexCount, dkd_header.dkd_faceCount, dkd_header.dkd_end])));
   assert.equal(dkd_headers.length, 16);
-  assert.equal(dkd_resyncBytes, 437, 'Bilinen bozuk mesh artığı dışında beklenmeyen veri kayması olmamalı.');
+  assert.equal(dkd_resyncBytes, 6, 'İlk mesh sonundaki bilinen altı baytlık ayraç dışında kayma olmamalı.');
   assert.equal(dkd_offset, dkd_bytes.length, `Scooter paketinde ${dkd_bytes.length - dkd_offset} okunmamış bayt kaldı.`);
 });
