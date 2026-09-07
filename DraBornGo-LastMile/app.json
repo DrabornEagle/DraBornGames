@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "DraBornGo / LAST MILE",
+    "slug": "dkd-draborngo-lastmile",
+    "version": "0.100.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#080e15",
+    "android": {
+      "package": "com.draborneagle.lastmile",
+      "versionCode": 100,
+      "permissions": [],
+      "blockedPermissions": [
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_CONTACTS"
+      ]
+    },
+    "extra": {
+      "dkd_versionLabel": "v0.100",
+      "dkd_demo": true,
+      "dkd_backendEnabled": false,
+      "dkd_realRewardsEnabled": false
+    },
+    "plugins": [
+      "expo-sharing"
+    ]
+  }
+}

@@ -1,0 +1,37 @@
+name: DKD Last Mile checks
+on:
+  push:
+    branches: [main]
+    paths: ['DraBornGo-LastMile/**', '.github/workflows/dkd-lastmile-check.yml']
+  pull_request:
+    paths: ['DraBornGo-LastMile/**', '.github/workflows/dkd-lastmile-check.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: dkd-lastmile-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  dkd-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: DraBornGo-LastMile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: DraBornGo-LastMile/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build:game
+      - name: Generated files match source
+        run: git diff --exit-code -- assets/dkd-lastmile.html src/generated/dkd-game-html.ts
+      - run: npm test
+      - run: npm run typecheck
+      - name: Expo SDK dependency versions
+        run: EXPO_OFFLINE=1 npx expo install --check
+      - name: Android JavaScript export (no APK)
+        run: EXPO_OFFLINE=1 npx expo export --platform android --output-dir dist-android
