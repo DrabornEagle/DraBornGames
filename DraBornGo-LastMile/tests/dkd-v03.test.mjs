@@ -14,8 +14,8 @@ function dkd_readModelChunk(dkd_index) {
 }
 
 test('v0.3 scooter + sürücü paketi eksiksiz ve güvenli okunur', () => {
-  const dkd_base64 = Array.from({ length: 9 }, (dkd_value, dkd_index) => dkd_readModelChunk(dkd_index)).join('');
-  const dkd_bytes = Buffer.from(dkd_base64, 'base64');
+  const dkd_parts = Array.from({ length: 9 }, (dkd_value, dkd_index) => Buffer.from(dkd_readModelChunk(dkd_index), 'base64'));
+  const dkd_bytes = Buffer.concat(dkd_parts);
   assert.equal(dkd_bytes.subarray(0, 4).toString('ascii'), 'DK31');
   const dkd_view = new DataView(dkd_bytes.buffer, dkd_bytes.byteOffset, dkd_bytes.byteLength);
   const dkd_meshCount = dkd_view.getUint16(4, true);
@@ -59,6 +59,7 @@ test('v0.3 scooter + sürücü paketi eksiksiz ve güvenli okunur', () => {
 test('v0.3 is wired into build, settings, arrows, phone and automatic delivery', () => {
   const dkd_build = dkd_fs.readFileSync(dkd_path.join(dkd_root, 'scripts/dkd-build-game.mjs'), 'utf8');
   const dkd_patch = dkd_fs.readFileSync(dkd_path.join(dkd_root, 'game/dkd-v03-patch.mjs'), 'utf8');
+  const dkd_fix = dkd_fs.readFileSync(dkd_path.join(dkd_root, 'game/dkd-v03-runtime-fix.mjs'), 'utf8');
   const dkd_package = JSON.parse(dkd_fs.readFileSync(dkd_path.join(dkd_root, 'package.json'), 'utf8'));
   const dkd_app = JSON.parse(dkd_fs.readFileSync(dkd_path.join(dkd_root, 'app.json'), 'utf8'));
   assert.equal(dkd_package.version, '0.3.0');
@@ -67,12 +68,15 @@ test('v0.3 is wired into build, settings, arrows, phone and automatic delivery',
   assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.3');
   assert.match(dkd_build, /dkd-v03-model-0\.mjs/);
   assert.match(dkd_build, /dkd-v03-patch\.mjs/);
+  assert.match(dkd_build, /dkd-v03-runtime-fix\.mjs/);
   assert.match(dkd_build, /v0\.3/);
   assert.match(dkd_patch, /dkd_assist = false/);
   assert.match(dkd_patch, /dkd_camera = 'high'/);
-  assert.match(dkd_patch, /dkd_rotation: \[-Math\.PI \/ 2, dkd_heading, 0\]/);
+  assert.match(dkd_fix, /dkd_arrowGeometry\.rotateX\(-Math\.PI \/ 2\)/);
+  assert.match(dkd_fix, /dkd_rotation: \[0, dkd_heading, 0\]/);
   assert.match(dkd_patch, /DraBornGo \//);
   assert.match(dkd_patch, /dkd_arrivalDistance > 10/);
   assert.match(dkd_patch, /dkd_v03GarageZoom/);
   assert.match(dkd_patch, /Neon Vardiya/);
+  assert.match(dkd_fix, /Buffer|atob/);
 });
