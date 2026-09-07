@@ -20,6 +20,26 @@ function dkd_need(dkd_offset, dkd_length, dkd_total, dkd_meshIndex, dkd_label) {
   );
 }
 
+function dkd_scanHeaders(dkd_bytes, dkd_view, dkd_from, dkd_to) {
+  const dkd_candidates = [];
+  for (let dkd_offset = dkd_from; dkd_offset <= Math.min(dkd_to, dkd_bytes.length - 35); dkd_offset++) {
+    const dkd_vertexCount = dkd_view.getUint16(dkd_offset, true);
+    const dkd_faceCount = dkd_view.getUint16(dkd_offset + 2, true);
+    if (dkd_vertexCount < 3 || dkd_vertexCount > 5000 || dkd_faceCount < 1 || dkd_faceCount > 10000) continue;
+    const dkd_alpha = dkd_bytes[dkd_offset + 7];
+    if (dkd_alpha < 120) continue;
+    const dkd_min = [0, 1, 2].map(dkd_axis => dkd_view.getFloat32(dkd_offset + 11 + dkd_axis * 4, true));
+    const dkd_max = [0, 1, 2].map(dkd_axis => dkd_view.getFloat32(dkd_offset + 23 + dkd_axis * 4, true));
+    if (![...dkd_min, ...dkd_max].every(dkd_value => Number.isFinite(dkd_value) && Math.abs(dkd_value) < 100)) continue;
+    if (!dkd_min.every((dkd_value, dkd_axis) => dkd_value <= dkd_max[dkd_axis])) continue;
+    const dkd_end = dkd_offset + 35 + dkd_vertexCount * 6 + dkd_faceCount * 6;
+    if (dkd_end > dkd_bytes.length) continue;
+    dkd_candidates.push({ dkd_offset, dkd_vertexCount, dkd_faceCount, dkd_end, dkd_alpha, dkd_min, dkd_max });
+    if (dkd_candidates.length >= 20) break;
+  }
+  console.log('DKD olası headerlar:', JSON.stringify(dkd_candidates));
+}
+
 test('v0.2 başlangıç scooter paketi tamamen okunabilir', () => {
   const dkd_base64 = dkd_readChunk(0) + dkd_readChunk(1) + dkd_readChunk(2);
   const dkd_bytes = Buffer.from(dkd_base64, 'base64');
@@ -37,10 +57,11 @@ test('v0.2 başlangıç scooter paketi tamamen okunabilir', () => {
     const dkd_vertexCount = dkd_view.getUint16(dkd_offset, true); dkd_offset += 2;
     const dkd_faceCount = dkd_view.getUint16(dkd_offset, true); dkd_offset += 2;
     console.log(`DKD mesh=${dkd_meshIndex} start=${dkd_meshStart} vertices=${dkd_vertexCount} faces=${dkd_faceCount}`);
-    if (dkd_vertexCount > 10000 || dkd_faceCount > 20000) {
+    if (dkd_meshIndex === 2 || dkd_vertexCount > 10000 || dkd_faceCount > 20000) {
       const dkd_from = Math.max(0, dkd_meshStart - 24);
       const dkd_to = Math.min(dkd_bytes.length, dkd_meshStart + 96);
       console.log(`DKD çevre ${dkd_from}-${dkd_to}: ${dkd_bytes.subarray(dkd_from, dkd_to).toString('hex')}`);
+      dkd_scanHeaders(dkd_bytes, dkd_view, dkd_meshStart, dkd_meshStart + 4000);
     }
     dkd_need(dkd_offset, 7, dkd_bytes.length, dkd_meshIndex, 'material'); dkd_offset += 7;
     dkd_need(dkd_offset, 24, dkd_bytes.length, dkd_meshIndex, 'bounds'); dkd_offset += 24;
