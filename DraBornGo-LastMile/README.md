@@ -1,69 +1,113 @@
 # DraBornGo / Son Kilometre
 
-**v0.101.0 — Expo Go SDK 57 için oynanabilir, yerel verili geliştirme demosu.**
+**v0.2.0 — Expo Go SDK 57 için oynanabilir geliştirme sürümü.**
 
-Eski scooter ve küçük şirketle başla; Ankara yollarında paket taşı, hava ve trafikle mücadele et, araçlarını geliştir, özel müşteri hikâyelerini tamamla ve Final Görevi’ne ulaş. Dikey 3D sürüş ile işletim sistemi biçimindeki kurye telefonu aynı uygulamada çalışır.
+DraBornGo / Last Mile; oyuncunun eski bir başlangıç scooter'ı ve küçük kurye şirketiyle başlayıp teslimatlar, hava koşulları, trafik, araç geliştirmeleri, özel müşteriler ve Final Görevi üzerinden ilerlediği dikey ekran 3D kurye oyunudur.
 
-Bu teslim **tam üretim sürümü değildir**. Supabase, hesap sunucusu, gerçek ödeme, canlı AI, çevrimiçi sıralama, sunucu anti-cheat ve fiziksel ödül dağıtımı bağlı değildir. APK/AAB üretilmez. Bunların yerine açıkça etiketlenmiş demo akışları bulunur. [50 maddelik kapsam](docs/DKD-KAPSAM.md) mevcut davranışı ve üretim için kalan işleri tek tek gösterir.
+Bu sürüm geliştirme/test sürümüdür. Supabase, gerçek ödeme, canlı çevrimiçi sıralama, sunucu anti-cheat ve gerçek fiziksel ödül doğrulaması bağlı değildir. APK/AAB üretilmez; test Expo Go üzerinden yapılır.
+
+## v0.2 değişiklikleri
+
+- Başlangıç aracı **Şehir 50**, gönderilen modern scooter 3D geometrisiyle değiştirildi.
+- **Güvenli** ve **Ara Sokak** seçeneklerinin aynı rota ve ekranda aynı km ile görünmesi engellenmek için sipariş oluşturma iyileştirildi. Güvenli rota geniş yolları tercih eder, Ara Sokak gerçek kısa rotayı kullanır; iki seçenek aynı çıkarsa kullanıcıya gösterilmeden farklı hedef aranır.
+- Yoldaki limon renkli rota oklarının 3D yönü düzeltildi; ok ucu gerçek ilerleme yönünü gösterir.
+- Mobil direksiyon kontrolündeki ters yön problemi düzeltildi.
+- Rota seçim ve sürüş ekranındaki görünür **OpenStreetMap katılımcıları** yazısı kaldırıldı. Kaynak/lisans bilgisi Veri ve deneme kapsamı ekranında korunur.
+- Uygulama sürümü `0.2.0`, ekran etiketi `v0.2`, Android `versionCode` değeri `200` oldu.
+- Expo SDK **57** korunur. Expo Go 57.x hattında test edilir.
+- Kaynak değişikliklerinden sonra oyun HTML paketi GitHub Actions ile otomatik üretilir; test, TypeScript kontrolü ve Expo bağımlılık kontrolü çalıştırılır.
+
+## v0.101 geri dönüş yedeği
+
+v0.101 sürümü GitHub'da ayrı ve değiştirilmeyen bir yedek dalında tutulur:
+
+```text
+backup/DraBornGo-LastMile-v0.101
+801c3cd55b894293a70f991f78f3564269d6897c
+```
+
+Gerekirse bu sürüme birebir geri dönülebilir.
 
 ## Termux kurulumu
 
-Expo Go **57.0.9** hedeflenmiştir. Proje Expo SDK 57, React Native 0.86.3 ve React 19.2.3 kullanır. Telefonun Android System WebView bileşeninde WebGL2 desteği gerekir. Fiziksel cihaz testi henüz yapılmamıştır.
+Hedef klasör:
 
-Termux içinde aşağıdaki bloğu çalıştır:
+```text
+$HOME/projects/DraBornGames/DraBornGo-LastMile
+```
+
+İlk kurulum veya temiz eşitleme için:
 
 ```bash
-pkg update -y &&
-pkg install -y git nodejs-lts util-linux curl &&
+pkg update -y && pkg upgrade -y
+pkg install -y git nodejs-lts util-linux curl
+
+mkdir -p "$HOME/projects"
+
+if [ ! -d "$HOME/projects/DraBornGames/.git" ]; then
+  git clone https://github.com/DrabornEagle/DraBornGames.git "$HOME/projects/DraBornGames"
+fi
+
+cd "$HOME/projects/DraBornGames"
+git fetch origin --prune
+git switch main 2>/dev/null || git switch -c main --track origin/main
+git reset --hard origin/main
+
+cd "$HOME/projects/DraBornGames/DraBornGo-LastMile"
+npm ci --no-audit --no-fund
+npm run build:game
+npm test
+npm run typecheck
+npx expo install --check
+
+bash scripts/dkd-termux.sh
+```
+
+Daha kısa kurulum yöntemi:
+
+```bash
+pkg update -y && pkg upgrade -y
+pkg install -y git nodejs-lts util-linux curl
 bash -o pipefail -c 'curl -fsSL https://raw.githubusercontent.com/DrabornEagle/DraBornGames/main/DraBornGo-LastMile/scripts/dkd-install.sh | bash'
 ```
 
-Kurulum `$HOME/projects/DraBornGames/DraBornGo-LastMile` klasörünü kullanır. Mevcut depo varsa günceller; yoksa klonlar. Kilitli npm paketleri kurulur, ardından Metro başlar. Java/JDK, Python, Android SDK, Supabase anahtarı ve EAS hesabı gerekmez.
+Başlatıcı GitHub `main` dalını 30 saniyede bir kontrol eder. Yeni commit geldiğinde lokal repo güvenli biçimde `origin/main` ile eşitlenir ve Metro gerektiğinde yeniden başlatılır. Lokal değişiklik varsa eşitleme betiği bunları doğrudan silmek yerine stash / preserved branch ile korur.
 
-**Aynı telefonda Expo Go’ya `exp://127.0.0.1:8081` adresini gir.** İstersen ikinci Termux oturumunda `termux-open-url 'exp://127.0.0.1:8081'` çalıştır. İlk paketleme bitene kadar bekle.
+## Expo Go testi
 
-Sonraki açılışlar:
+Projede:
 
 ```bash
 cd "$HOME/projects/DraBornGames/DraBornGo-LastMile"
 bash scripts/dkd-termux.sh
 ```
 
-Başlatıcı GitHub `main` dalını **30 saniyede bir** kontrol eder. Kaynak değişirse Metro’yu yeniden başlatır; bağımlılıklar değişirse önce `npm ci` çalıştırır. O sıradaki teslimat yeniden denenmelidir; tamamlanan kariyer ilerlemesi cihazda kalır. Termux’u açık tut ve gerekiyorsa Android pil kısıtlamasını kaldır. Android uygulamayı kapatırsa eşitleme durur; başlatıcı tekrar açılınca devam eder. Fiziksel telefonuna bu çalışma ortamından doğrudan dosya yazılamaz; yukarıdaki komut ilk kurulumu başlatır.
+Aynı Android telefonda Expo Go kullanılıyorsa başlatıcı varsayılan olarak:
 
-Yerel değişiklikler otomatik olarak uzak depoya gönderilmez: güncelleme öncesinde `git stash` ve gerektiğinde `dkd-preserved/...` dallarıyla korunur. GitHub `main` bu test kurulumunun kaynağıdır. [Eşitleme ve kurtarma](docs/DKD-TERMUX.md).
+```text
+exp://127.0.0.1:8081
+```
 
-## İlk oyun ve hızlı test
-
-1. Şirketini oluştur; demo ad ve telefon kullanabilirsin. Fotoğraf isteğe bağlıdır. Renk, logo ve kıyafet seç.
-2. Ankara’yı ve Telefon / MSI / Tablet hedefini seç.
-3. Eğitim teslimatında sağdaki **GAZ**’a basılı tut. Varsayılan direksiyon yardımcısı rotayı izler; soldaki yön pedi müdahale eder. Teslimat alanında **FREN** ile dur ve paketi teslim et.
-4. Eğitimden sonra **ücretsiz demo kariyerini aç**. Siparişler’den işleri kabul et/reddet; güvenli veya kısa rota seç.
-5. **Telefon → Ayarlar → Test kariyeri** ana kariyerden ayrı bir kayıt açar. Test bütçesi ve özel müşteri hakkı hazırdır. İstersen **Final test verisini hazırla** ile Final kilitlerini test kaydında aç.
-6. Görevler içinden özel müşteri seçimi, altı bölüm, Gizli Görev veya Final’i dene. Ana kariyere dönünce test bakiyesi ve skorları ana kayda geçmez.
-
-Telefon/menü açılınca simülasyon duraklar. Arka plana geçiş ve Android geri tuşu da sürüşü duraklatır. Uygulama tamamen kapanırsa aktif teslimat sürdürülmez; son kaydedilmiş kariyer açılır.
-
-## v0.101 yenilikleri
-
-Oyun içi ekranlar, paket/araç adları, hikâyeler, müzik adları, bildirimler, 3D tabelalar ve paylaşım kartları Türkçeleştirildi. Tüm ücretler ve bakiyeler `1.250 TL` biçimindedir; bunlar gerçek para olmayan oyun bakiyeleridir. Mevcut kayıt bakiyeleri ve ilerleme korunur.
-
-Ana menü, telefon, siparişler, garaj, ödül kasası ve sonuç ekranları mavi, turkuaz, pembe, mor ve sıcak tonlarla yenilendi. Açılış, uygulama simgeleri, kartlar, ilerleme çubukları ve alt pencereler kısa animasyonlar kullanır. **Ayarlar → Arayüz animasyonları** hareketi kapatır; cihazın azaltılmış hareket tercihi de uygulanır.
-
-## Bu sürümde
-
-- OSM’den alınan **1.476 nokta / 1.562 yol parçası** ile Ankara merkezinde yaklaşık 1,5 × 1,7 km alan; tek yönler ve kapanışlara uyan rotalama. Binalar, müşteriler ve teslimat girişleri kurgusaldır.
-- Three.js/WebGL2 ile gerçek zamanlı 3D şehir, kurye, scooter/motosiklet/araç varyantları, garaj, Ödül Kasası; trafik, paket hasarı, yakıt, bakım, sıcaklık ve hava etkileri.
-- 14 paket sınıfı, 10 araç, oyun parasıyla geliştirme/kozmetik, şirket markası, fotoğraf ve paylaşılabilir şirket/teslimat kartları.
-- 16 uygulamalı kurye telefonu, siparişler, navigasyon, cüzdan, yorumlar, itibar, günlük görevler ve giriş serisi ödülleri.
-- 10 yetişkin kurgusal müşteri, dört özel müşterinin altışar bölümü, üç Gizli Görev; yazılmış diyaloglar ve cihazın Türkçe metin okuma desteğiyle görüşme demosu.
-- Dört sezon teması, standart araçla üç zorunlu durağı olan Final, yerel telemetri kontrolü, skor geçmişi ve önceki yerel Final kaydından Hayalet Kurye.
-- Ayrı test kariyeri, JSON yedekleme/geri yükleme, düşük/dengeli/yüksek grafik ayarları, beş özgün müzik parçası ve motor/yağmur/korna efektleri.
-
-## Geliştirme ve doğrulama
+adresini kullanır. Gerekirse LAN yöntemi:
 
 ```bash
-npm ci
+cd "$HOME/projects/DraBornGames/DraBornGo-LastMile"
+npm run start:lan
+```
+
+Metro önbelleğini temizlemek gerekirse:
+
+```bash
+cd "$HOME/projects/DraBornGames/DraBornGo-LastMile"
+npx expo start --go --localhost --clear
+```
+
+## Doğrulama
+
+Kaynak değişikliği sonrası standart kontrol:
+
+```bash
+npm ci --no-audit --no-fund
 npm run build:game
 npm test
 npm run typecheck
@@ -71,15 +115,29 @@ EXPO_OFFLINE=1 npx expo install --check
 EXPO_OFFLINE=1 npx expo export --platform android --output-dir dist-android
 ```
 
-Son komut yalnızca Android JavaScript/Hermes paketi çıkarır; **APK üretmez**. `npm run preview` masaüstü için aynı HTML’yi `http://localhost:4173` üzerinde sunar. Bu sürümün görsel tarayıcı/cihaz kabul testi henüz tamamlanmadı; test kanıtı ve sınırları [doğrulama belgesinde](docs/DKD-TEST.md).
+Son komut APK üretmez; yalnızca Android JavaScript/Hermes export kontrolüdür.
 
-Oyun kaynaklarını değiştirdikten sonra `npm run build:game` zorunludur. `assets/dkd-lastmile.html` ve `src/generated/dkd-game-html.ts` üretilmiş dosyalardır ve repoya alınır. Böylece telefonda ayrıca oyun derlemesi gerekmez. Metro native kabuğu paketler. `npm start` yalnızca geliştirme sunucusunu açar; otomatik eşitleme için Termux başlatıcısını kullan.
+Üretilen dosyalar:
 
-- [Mimari ve yerel veri](docs/DKD-MIMARI.md)
-- [50 maddelik kapsam](docs/DKD-KAPSAM.md)
-- [Termux / eşitleme / sorun giderme](docs/DKD-TERMUX.md)
-- [Test ve cihaz kabul adımları](docs/DKD-TEST.md)
-- [Sürüm notları](docs/DKD-SURUM-NOTLARI.md)
-- [Üçüncü taraf kaynaklar ve lisanslar](docs/DKD-KAYNAKLAR.md)
+```text
+assets/dkd-lastmile.html
+src/generated/dkd-game-html.ts
+```
 
-© OpenStreetMap contributors. Yol verisi ODbL 1.0 kapsamında paylaşılır; oyun kodundan ayrı lisanslanır. Gerçek navigasyon veya fiziksel araç kullanımı için tasarlanmamıştır.
+Bu dosyalar `scripts/dkd-build-game.mjs` tarafından oluşturulur ve GitHub otomatik üretim iş akışıyla güncel tutulur.
+
+## Temel oyun içeriği
+
+- Ankara merkezinden paketlenmiş yol ağı ve tek yön bilgileri.
+- Three.js/WebGL tabanlı 3D şehir ve sürüş.
+- Hava, trafik, yakıt, bakım, paket hasarı ve sıcaklık sistemleri.
+- Scooter, motosiklet, otomobil ve kargo araçları.
+- Güvenli rota / Ara Sokak rota seçimi.
+- Şirket, garaj, cüzdan, mesajlar, özel müşteriler ve Final Görevi.
+- Yerel kariyer kaydı, test kariyeri ve JSON yedekleme.
+- Düşük / Dengeli / Yüksek grafik ayarları.
+- Expo Go üzerinden Android geliştirme testi.
+
+## Geliştirme notu
+
+GitHub `main` bu projenin kaynak doğrusu olarak kullanılır. Telefon tarafında lokal repo düzenli olarak `origin/main` ile eşit tutulur. v0.101 yedeği ayrı dalda korunur; v0.2 ve sonraki çalışmalar `main` üzerinden devam eder.
