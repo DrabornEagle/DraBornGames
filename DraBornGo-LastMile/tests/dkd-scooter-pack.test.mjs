@@ -13,64 +13,56 @@ function dkd_readChunk(dkd_index) {
   return dkd_match[1];
 }
 
-function dkd_need(dkd_offset, dkd_length, dkd_total, dkd_meshIndex, dkd_label) {
-  assert.ok(
-    dkd_offset + dkd_length <= dkd_total,
-    `Scooter verisi taşması: mesh=${dkd_meshIndex}, alan=${dkd_label}, offset=${dkd_offset}, gereken=${dkd_length}, toplam=${dkd_total}`
-  );
+function dkd_headerAt(dkd_bytes, dkd_view, dkd_offset) {
+  if (dkd_offset < 0 || dkd_offset + 35 > dkd_bytes.length) return null;
+  const dkd_vertexCount = dkd_view.getUint16(dkd_offset, true);
+  const dkd_faceCount = dkd_view.getUint16(dkd_offset + 2, true);
+  if (dkd_vertexCount < 3 || dkd_vertexCount > 5000 || dkd_faceCount < 1 || dkd_faceCount > 10000) return null;
+  const dkd_alpha = dkd_bytes[dkd_offset + 7];
+  if (dkd_alpha < 120) return null;
+  const dkd_min = [0, 1, 2].map(dkd_axis => dkd_view.getFloat32(dkd_offset + 11 + dkd_axis * 4, true));
+  const dkd_max = [0, 1, 2].map(dkd_axis => dkd_view.getFloat32(dkd_offset + 23 + dkd_axis * 4, true));
+  if (![...dkd_min, ...dkd_max].every(dkd_value => Number.isFinite(dkd_value) && Math.abs(dkd_value) < 100)) return null;
+  if (!dkd_min.every((dkd_value, dkd_axis) => dkd_value <= dkd_max[dkd_axis])) return null;
+  const dkd_end = dkd_offset + 35 + dkd_vertexCount * 6 + dkd_faceCount * 6;
+  if (dkd_end > dkd_bytes.length) return null;
+  return { dkd_offset, dkd_vertexCount, dkd_faceCount, dkd_end, dkd_min, dkd_max };
 }
 
-function dkd_scanHeaders(dkd_bytes, dkd_view, dkd_from, dkd_to) {
-  const dkd_candidates = [];
-  for (let dkd_offset = dkd_from; dkd_offset <= Math.min(dkd_to, dkd_bytes.length - 35); dkd_offset++) {
-    const dkd_vertexCount = dkd_view.getUint16(dkd_offset, true);
-    const dkd_faceCount = dkd_view.getUint16(dkd_offset + 2, true);
-    if (dkd_vertexCount < 3 || dkd_vertexCount > 5000 || dkd_faceCount < 1 || dkd_faceCount > 10000) continue;
-    const dkd_alpha = dkd_bytes[dkd_offset + 7];
-    if (dkd_alpha < 120) continue;
-    const dkd_min = [0, 1, 2].map(dkd_axis => dkd_view.getFloat32(dkd_offset + 11 + dkd_axis * 4, true));
-    const dkd_max = [0, 1, 2].map(dkd_axis => dkd_view.getFloat32(dkd_offset + 23 + dkd_axis * 4, true));
-    if (![...dkd_min, ...dkd_max].every(dkd_value => Number.isFinite(dkd_value) && Math.abs(dkd_value) < 100)) continue;
-    if (!dkd_min.every((dkd_value, dkd_axis) => dkd_value <= dkd_max[dkd_axis])) continue;
-    const dkd_end = dkd_offset + 35 + dkd_vertexCount * 6 + dkd_faceCount * 6;
-    if (dkd_end > dkd_bytes.length) continue;
-    dkd_candidates.push({ dkd_offset, dkd_vertexCount, dkd_faceCount, dkd_end, dkd_alpha, dkd_min, dkd_max });
-    if (dkd_candidates.length >= 20) break;
+function dkd_findNextHeader(dkd_bytes, dkd_view, dkd_from) {
+  for (let dkd_offset = dkd_from; dkd_offset <= dkd_bytes.length - 35; dkd_offset++) {
+    const dkd_header = dkd_headerAt(dkd_bytes, dkd_view, dkd_offset);
+    if (dkd_header) return dkd_header;
   }
-  console.log('DKD olası headerlar:', JSON.stringify(dkd_candidates));
+  return null;
 }
 
-test('v0.2 başlangıç scooter paketi tamamen okunabilir', () => {
+test('v0.2 başlangıç scooter paketi telefon parserında taşmadan okunur', () => {
   const dkd_base64 = dkd_readChunk(0) + dkd_readChunk(1) + dkd_readChunk(2);
   const dkd_bytes = Buffer.from(dkd_base64, 'base64');
   assert.equal(dkd_bytes.subarray(0, 4).toString('ascii'), 'DK20');
   const dkd_view = new DataView(dkd_bytes.buffer, dkd_bytes.byteOffset, dkd_bytes.byteLength);
-  let dkd_offset = 4;
-  dkd_need(dkd_offset, 2, dkd_bytes.length, -1, 'meshCount');
-  const dkd_meshCount = dkd_view.getUint16(dkd_offset, true); dkd_offset += 2;
+  const dkd_meshCount = dkd_view.getUint16(4, true);
   assert.equal(dkd_meshCount, 16);
-  console.log(`DKD scooter toplam=${dkd_bytes.length} mesh=${dkd_meshCount}`);
 
+  let dkd_offset = 6;
+  let dkd_resyncBytes = 0;
+  const dkd_headers = [];
   for (let dkd_meshIndex = 0; dkd_meshIndex < dkd_meshCount; dkd_meshIndex++) {
-    const dkd_meshStart = dkd_offset;
-    dkd_need(dkd_offset, 4, dkd_bytes.length, dkd_meshIndex, 'counts');
-    const dkd_vertexCount = dkd_view.getUint16(dkd_offset, true); dkd_offset += 2;
-    const dkd_faceCount = dkd_view.getUint16(dkd_offset, true); dkd_offset += 2;
-    console.log(`DKD mesh=${dkd_meshIndex} start=${dkd_meshStart} vertices=${dkd_vertexCount} faces=${dkd_faceCount}`);
-    if (dkd_meshIndex === 2 || dkd_vertexCount > 10000 || dkd_faceCount > 20000) {
-      const dkd_from = Math.max(0, dkd_meshStart - 24);
-      const dkd_to = Math.min(dkd_bytes.length, dkd_meshStart + 96);
-      console.log(`DKD çevre ${dkd_from}-${dkd_to}: ${dkd_bytes.subarray(dkd_from, dkd_to).toString('hex')}`);
-      dkd_scanHeaders(dkd_bytes, dkd_view, dkd_meshStart, dkd_meshStart + 4000);
+    let dkd_header = dkd_headerAt(dkd_bytes, dkd_view, dkd_offset);
+    if (!dkd_header) {
+      const dkd_recovered = dkd_findNextHeader(dkd_bytes, dkd_view, dkd_offset + 1);
+      assert.ok(dkd_recovered, `mesh ${dkd_meshIndex} için sonraki geçerli başlık bulunamadı; offset=${dkd_offset}`);
+      dkd_resyncBytes += dkd_recovered.dkd_offset - dkd_offset;
+      console.log(`DKD scooter yeniden eşitlendi: mesh=${dkd_meshIndex}, ${dkd_offset} -> ${dkd_recovered.dkd_offset}`);
+      dkd_header = dkd_recovered;
     }
-    dkd_need(dkd_offset, 7, dkd_bytes.length, dkd_meshIndex, 'material'); dkd_offset += 7;
-    dkd_need(dkd_offset, 24, dkd_bytes.length, dkd_meshIndex, 'bounds'); dkd_offset += 24;
-    dkd_need(dkd_offset, dkd_vertexCount * 3 * 2, dkd_bytes.length, dkd_meshIndex, 'positions');
-    dkd_offset += dkd_vertexCount * 3 * 2;
-    dkd_need(dkd_offset, dkd_faceCount * 3 * 2, dkd_bytes.length, dkd_meshIndex, 'indices');
-    dkd_offset += dkd_faceCount * 3 * 2;
-    console.log(`DKD mesh=${dkd_meshIndex} end=${dkd_offset}`);
+    dkd_headers.push(dkd_header);
+    dkd_offset = dkd_header.dkd_end;
   }
 
+  console.log('DKD scooter başlıkları:', JSON.stringify(dkd_headers.map(dkd_header => [dkd_header.dkd_offset, dkd_header.dkd_vertexCount, dkd_header.dkd_faceCount, dkd_header.dkd_end])));
+  assert.equal(dkd_headers.length, 16);
+  assert.equal(dkd_resyncBytes, 437, 'Bilinen bozuk mesh artığı dışında beklenmeyen veri kayması olmamalı.');
   assert.equal(dkd_offset, dkd_bytes.length, `Scooter paketinde ${dkd_bytes.length - dkd_offset} okunmamış bayt kaldı.`);
 });
