@@ -15,7 +15,8 @@ const dkd_sources = [
   'dkd-v02-scooter-0.mjs',
   'dkd-v02-scooter-1.mjs',
   'dkd-v02-scooter-2.mjs',
-  'dkd-v02-patch.mjs'
+  'dkd-v02-patch.mjs',
+  'dkd-v02-runtime-fix.mjs'
 ];
 
 const dkd_threeCode = await dkd_fs.readFile(dkd_path.join(dkd_root, 'node_modules/three/build/three.cjs'), 'utf8');
