@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - work/DraBornGo-LastMile-v0.2
+      - work/DraBornGo-LastMile-v0.3
     paths:
       - 'DraBornGo-LastMile/game/**'
       - 'DraBornGo-LastMile/scripts/dkd-build-game.mjs'
@@ -64,5 +65,5 @@ jobs:
             echo 'Generated files already current.'
             exit 0
           fi
-          git commit -m 'build(lastmile): regenerate v0.2 Expo Go bundle'
+          git commit -m 'build(lastmile): regenerate v0.3 Expo Go bundle'
           git push origin HEAD:${{ github.ref_name }}
