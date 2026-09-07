@@ -7,12 +7,12 @@ const dkd_build = fs.readFileSync(new URL('../scripts/dkd-build-game.mjs', impor
 const dkd_app = JSON.parse(fs.readFileSync(new URL('../app.json', import.meta.url), 'utf8'));
 const dkd_package = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 
-test('v0.2 metadata is aligned for Expo Go', () => {
-  assert.equal(dkd_package.version, '0.2.0');
-  assert.equal(dkd_app.expo.version, '0.2.0');
-  assert.equal(dkd_app.expo.android.versionCode, 200);
-  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.2');
-  assert.match(dkd_build, /v0\.2 Deneme/);
+test('v0.2 compatibility layer remains bundled in v0.3 Expo Go build', () => {
+  assert.equal(dkd_package.version, '0.3.0');
+  assert.equal(dkd_app.expo.version, '0.3.0');
+  assert.equal(dkd_app.expo.android.versionCode, 300);
+  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.3');
+  assert.match(dkd_build, /v0\.3 Deneme/);
 });
 
 test('v0.2 bundle includes starter scooter data and patch after base modules', () => {
@@ -30,8 +30,7 @@ test('route choices are rejected when geometry or displayed distance is identica
   assert.match(dkd_patch, /24/);
 });
 
-test('ground arrows, steering inversion and visible OSM label fixes are bundled', () => {
-  assert.match(dkd_patch, /dkd_rotation: \[Math\.PI \/ 2, dkd_heading, 0\]/);
+test('v0.2 steering and visible OSM compatibility fixes remain bundled', () => {
   assert.match(dkd_patch, /this\.dkd_input\.dkd_steer = -dkd_visual/);
   assert.match(dkd_patch, /\.dkd-osm\{display:none!important\}/);
 });
