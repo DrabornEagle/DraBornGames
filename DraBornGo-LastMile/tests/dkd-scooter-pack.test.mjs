@@ -29,17 +29,26 @@ test('v0.2 başlangıç scooter paketi tamamen okunabilir', () => {
   dkd_need(dkd_offset, 2, dkd_bytes.length, -1, 'meshCount');
   const dkd_meshCount = dkd_view.getUint16(dkd_offset, true); dkd_offset += 2;
   assert.equal(dkd_meshCount, 16);
+  console.log(`DKD scooter toplam=${dkd_bytes.length} mesh=${dkd_meshCount}`);
 
   for (let dkd_meshIndex = 0; dkd_meshIndex < dkd_meshCount; dkd_meshIndex++) {
+    const dkd_meshStart = dkd_offset;
     dkd_need(dkd_offset, 4, dkd_bytes.length, dkd_meshIndex, 'counts');
     const dkd_vertexCount = dkd_view.getUint16(dkd_offset, true); dkd_offset += 2;
     const dkd_faceCount = dkd_view.getUint16(dkd_offset, true); dkd_offset += 2;
+    console.log(`DKD mesh=${dkd_meshIndex} start=${dkd_meshStart} vertices=${dkd_vertexCount} faces=${dkd_faceCount}`);
+    if (dkd_vertexCount > 10000 || dkd_faceCount > 20000) {
+      const dkd_from = Math.max(0, dkd_meshStart - 24);
+      const dkd_to = Math.min(dkd_bytes.length, dkd_meshStart + 96);
+      console.log(`DKD çevre ${dkd_from}-${dkd_to}: ${dkd_bytes.subarray(dkd_from, dkd_to).toString('hex')}`);
+    }
     dkd_need(dkd_offset, 7, dkd_bytes.length, dkd_meshIndex, 'material'); dkd_offset += 7;
     dkd_need(dkd_offset, 24, dkd_bytes.length, dkd_meshIndex, 'bounds'); dkd_offset += 24;
     dkd_need(dkd_offset, dkd_vertexCount * 3 * 2, dkd_bytes.length, dkd_meshIndex, 'positions');
     dkd_offset += dkd_vertexCount * 3 * 2;
     dkd_need(dkd_offset, dkd_faceCount * 3 * 2, dkd_bytes.length, dkd_meshIndex, 'indices');
     dkd_offset += dkd_faceCount * 3 * 2;
+    console.log(`DKD mesh=${dkd_meshIndex} end=${dkd_offset}`);
   }
 
   assert.equal(dkd_offset, dkd_bytes.length, `Scooter paketinde ${dkd_bytes.length - dkd_offset} okunmamış bayt kaldı.`);
