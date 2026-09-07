@@ -73,3 +73,12 @@ test('v0.2 başlangıç scooter paketi telefon parserında taşmadan okunur', ()
   assert.equal(dkd_resyncBytes, 6, 'İlk mesh sonundaki bilinen altı baytlık ayraç dışında kayma olmamalı.');
   assert.equal(dkd_offset, dkd_bytes.length, `Scooter paketinde ${dkd_bytes.length - dkd_offset} okunmamış bayt kaldı.`);
 });
+
+test('telefon güvenli scooter parserı üretilen oyun paketine dahil edilir', () => {
+  const dkd_build = dkd_fs.readFileSync(dkd_path.join(dkd_root, 'scripts/dkd-build-game.mjs'), 'utf8');
+  const dkd_runtime = dkd_fs.readFileSync(dkd_path.join(dkd_root, 'game/dkd-v02-runtime-fix.mjs'), 'utf8');
+  assert.match(dkd_build, /dkd-v02-runtime-fix\.mjs/);
+  assert.match(dkd_runtime, /dkd_v02_scooterHeader/);
+  assert.match(dkd_runtime, /dkd_v02_findScooterHeader/);
+  assert.match(dkd_runtime, /dkd_v02_baseBuildBike/);
+});
