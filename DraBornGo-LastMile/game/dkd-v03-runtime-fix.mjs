@@ -181,3 +181,5 @@ dkd_Scene.prototype.dkd_setRoute = function(dkd_run) {
   );
   else dkd_arrowGeometry.dispose();
 };
+
+// CI marker: v0.3 model decoding and route orientation are finalized together.
