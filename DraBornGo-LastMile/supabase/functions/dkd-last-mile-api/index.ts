@@ -29,16 +29,27 @@ Deno.serve(async (dkd_request: Request) => {
     const dkd_user = dkd_userData.user;
     const dkd_body = await dkd_request.json().catch(() => ({})) as Record<string, unknown>;
     const dkd_action = String(dkd_body.dkd_action ?? 'bootstrap');
+    const dkd_userMetadata = (dkd_user.user_metadata && typeof dkd_user.user_metadata === 'object') ? dkd_user.user_metadata as Record<string, unknown> : {};
+    const dkd_role = String(dkd_user.app_metadata?.last_mile_role ?? '') === 'admin' ? 'admin' : 'player';
 
-    if (dkd_action === 'health') return dkd_json({ dkd_ok: true, dkd_version: '0.4', dkd_user_id: dkd_user.id });
+    const { error: dkd_profileError } = await dkd_admin.rpc('dkd_lastmile_ensure_profile', {
+      dkd_user_id: dkd_user.id,
+      dkd_email: dkd_user.email ?? '',
+      dkd_full_name: String(dkd_userMetadata.dkd_full_name ?? ''),
+      dkd_username: String(dkd_userMetadata.dkd_username ?? ''),
+      dkd_company_name: String(dkd_userMetadata.dkd_company_name ?? ''),
+      dkd_phone: String(dkd_userMetadata.dkd_phone ?? ''),
+      dkd_role,
+    });
+    if (dkd_profileError) throw dkd_profileError;
+
+    if (dkd_action === 'health') return dkd_json({ dkd_ok: true, dkd_version: '0.4', dkd_user_id: dkd_user.id, dkd_role });
 
     if (dkd_action === 'bootstrap') {
       const { data: dkd_data, error: dkd_error } = await dkd_admin.rpc('dkd_lastmile_bootstrap', { dkd_user_id: dkd_user.id });
       if (dkd_error) throw dkd_error;
       return dkd_json({ dkd_ok: true, dkd_data });
     }
-
-    if (String(dkd_user.app_metadata?.last_mile_role ?? '') !== 'admin') return dkd_json({ dkd_error: 'admin_required' }, 403);
 
     if (dkd_action === 'save_progress') {
       const dkd_state = (dkd_body.dkd_game_state && typeof dkd_body.dkd_game_state === 'object') ? dkd_body.dkd_game_state as Record<string, unknown> : {};
@@ -53,12 +64,13 @@ Deno.serve(async (dkd_request: Request) => {
     }
 
     if (dkd_action === 'toggle_demo') {
+      if (dkd_role !== 'admin') return dkd_json({ dkd_error: 'admin_required' }, 403);
       const dkd_enabled = dkd_body.dkd_enabled === true;
-      const { data: dkd_runtime, error: dkd_error } = await dkd_admin.rpc('dkd_lastmile_toggle_demo', { dkd_user_id: dkd_user.id, dkd_enabled });
+      const { error: dkd_error } = await dkd_admin.rpc('dkd_lastmile_toggle_demo', { dkd_user_id: dkd_user.id, dkd_enabled });
       if (dkd_error) throw dkd_error;
       const { data: dkd_bootstrap, error: dkd_bootstrapError } = await dkd_admin.rpc('dkd_lastmile_bootstrap', { dkd_user_id: dkd_user.id });
       if (dkd_bootstrapError) throw dkd_bootstrapError;
-      return dkd_json({ dkd_ok: true, dkd_runtime, dkd_data: dkd_bootstrap });
+      return dkd_json({ dkd_ok: true, dkd_data: dkd_bootstrap });
     }
 
     if (dkd_action === 'claim_job') {
