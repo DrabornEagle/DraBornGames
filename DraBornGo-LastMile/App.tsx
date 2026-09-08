@@ -25,7 +25,12 @@ type dkd_Session = {
   expires_at?: number;
   expires_in?: number;
   token_type?: string;
-  user?: { id?: string; email?: string; app_metadata?: Record<string, unknown> };
+  user?: {
+    id?: string;
+    email?: string;
+    app_metadata?: Record<string, unknown>;
+    user_metadata?: Record<string, unknown>;
+  };
 };
 
 function dkd_Container() {
@@ -39,7 +44,7 @@ function dkd_Container() {
   const dkd_latestSave = dkd_useRef<string | null>(null);
   const dkd_shareBusy = dkd_useRef(false);
   const dkd_session = dkd_useRef<dkd_Session | null>(null);
-  const dkd_adminReady = dkd_useRef(false);
+  const dkd_cloudReady = dkd_useRef(false);
   const dkd_cloudSaveBusy = dkd_useRef(false);
   const dkd_cloudSavePending = dkd_useRef<any>(null);
 
@@ -79,42 +84,54 @@ function dkd_Container() {
       return dkd_refreshed;
     } catch {
       await dkd_storeSession(null);
-      dkd_adminReady.current = false;
+      dkd_cloudReady.current = false;
       return null;
     }
   };
 
   const dkd_emitAuth = async () => {
     const dkd_current = await dkd_refreshSession();
-    dkd_receive({ dkd_type: 'auth-state', dkd_data: { dkd_authenticated: Boolean(dkd_current?.access_token), dkd_email: dkd_current?.user?.email || '' } });
+    dkd_receive({
+      dkd_type: 'auth-state',
+      dkd_data: {
+        dkd_authenticated: Boolean(dkd_current?.access_token),
+        dkd_email: dkd_current?.user?.email || '',
+      },
+    });
   };
 
   const dkd_edge = async (dkd_action: string, dkd_data: Record<string, unknown> = {}) => {
     const dkd_current = await dkd_refreshSession();
-    if (!dkd_current?.access_token) throw new Error('Yönetici oturumu gerekli.');
+    if (!dkd_current?.access_token) throw new Error('Oturum açman gerekiyor.');
     const dkd_response = await fetch(dkd_edgeUrl, {
       method: 'POST',
-      headers: { apikey: dkd_supabaseKey, Authorization: `Bearer ${dkd_current.access_token}`, 'Content-Type': 'application/json' },
+      headers: {
+        apikey: dkd_supabaseKey,
+        Authorization: `Bearer ${dkd_current.access_token}`,
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ dkd_action, ...dkd_data }),
     });
     const dkd_json = await dkd_response.json().catch(() => ({}));
-    if (!dkd_response.ok || dkd_json?.dkd_ok === false || dkd_json?.dkd_error) throw new Error(String(dkd_json?.dkd_error || 'Last-Mile sunucu işlemi başarısız.'));
+    if (!dkd_response.ok || dkd_json?.dkd_ok === false || dkd_json?.dkd_error) {
+      throw new Error(String(dkd_json?.dkd_error || 'Last-Mile sunucu işlemi başarısız.'));
+    }
     return dkd_json;
   };
 
   const dkd_bootstrapCloud = async () => {
     try {
       const dkd_result = await dkd_edge('bootstrap');
-      dkd_adminReady.current = dkd_result?.dkd_data?.dkd_enabled === true && dkd_result?.dkd_data?.dkd_role === 'admin';
+      dkd_cloudReady.current = dkd_result?.dkd_data?.dkd_enabled === true;
       dkd_receive({ dkd_type: 'cloud-bootstrap', dkd_data: dkd_result });
     } catch (dkd_issue) {
-      dkd_adminReady.current = false;
+      dkd_cloudReady.current = false;
       dkd_receive({ dkd_type: 'cloud-error', dkd_data: dkd_issue instanceof Error ? dkd_issue.message : 'Last-Mile bağlantısı kurulamadı.' });
     }
   };
 
   const dkd_flushCloudSave = async () => {
-    if (dkd_cloudSaveBusy.current || !dkd_adminReady.current || !dkd_cloudSavePending.current) return;
+    if (dkd_cloudSaveBusy.current || !dkd_cloudReady.current || !dkd_cloudSavePending.current) return;
     const dkd_gameState = dkd_cloudSavePending.current;
     dkd_cloudSavePending.current = null;
     dkd_cloudSaveBusy.current = true;
@@ -151,10 +168,18 @@ function dkd_Container() {
       else void dkd_Speech.stop();
     });
     const dkd_back = dkd_BackHandler.addEventListener('hardwareBackPress', () => { dkd_receive({ dkd_type: 'back' }); return true; });
-    return () => { dkd_alive = false; dkd_subscription.remove(); dkd_back.remove(); void dkd_Speech.stop(); };
+    return () => {
+      dkd_alive = false;
+      dkd_subscription.remove();
+      dkd_back.remove();
+      void dkd_Speech.stop();
+    };
   }, [dkd_storageAttempt]);
 
-  const dkd_html = dkd_useMemo(() => dkd_gameHtml.replace('/*DKD_BOOTSTRAP*/', `window.dkd_bootstrap=${(dkd_bootstrap || 'null').replace(/</g, '\\u003c')};`), [dkd_bootstrap]);
+  const dkd_html = dkd_useMemo(
+    () => dkd_gameHtml.replace('/*DKD_BOOTSTRAP*/', `window.dkd_bootstrap=${(dkd_bootstrap || 'null').replace(/</g, '\\u003c')};`),
+    [dkd_bootstrap],
+  );
 
   const dkd_share = async (dkd_text: string, dkd_name: string, dkd_mime: string, dkd_base64 = false) => {
     if (dkd_shareBusy.current) return;
@@ -186,24 +211,67 @@ function dkd_Container() {
       } else if (dkd_message.dkd_type === 'auth-state-request') {
         await dkd_emitAuth();
       } else if (dkd_message.dkd_type === 'auth-login') {
-        const dkd_email = String(dkd_data?.dkd_email || '').trim();
+        const dkd_email = String(dkd_data?.dkd_email || '').trim().toLowerCase();
         const dkd_password = String(dkd_data?.dkd_password || '');
         if (!dkd_email || dkd_password.length < 6) throw new Error('E-posta ve şifreyi kontrol et.');
         const dkd_loggedIn = await dkd_authFetch('/auth/v1/token?grant_type=password', { email: dkd_email, password: dkd_password });
         await dkd_storeSession(dkd_loggedIn);
+        dkd_cloudReady.current = false;
         dkd_receive({ dkd_type: 'auth-state', dkd_data: { dkd_authenticated: true, dkd_email: dkd_loggedIn.user?.email || dkd_email } });
+      } else if (dkd_message.dkd_type === 'auth-signup') {
+        const dkd_email = String(dkd_data?.dkd_email || '').trim().toLowerCase();
+        const dkd_password = String(dkd_data?.dkd_password || '');
+        const dkd_fullName = String(dkd_data?.dkd_full_name || '').trim().slice(0, 80);
+        const dkd_username = String(dkd_data?.dkd_username || '').trim().slice(0, 40);
+        const dkd_companyName = String(dkd_data?.dkd_company_name || '').trim().slice(0, 80);
+        const dkd_phone = String(dkd_data?.dkd_phone || '').replace(/[^+0-9]/g, '').slice(0, 30);
+        if (!dkd_email || dkd_password.length < 6 || dkd_fullName.length < 3 || !/^[A-Za-z0-9_]{3,22}$/.test(dkd_username) || dkd_companyName.length < 2 || !/^\+?\d{10,15}$/.test(dkd_phone)) {
+          throw new Error('Kayıt bilgilerini kontrol et.');
+        }
+        const dkd_signedUp = await dkd_authFetch('/auth/v1/signup', {
+          email: dkd_email,
+          password: dkd_password,
+          data: {
+            dkd_full_name: dkd_fullName,
+            dkd_username,
+            dkd_company_name: dkd_companyName,
+            dkd_phone,
+          },
+        });
+        if (dkd_signedUp?.access_token && dkd_signedUp?.refresh_token) {
+          await dkd_storeSession(dkd_signedUp);
+          dkd_cloudReady.current = false;
+          dkd_receive({
+            dkd_type: 'auth-signup-result',
+            dkd_data: {
+              dkd_authenticated: true,
+              dkd_confirmation_required: false,
+              dkd_email: dkd_signedUp.user?.email || dkd_email,
+            },
+          });
+        } else {
+          dkd_receive({
+            dkd_type: 'auth-signup-result',
+            dkd_data: {
+              dkd_authenticated: false,
+              dkd_confirmation_required: true,
+              dkd_email,
+            },
+          });
+        }
       } else if (dkd_message.dkd_type === 'auth-logout') {
         const dkd_current = await dkd_refreshSession();
         if (dkd_current?.access_token) {
           try { await dkd_authFetch('/auth/v1/logout', {}, dkd_current.access_token); } catch {}
         }
         await dkd_storeSession(null);
-        dkd_adminReady.current = false;
-        dkd_receive({ dkd_type: 'auth-state', dkd_data: { dkd_authenticated: false, dkd_email: '' } });
+        dkd_cloudReady.current = false;
+        dkd_cloudSavePending.current = null;
+        dkd_receive({ dkd_type: 'auth-state', dkd_data: { dkd_authenticated: false, dkd_email: '', dkd_logged_out: true } });
       } else if (dkd_message.dkd_type === 'cloud-bootstrap') {
         await dkd_bootstrapCloud();
       } else if (dkd_message.dkd_type === 'cloud-claim-jobs') {
-        const dkd_count = Math.max(1, Math.min(4, Math.floor(Number(dkd_data?.dkd_count || 4))));
+        const dkd_count = Math.max(1, Math.min(6, Math.floor(Number(dkd_data?.dkd_count || 4))));
         const dkd_level = Math.max(1, Math.floor(Number(dkd_data?.dkd_level || 1)));
         const dkd_jobs = [];
         for (let dkd_index = 0; dkd_index < dkd_count; dkd_index++) {
@@ -231,10 +299,10 @@ function dkd_Container() {
         }
       } else if (dkd_message.dkd_type === 'admin-demo-toggle') {
         const dkd_result = await dkd_edge('toggle_demo', { dkd_enabled: dkd_data?.dkd_enabled === true });
-        dkd_adminReady.current = dkd_result?.dkd_data?.dkd_enabled === true;
-        dkd_receive({ dkd_type: 'cloud-bootstrap', dkd_data: { dkd_ok: true, dkd_data: dkd_result?.dkd_data } });
+        dkd_cloudReady.current = dkd_result?.dkd_data?.dkd_enabled === true;
+        dkd_receive({ dkd_type: 'cloud-bootstrap', dkd_data: dkd_result });
       } else if (dkd_message.dkd_type === 'cloud-save') {
-        if (dkd_data?.dkd_game_state && dkd_adminReady.current) {
+        if (dkd_data?.dkd_game_state && dkd_cloudReady.current) {
           dkd_cloudSavePending.current = dkd_data.dkd_game_state;
           void dkd_flushCloudSave();
         }
@@ -253,7 +321,7 @@ function dkd_Container() {
         if (typeof dkd_data?.dkd_data !== 'string' || !/^data:image\/(png|jpeg);base64,/.test(dkd_data.dkd_data)) throw new Error('Paylaşılacak görsel geçersiz.');
         await dkd_share(dkd_data.dkd_data.split(',')[1], String(dkd_data.dkd_name || 'Son-Kilometre.png'), String(dkd_data.dkd_mime || 'image/png'), true);
       } else if (dkd_message.dkd_type === 'export-json') {
-        if (typeof dkd_data?.dkd_text !== 'string') throw new Error('Yedek boş.');
+        if (typeof dkd_data?.dkd_text !== 'string') throw new Error('Dosya verisi boş.');
         JSON.parse(dkd_data.dkd_text);
         await dkd_share(dkd_data.dkd_text, String(dkd_data.dkd_name || 'Son-Kilometre.json'), 'application/json');
       } else if (dkd_message.dkd_type === 'speak') {
@@ -268,7 +336,8 @@ function dkd_Container() {
       }
     } catch (dkd_issue) {
       const dkd_message = dkd_issue instanceof Error ? dkd_issue.message : 'İşlem tamamlanamadı.';
-      if (String(dkd_event.nativeEvent.data).includes('cloud-') || String(dkd_event.nativeEvent.data).includes('admin-demo')) dkd_receive({ dkd_type: 'cloud-error', dkd_data: dkd_message });
+      const dkd_raw = String(dkd_event.nativeEvent.data);
+      if (dkd_raw.includes('cloud-') || dkd_raw.includes('admin-demo')) dkd_receive({ dkd_type: 'cloud-error', dkd_data: dkd_message });
       else dkd_receive({ dkd_type: 'error', dkd_data: dkd_message });
     }
   };
@@ -285,7 +354,17 @@ function dkd_Container() {
           dkd_createElement(dkd_Text, { style: { color: '#d9e1e5', fontSize: 16, lineHeight: 25 }, selectable: true }, dkd_error),
           dkd_createElement(
             dkd_Pressable,
-            { onPress: () => { dkd_setError(''); if (dkd_bootstrap === null) dkd_setStorageAttempt(dkd_previous => dkd_previous + 1); else { dkd_setBootstrap(dkd_latestSave.current || dkd_bootstrap); dkd_setReloadKey(dkd_previous => dkd_previous + 1); } }, style: { padding: 18, backgroundColor: '#e4ff5e', borderRadius: 12 } },
+            {
+              onPress: () => {
+                dkd_setError('');
+                if (dkd_bootstrap === null) dkd_setStorageAttempt(dkd_previous => dkd_previous + 1);
+                else {
+                  dkd_setBootstrap(dkd_latestSave.current || dkd_bootstrap);
+                  dkd_setReloadKey(dkd_previous => dkd_previous + 1);
+                }
+              },
+              style: { padding: 18, backgroundColor: '#e4ff5e', borderRadius: 12 },
+            },
             dkd_createElement(dkd_Text, { style: { color: '#162c3d', fontWeight: '700', textAlign: 'center' } }, 'Tekrar dene'),
           ),
         )
