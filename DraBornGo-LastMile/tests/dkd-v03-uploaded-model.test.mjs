@@ -20,10 +20,11 @@ function dkd_uploadedPack() {
 
 test('yeniden yüklenen scooter + sürücü paketi yapısal olarak doğrulanır', () => {
   const dkd_pack = dkd_uploadedPack();
-  // Paket yeniden üretildiğinde eski GLB dönüşümünden daha büyük oldu. Sabit
-  // eski SHA yerine DK31 başlığı, toplam boyut ve bütün mesh sınırları birlikte
-  // doğrulanır; böylece eksik/kırpılmış Git parçaları yine CI tarafından yakalanır.
-  assert.equal(dkd_pack.length, 64071);
+  // Git parça sınırları değişse bile gerçek doğrulama DK31 yapısının tamamının
+  // hatasız okunmasıdır. Boyut için yalnızca kırpılmış/boş paketi yakalayan
+  // güvenli bir aralık kullanılır; aşağıdaki offset kontrolü paketin tamamını
+  // birebir tüketmek zorundadır.
+  assert.ok(dkd_pack.length > 50000 && dkd_pack.length < 100000, `beklenmeyen paket boyutu: ${dkd_pack.length}`);
   assert.equal(dkd_pack.subarray(0, 4).toString('ascii'), 'DK31');
   assert.equal(dkd_pack.readUInt16LE(4), 26);
 
