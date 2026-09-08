@@ -1,4 +1,5 @@
 # v0.4 real-data/admin-preview Expo Go bundle generation
+# Revalidated after clean runtime bridge rebuild.
 name: DKD Last Mile autogen
 
 on:
