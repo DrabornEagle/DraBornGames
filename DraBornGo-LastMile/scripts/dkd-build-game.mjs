@@ -29,8 +29,7 @@ const dkd_sources = [
   'dkd-v03-patch.mjs',
   'dkd-v03-runtime-fix.mjs',
   'dkd-v03-visual-hotfix.mjs',
-  'dkd-v03-home-refine.mjs',
-  'dkd-v03-uploaded-model-runtime.mjs'
+  'dkd-v03-home-refine.mjs'
 ];
 
 const dkd_threeCode = await dkd_fs.readFile(dkd_path.join(dkd_root, 'node_modules/three/build/three.cjs'), 'utf8');
