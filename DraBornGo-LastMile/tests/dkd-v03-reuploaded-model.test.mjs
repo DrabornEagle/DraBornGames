@@ -104,9 +104,11 @@ test('new and migrated careers start High and İlk garajın is removed', () => {
   assert.match(dkd_patch, /replace\(\/<small/);
 });
 
-test('generated Expo Go HTML contains the re-uploaded model runtime', () => {
+test('generated Expo Go HTML contains the complete re-uploaded model runtime', () => {
   const dkd_html = dkd_read('assets/dkd-lastmile.html');
   assert.match(dkd_html, /dkd_city50_reuploaded_scooter_rider/);
   assert.match(dkd_html, /dkd_reuploadedHighQualityApplied/);
   assert.match(dkd_html, /DecompressionStream/);
+  assert.match(dkd_html, /dkd_v03_reuploadedGzipChunk7/);
+  assert.match(dkd_html, /55706/);
 });
