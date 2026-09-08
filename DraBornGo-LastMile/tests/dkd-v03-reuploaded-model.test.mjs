@@ -10,9 +10,15 @@ const dkd_read = dkd_pathname => dkd_fs.readFileSync(dkd_path.join(dkd_root, dkd
 
 function dkd_modelBytes() {
   const dkd_source = dkd_read('game/dkd-v03-reuploaded-model-data.mjs');
-  const dkd_match = dkd_source.match(/\['([A-Za-z0-9+/=]+)'\]/);
-  assert.ok(dkd_match, 'Yeniden yüklenen model base64 verisi okunamadı.');
-  return Buffer.from(dkd_match[1], 'base64');
+  const dkd_start = dkd_source.indexOf('[');
+  const dkd_end = dkd_source.indexOf('];', dkd_start + 1);
+  assert.ok(dkd_start >= 0 && dkd_end > dkd_start, 'Yeniden yüklenen model veri dizisi okunamadı.');
+  const dkd_body = dkd_source.slice(dkd_start + 1, dkd_end);
+  const dkd_chunks = [...dkd_body.matchAll(/'([A-Za-z0-9+/=]+)'/g)].map(dkd_match => dkd_match[1]);
+  assert.ok(dkd_chunks.length >= 1, 'Yeniden yüklenen model base64 verisi okunamadı.');
+  const dkd_base64 = dkd_chunks.join('');
+  assert.equal(dkd_base64.length % 4, 0, 'Yeniden yüklenen model base64 uzunluğu geçersiz.');
+  return Buffer.from(dkd_base64, 'base64');
 }
 
 function dkd_parsePack(dkd_bytes) {
@@ -25,9 +31,12 @@ function dkd_parsePack(dkd_bytes) {
     assert.ok(dkd_offset + 34 <= dkd_bytes.length, `mesh ${dkd_mesh} başlığı eksik`);
     const dkd_vertexCount = dkd_bytes.readUInt16LE(dkd_offset);
     const dkd_faceCount = dkd_bytes.readUInt16LE(dkd_offset + 2);
+    assert.ok(dkd_vertexCount >= 3 && dkd_vertexCount <= 12000, `mesh ${dkd_mesh} vertex sayısı geçersiz`);
+    assert.ok(dkd_faceCount >= 1 && dkd_faceCount <= 24000, `mesh ${dkd_mesh} yüz sayısı geçersiz`);
     dkd_vertices += dkd_vertexCount;
     dkd_faces += dkd_faceCount;
     dkd_offset += 34 + dkd_vertexCount * 3;
+    assert.ok(dkd_offset <= dkd_bytes.length, `mesh ${dkd_mesh} konum verisi eksik`);
     let dkd_previousIndex = 0;
     for (let dkd_index = 0; dkd_index < dkd_faceCount * 3; dkd_index++) {
       let dkd_unsigned = 0;
