@@ -35,6 +35,10 @@ const dkd_sources = [
   'dkd-v03-reuploaded-gzip-2.mjs',
   'dkd-v03-reuploaded-gzip-3.mjs',
   'dkd-v03-reuploaded-gzip-4.mjs',
+  'dkd-v03-reuploaded-gzip-5.mjs',
+  'dkd-v03-reuploaded-gzip-6.mjs',
+  'dkd-v03-reuploaded-gzip-7.mjs',
+  'dkd-v03-reuploaded-gzip-manifest.mjs',
   'dkd-v03-reuploaded-model.mjs'
 ];
 
