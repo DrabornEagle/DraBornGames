@@ -8,6 +8,7 @@ on:
       - main
       - work/DraBornGo-LastMile-v0.4
       - work/DraBornGo-LastMile-v0.4-auth-open
+      - work/DraBornGo-LastMile-v0.4-real-career-cleanup
     paths:
       - 'DraBornGo-LastMile/game/**'
       - 'DraBornGo-LastMile/tests/**'
