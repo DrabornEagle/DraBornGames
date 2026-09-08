@@ -13,9 +13,24 @@ function dkd_readModelChunk(dkd_index) {
   return dkd_match[1];
 }
 
+function dkd_readVerifiedChunk(dkd_index) {
+  const dkd_name = String(dkd_index).padStart(2, '0');
+  const dkd_text = dkd_fs.readFileSync(dkd_path.join(dkd_root, `game/dkd-v03-data-${dkd_name}.mjs`), 'utf8');
+  const dkd_match = dkd_text.match(/=\s*"([A-Za-z0-9+/=]+)"\s*;/);
+  assert.ok(dkd_match, `v0.3 doğrulanmış veri parçası ${dkd_name} okunamadı.`);
+  return dkd_match[1];
+}
+
 test('v0.3 scooter + sürücü paketi eksiksiz ve güvenli okunur', () => {
   const dkd_parts = Array.from({ length: 9 }, (dkd_value, dkd_index) => Buffer.from(dkd_readModelChunk(dkd_index), 'base64'));
   const dkd_bytes = Buffer.concat(dkd_parts);
+  const dkd_verified = Buffer.from(Array.from({ length: 9 }, (dkd_value, dkd_index) => dkd_readVerifiedChunk(dkd_index)).join(''), 'base64');
+  let dkd_firstMismatch = -1;
+  const dkd_compareLength = Math.min(dkd_verified.length, dkd_bytes.length);
+  for (let dkd_index = 0; dkd_index < dkd_compareLength; dkd_index++) {
+    if (dkd_verified[dkd_index] !== dkd_bytes[dkd_index]) { dkd_firstMismatch = dkd_index; break; }
+  }
+  assert.equal(dkd_firstMismatch, -1, `v0.3 model akışı doğrulanmış kaynakla byte ${dkd_firstMismatch} konumunda ayrışıyor; doğrulanmış uzunluk=${dkd_verified.length}, model uzunluğu=${dkd_bytes.length}`);
   assert.equal(dkd_bytes.subarray(0, 4).toString('ascii'), 'DK31');
   const dkd_view = new DataView(dkd_bytes.buffer, dkd_bytes.byteOffset, dkd_bytes.byteLength);
   const dkd_meshCount = dkd_view.getUint16(4, true);
@@ -49,10 +64,7 @@ test('v0.3 scooter + sürücü paketi eksiksiz ve güvenli okunur', () => {
       } while (dkd_byte & 0x80);
       const dkd_delta = (dkd_unsigned >>> 1) ^ -(dkd_unsigned & 1);
       dkd_previousIndex += dkd_delta;
-      assert.ok(
-        dkd_previousIndex >= 0 && dkd_previousIndex < dkd_vertexCount,
-        `mesh=${dkd_meshIndex} index=${dkd_index} byte=${dkd_indexOffset} vertices=${dkd_vertexCount} unsigned=${dkd_unsigned} delta=${dkd_delta} current=${dkd_previousIndex}`
-      );
+      assert.ok(dkd_previousIndex >= 0 && dkd_previousIndex < dkd_vertexCount, `mesh=${dkd_meshIndex} index=${dkd_index} byte=${dkd_indexOffset} vertices=${dkd_vertexCount} unsigned=${dkd_unsigned} delta=${dkd_delta} current=${dkd_previousIndex}`);
     }
   }
   assert.equal(dkd_offset, dkd_bytes.length);
