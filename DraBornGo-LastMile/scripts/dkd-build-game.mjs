@@ -29,13 +29,22 @@ const dkd_sources = [
   'dkd-v03-patch.mjs',
   'dkd-v03-runtime-fix.mjs',
   'dkd-v03-visual-hotfix.mjs',
-  'dkd-v03-home-refine.mjs'
+  'dkd-v03-home-refine.mjs',
+  'dkd-v03-reuploaded-gzip-0.mjs',
+  'dkd-v03-reuploaded-gzip-1.mjs',
+  'dkd-v03-reuploaded-gzip-2.mjs',
+  'dkd-v03-reuploaded-gzip-3.mjs',
+  'dkd-v03-reuploaded-gzip-4.mjs',
+  'dkd-v03-reuploaded-gzip-5.mjs',
+  'dkd-v03-reuploaded-gzip-6.mjs',
+  'dkd-v03-reuploaded-gzip-7.mjs',
+  'dkd-v03-reuploaded-gzip-manifest.mjs',
+  'dkd-v03-reuploaded-model.mjs'
 ];
 
 const dkd_threeCode = await dkd_fs.readFile(dkd_path.join(dkd_root, 'node_modules/three/build/three.cjs'), 'utf8');
 const dkd_modules = await Promise.all(dkd_sources.map(async dkd_file => {
   let dkd_source = await dkd_fs.readFile(dkd_path.join(dkd_root, 'game', dkd_file), 'utf8');
-  // v0.3 paket etiketi, eski kariyer kayıt şemasıyla uyumlu tutulur.
   if (dkd_file === 'dkd-data.mjs') dkd_source = dkd_source.replace("export const dkd_version = 'v0.101';", "export const dkd_version = 'v0.3';");
   return dkd_source
     .replace(/^import .*?;\s*$/gm, '')
