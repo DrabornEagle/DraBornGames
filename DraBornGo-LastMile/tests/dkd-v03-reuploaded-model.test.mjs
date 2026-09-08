@@ -3,23 +3,29 @@ import assert from 'node:assert/strict';
 import * as dkd_fs from 'node:fs';
 import * as dkd_path from 'node:path';
 import * as dkd_vm from 'node:vm';
+import { gunzipSync as dkd_gunzipSync } from 'node:zlib';
 import { createHash as dkd_createHash } from 'node:crypto';
 import { fileURLToPath as dkd_fileURLToPath } from 'node:url';
 
 const dkd_root = dkd_path.resolve(dkd_path.dirname(dkd_fileURLToPath(import.meta.url)), '..');
 const dkd_read = dkd_pathname => dkd_fs.readFileSync(dkd_path.join(dkd_root, dkd_pathname), 'utf8');
 
-function dkd_modelBytes() {
-  const dkd_source = dkd_read('game/dkd-v03-reuploaded-model-data.mjs');
+function dkd_readChunk(dkd_index) {
+  const dkd_source = dkd_read(`game/dkd-v03-reuploaded-gzip-${dkd_index}.mjs`);
   const dkd_context = {};
   dkd_vm.createContext(dkd_context);
-  dkd_vm.runInContext(`${dkd_source}\nglobalThis.dkd_testModelChunks = dkd_v03_reuploadedModelChunks;`, dkd_context, { timeout: 1000 });
-  const dkd_chunks = dkd_context.dkd_testModelChunks;
-  assert.ok(Array.isArray(dkd_chunks) && dkd_chunks.length >= 1, 'Yeniden yüklenen model base64 verisi okunamadı.');
-  assert.ok(dkd_chunks.every(dkd_chunk => typeof dkd_chunk === 'string' && /^[A-Za-z0-9+/=]+$/.test(dkd_chunk)), 'Yeniden yüklenen model base64 parçaları geçersiz.');
-  const dkd_base64 = dkd_chunks.join('');
-  assert.equal(dkd_base64.length % 4, 0, 'Yeniden yüklenen model base64 uzunluğu geçersiz.');
-  return Buffer.from(dkd_base64, 'base64');
+  dkd_vm.runInContext(`${dkd_source}\nglobalThis.dkd_chunk = dkd_v03_reuploadedGzipChunk${dkd_index};`, dkd_context, { timeout: 1000 });
+  assert.equal(typeof dkd_context.dkd_chunk, 'string');
+  assert.match(dkd_context.dkd_chunk, /^[A-Za-z0-9+/=]+$/);
+  return dkd_context.dkd_chunk;
+}
+
+function dkd_modelBytes() {
+  const dkd_base64 = [0, 1, 2, 3, 4].map(dkd_readChunk).join('');
+  assert.equal(dkd_base64.length % 4, 0, 'Sıkıştırılmış model base64 uzunluğu geçersiz.');
+  const dkd_compressed = Buffer.from(dkd_base64, 'base64');
+  assert.ok(dkd_compressed.length > 10000 && dkd_compressed.length < 30000, 'Sıkıştırılmış model boyutu beklenmiyor.');
+  return dkd_gunzipSync(dkd_compressed);
 }
 
 function dkd_parsePack(dkd_bytes) {
@@ -72,13 +78,16 @@ test('re-uploaded scooter + rider mobile pack is intact', () => {
 test('re-uploaded model runtime is bundled last and replaces City 50', () => {
   const dkd_build = dkd_read('scripts/dkd-build-game.mjs');
   const dkd_home = dkd_build.indexOf("'dkd-v03-home-refine.mjs'");
-  const dkd_data = dkd_build.indexOf("'dkd-v03-reuploaded-model-data.mjs'");
+  const dkd_gzip0 = dkd_build.indexOf("'dkd-v03-reuploaded-gzip-0.mjs'");
+  const dkd_gzip4 = dkd_build.indexOf("'dkd-v03-reuploaded-gzip-4.mjs'");
   const dkd_runtime = dkd_build.indexOf("'dkd-v03-reuploaded-model.mjs'");
-  assert.ok(dkd_home >= 0 && dkd_data > dkd_home && dkd_runtime > dkd_data);
+  assert.ok(dkd_home >= 0 && dkd_gzip0 > dkd_home && dkd_gzip4 > dkd_gzip0 && dkd_runtime > dkd_gzip4);
 
   const dkd_patch = dkd_read('game/dkd-v03-reuploaded-model.mjs');
   assert.match(dkd_patch, /dkd_city50_reuploaded_scooter_rider/);
   assert.match(dkd_patch, /dkd_uploaded_scooter_rider_model/);
+  assert.match(dkd_patch, /DecompressionStream\('gzip'\)/);
+  assert.match(dkd_patch, /dkd_v03ModelLoadToken/);
   assert.match(dkd_patch, /this\.dkd_state\?\.dkd_equipped !== 'dkd_city50'/);
   assert.match(dkd_patch, /dkd_totalVertices !== 5942/);
   assert.match(dkd_patch, /dkd_totalFaces !== 11244/);
@@ -96,4 +105,5 @@ test('generated Expo Go HTML contains the re-uploaded model runtime', () => {
   const dkd_html = dkd_read('assets/dkd-lastmile.html');
   assert.match(dkd_html, /dkd_city50_reuploaded_scooter_rider/);
   assert.match(dkd_html, /dkd_reuploadedHighQualityApplied/);
+  assert.match(dkd_html, /DecompressionStream/);
 });
