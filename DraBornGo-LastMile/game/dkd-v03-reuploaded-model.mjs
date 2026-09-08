@@ -1,22 +1,46 @@
 // DraBornGo / Last Mile v0.3 re-uploaded scooter + rider integration.
-// The user-supplied combined GLB was validated, converted once to a compact
-// mobile runtime package (DK32), and is decoded entirely offline in Expo Go.
+// The validated user model is stored as five small gzip/base64 chunks. Android
+// WebView decompresses it once, entirely offline, then the exact combined
+// scooter+rider geometry replaces the temporary City 50 model.
 
 function dkd_v03_reuploadedNeed(dkd_offset, dkd_length, dkd_total, dkd_label) {
   if (dkd_offset < 0 || dkd_length < 0 || dkd_offset + dkd_length > dkd_total) throw new Error(`Yüklenen model verisi eksik: ${dkd_label}`);
 }
 
-function dkd_v03_reuploadedReadModel() {
-  const dkd_base64 = dkd_v03_reuploadedModelChunks.join('');
-  if (!dkd_base64 || dkd_base64.length < 1000) throw new Error('Yüklenen scooter + sürücü modeli bulunamadı.');
-  const dkd_binary = atob(dkd_base64);
-  const dkd_bytes = new Uint8Array(dkd_binary.length);
-  for (let dkd_index = 0; dkd_index < dkd_binary.length; dkd_index++) dkd_bytes[dkd_index] = dkd_binary.charCodeAt(dkd_index);
-  dkd_v03_reuploadedNeed(0, 6, dkd_bytes.length, 'başlık');
+let dkd_v03_reuploadedBytesPromise = null;
 
+async function dkd_v03_reuploadedReadBytes() {
+  if (dkd_v03_reuploadedBytesPromise) return dkd_v03_reuploadedBytesPromise;
+  dkd_v03_reuploadedBytesPromise = (async () => {
+    const dkd_base64 = [
+      dkd_v03_reuploadedGzipChunk0,
+      dkd_v03_reuploadedGzipChunk1,
+      dkd_v03_reuploadedGzipChunk2,
+      dkd_v03_reuploadedGzipChunk3,
+      dkd_v03_reuploadedGzipChunk4
+    ].join('');
+    if (!dkd_base64 || dkd_base64.length < 1000) throw new Error('Yüklenen scooter + sürücü modeli bulunamadı.');
+    if (typeof DecompressionStream !== 'function') throw new Error('Bu Android WebView gzip model açmayı desteklemiyor.');
+
+    const dkd_binary = atob(dkd_base64);
+    const dkd_compressed = new Uint8Array(dkd_binary.length);
+    for (let dkd_index = 0; dkd_index < dkd_binary.length; dkd_index++) dkd_compressed[dkd_index] = dkd_binary.charCodeAt(dkd_index);
+
+    const dkd_stream = new Blob([dkd_compressed]).stream().pipeThrough(new DecompressionStream('gzip'));
+    const dkd_bytes = new Uint8Array(await new Response(dkd_stream).arrayBuffer());
+    if (dkd_bytes.length !== 55706) throw new Error(`Yüklenen model boyutu geçersiz: ${dkd_bytes.length}`);
+    if (String.fromCharCode(...dkd_bytes.slice(0, 4)) !== 'DK32') throw new Error('Yüklenen scooter + sürücü modeli geçersiz.');
+    return dkd_bytes;
+  })().catch(dkd_error => {
+    dkd_v03_reuploadedBytesPromise = null;
+    throw dkd_error;
+  });
+  return dkd_v03_reuploadedBytesPromise;
+}
+
+function dkd_v03_reuploadedBuildModel(dkd_bytes) {
+  dkd_v03_reuploadedNeed(0, 6, dkd_bytes.length, 'başlık');
   const dkd_view = new DataView(dkd_bytes.buffer, dkd_bytes.byteOffset, dkd_bytes.byteLength);
-  const dkd_signature = String.fromCharCode(...dkd_bytes.slice(0, 4));
-  if (dkd_signature !== 'DK32') throw new Error('Yüklenen scooter + sürücü modeli geçersiz.');
   const dkd_meshCount = dkd_view.getUint16(4, true);
   if (dkd_meshCount !== 68) throw new Error('Yüklenen model parça sayısı geçersiz.');
 
@@ -27,8 +51,6 @@ function dkd_v03_reuploadedReadModel() {
   let dkd_totalFaces = 0;
 
   for (let dkd_meshIndex = 0; dkd_meshIndex < dkd_meshCount; dkd_meshIndex++) {
-    // DK32 mesh header: vertexCount(2), faceCount(2), RGBA(4), metalness(1),
-    // roughness(1), min xyz(12), max xyz(12) = 34 bytes.
     dkd_v03_reuploadedNeed(dkd_offset, 34, dkd_bytes.length, `mesh ${dkd_meshIndex + 1} başlığı`);
     const dkd_vertexCount = dkd_view.getUint16(dkd_offset, true);
     const dkd_faceCount = dkd_view.getUint16(dkd_offset + 2, true);
@@ -88,15 +110,13 @@ function dkd_v03_reuploadedReadModel() {
     dkd_geometry.computeVertexNormals();
     dkd_geometry.computeBoundingSphere();
 
-    const dkd_color = new dkd_three.Color(dkd_red / 255, dkd_green / 255, dkd_blue / 255);
-    const dkd_opacity = dkd_alpha / 255;
     const dkd_material = new dkd_three.MeshStandardMaterial({
-      color: dkd_color,
+      color: new dkd_three.Color(dkd_red / 255, dkd_green / 255, dkd_blue / 255),
       metalness: dkd_clamp(dkd_metalness, 0, 1),
       roughness: dkd_clamp(dkd_roughness, .04, 1),
       transparent: dkd_alpha < 250,
-      opacity: dkd_opacity,
-      depthWrite: dkd_opacity > .72,
+      opacity: dkd_alpha / 255,
+      depthWrite: dkd_alpha / 255 > .72,
       side: dkd_three.DoubleSide
     });
     const dkd_mesh = new dkd_three.Mesh(dkd_geometry, dkd_material);
@@ -112,14 +132,14 @@ function dkd_v03_reuploadedReadModel() {
   return dkd_group;
 }
 
-function dkd_v03_reuploadedDisposeBike(dkd_bike) {
-  if (!dkd_bike) return;
+function dkd_v03_reuploadedDisposeObject(dkd_object) {
+  if (!dkd_object) return;
   const dkd_materials = new Set();
-  dkd_bike.traverse(dkd_object => {
-    if (!dkd_object.isMesh) return;
-    dkd_object.geometry?.dispose?.();
-    if (Array.isArray(dkd_object.material)) dkd_object.material.forEach(dkd_material => dkd_materials.add(dkd_material));
-    else if (dkd_object.material) dkd_materials.add(dkd_object.material);
+  dkd_object.traverse(dkd_child => {
+    if (!dkd_child.isMesh) return;
+    dkd_child.geometry?.dispose?.();
+    if (Array.isArray(dkd_child.material)) dkd_child.material.forEach(dkd_material => dkd_materials.add(dkd_material));
+    else if (dkd_child.material) dkd_materials.add(dkd_child.material);
   });
   for (const dkd_material of dkd_materials) {
     dkd_material.map?.dispose?.();
@@ -127,28 +147,35 @@ function dkd_v03_reuploadedDisposeBike(dkd_bike) {
   }
 }
 
-// This patch is loaded last, so the actual re-uploaded combined scooter+rider
-// replaces the temporary safe/procedural City 50 model everywhere it is shown.
 const dkd_v03_reuploadedBaseBuildBike = dkd_Scene.prototype.dkd_buildBike;
 dkd_Scene.prototype.dkd_buildBike = function(dkd_kind = 'scooter') {
-  if (dkd_kind !== 'scooter' || this.dkd_state?.dkd_equipped !== 'dkd_city50') return dkd_v03_reuploadedBaseBuildBike.call(this, dkd_kind);
-  try {
-    const dkd_model = dkd_v03_reuploadedReadModel();
-    if (this.dkd_bike) {
-      this.dkd_scene.remove(this.dkd_bike);
-      dkd_v03_reuploadedDisposeBike(this.dkd_bike);
-    }
-    this.dkd_bike = new dkd_three.Group();
-    this.dkd_bike.name = 'dkd_city50_reuploaded_scooter_rider';
-    this.dkd_bike.add(dkd_model);
-    this.dkd_scene.add(this.dkd_bike);
-    this.dkd_wheels = [];
-    this.dkd_bikeKind = dkd_kind;
-    return this.dkd_bike;
-  } catch (dkd_error) {
-    console.warn('Yeniden yüklenen scooter + sürücü modeli açılamadı; güvenli modele dönülüyor.', dkd_error);
-    return dkd_v03_reuploadedBaseBuildBike.call(this, dkd_kind);
-  }
+  const dkd_fallback = dkd_v03_reuploadedBaseBuildBike.call(this, dkd_kind);
+  if (dkd_kind !== 'scooter' || this.dkd_state?.dkd_equipped !== 'dkd_city50' || !dkd_fallback) return dkd_fallback;
+
+  const dkd_token = (this.dkd_v03ModelLoadToken || 0) + 1;
+  this.dkd_v03ModelLoadToken = dkd_token;
+  dkd_v03_reuploadedReadBytes()
+    .then(dkd_bytes => dkd_v03_reuploadedBuildModel(dkd_bytes))
+    .then(dkd_model => {
+      if (this.dkd_v03ModelLoadToken !== dkd_token || this.dkd_state?.dkd_equipped !== 'dkd_city50' || this.dkd_bike !== dkd_fallback) {
+        dkd_v03_reuploadedDisposeObject(dkd_model);
+        return;
+      }
+      const dkd_bike = new dkd_three.Group();
+      dkd_bike.name = 'dkd_city50_reuploaded_scooter_rider';
+      dkd_bike.position.copy(dkd_fallback.position);
+      dkd_bike.rotation.copy(dkd_fallback.rotation);
+      dkd_bike.scale.copy(dkd_fallback.scale);
+      dkd_bike.add(dkd_model);
+      this.dkd_scene.remove(dkd_fallback);
+      dkd_v03_reuploadedDisposeObject(dkd_fallback);
+      this.dkd_bike = dkd_bike;
+      this.dkd_scene.add(dkd_bike);
+      this.dkd_wheels = [];
+      this.dkd_bikeKind = dkd_kind;
+    })
+    .catch(dkd_error => console.warn('Yeniden yüklenen scooter + sürücü modeli açılamadı; güvenli modele devam ediliyor.', dkd_error));
+  return dkd_fallback;
 };
 
 // New installs and existing careers migrated to this build start with High
