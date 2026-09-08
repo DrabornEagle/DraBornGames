@@ -21,7 +21,7 @@ function dkd_readChunk(dkd_index) {
 }
 
 function dkd_modelBytes() {
-  const dkd_base64 = [0, 1, 2, 3, 4].map(dkd_readChunk).join('');
+  const dkd_base64 = Array.from({ length: 8 }, (_, dkd_index) => dkd_readChunk(dkd_index)).join('');
   assert.equal(dkd_base64.length % 4, 0, 'Sıkıştırılmış model base64 uzunluğu geçersiz.');
   const dkd_compressed = Buffer.from(dkd_base64, 'base64');
   assert.ok(dkd_compressed.length > 10000 && dkd_compressed.length < 30000, 'Sıkıştırılmış model boyutu beklenmiyor.');
@@ -79,15 +79,18 @@ test('re-uploaded model runtime is bundled last and replaces City 50', () => {
   const dkd_build = dkd_read('scripts/dkd-build-game.mjs');
   const dkd_home = dkd_build.indexOf("'dkd-v03-home-refine.mjs'");
   const dkd_gzip0 = dkd_build.indexOf("'dkd-v03-reuploaded-gzip-0.mjs'");
-  const dkd_gzip4 = dkd_build.indexOf("'dkd-v03-reuploaded-gzip-4.mjs'");
+  const dkd_gzip7 = dkd_build.indexOf("'dkd-v03-reuploaded-gzip-7.mjs'");
+  const dkd_manifest = dkd_build.indexOf("'dkd-v03-reuploaded-gzip-manifest.mjs'");
   const dkd_runtime = dkd_build.indexOf("'dkd-v03-reuploaded-model.mjs'");
-  assert.ok(dkd_home >= 0 && dkd_gzip0 > dkd_home && dkd_gzip4 > dkd_gzip0 && dkd_runtime > dkd_gzip4);
+  assert.ok(dkd_home >= 0 && dkd_gzip0 > dkd_home && dkd_gzip7 > dkd_gzip0 && dkd_manifest > dkd_gzip7 && dkd_runtime > dkd_manifest);
 
   const dkd_patch = dkd_read('game/dkd-v03-reuploaded-model.mjs');
   assert.match(dkd_patch, /dkd_city50_reuploaded_scooter_rider/);
   assert.match(dkd_patch, /dkd_uploaded_scooter_rider_model/);
   assert.match(dkd_patch, /DecompressionStream\('gzip'\)/);
   assert.match(dkd_patch, /dkd_v03ModelLoadToken/);
+  assert.match(dkd_patch, /dkd_v03_reuploadedGzipChunk7/);
+  assert.match(dkd_patch, /dkd_v03_reuploadedExpectedBytes/);
   assert.match(dkd_patch, /this\.dkd_state\?\.dkd_equipped !== 'dkd_city50'/);
   assert.match(dkd_patch, /dkd_totalVertices !== 5942/);
   assert.match(dkd_patch, /dkd_totalFaces !== 11244/);
