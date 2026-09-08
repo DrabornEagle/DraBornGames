@@ -6,6 +6,7 @@ const dkd_read = dkd_path => fs.readFileSync(new URL(`../${dkd_path}`, import.me
 
 const dkd_app = dkd_read('App.tsx');
 const dkd_runtime = dkd_read('game/dkd-v04-runtime.mjs');
+const dkd_realCareer = dkd_read('game/dkd-v04-real-career.mjs');
 const dkd_build = dkd_read('scripts/dkd-build-game.mjs');
 const dkd_edge = dkd_read('supabase/functions/dkd-last-mile-api/index.ts');
 
@@ -51,13 +52,73 @@ test('v0.4 server jobs are available to authenticated player sessions', () => {
   assert.doesNotMatch(dkd_edge, /if \(String\(dkd_user\.app_metadata\?\./);
 });
 
-test('settings rely on Supabase and keep only the how-to action from backup controls', () => {
+test('settings rely on cloud save and keep only the how-to action from backup controls', () => {
   const dkd_settingsStart = dkd_runtime.indexOf('dkd_Game.prototype.dkd_view_settings = function');
   const dkd_privacyStart = dkd_runtime.indexOf('dkd_Game.prototype.dkd_view_privacy = function');
   assert.ok(dkd_settingsStart >= 0 && dkd_privacyStart > dkd_settingsStart);
   const dkd_settings = dkd_runtime.slice(dkd_settingsStart, dkd_privacyStart);
   assert.match(dkd_settings, /NASIL OYNANIR/);
   assert.doesNotMatch(dkd_settings, /KAYDI DIŞA AKTAR|YEDEKTEN GERİ YÜKLE/);
+});
+
+test('normal account card hides Supabase and mission-template implementation details', () => {
+  const dkd_settingsStart = dkd_realCareer.indexOf('dkd_Game.prototype.dkd_view_settings = function');
+  assert.ok(dkd_settingsStart >= 0);
+  const dkd_settings = dkd_realCareer.slice(dkd_settingsStart);
+  assert.match(dkd_settings, /Hesabın aktif/);
+  assert.match(dkd_settings, /Kariyerin otomatik kaydedilir/);
+  assert.doesNotMatch(dkd_settings, /22 gerçek görev|görev şablonu|Supabase/);
+});
+
+test('signup photo selection stays on registration and preserves form state', () => {
+  assert.match(dkd_realCareer, /dkd_payload\?\.dkd_type === 'photo' && dkd_registerForm/);
+  assert.match(dkd_realCareer, /this\.dkd_pendingPhoto = dkd_payload\.dkd_data/);
+  assert.match(dkd_realCareer, /Kayıt bilgilerin korunuyor/);
+  assert.match(dkd_realCareer, /dkd_logged_out !== true/);
+  assert.match(dkd_realCareer, /\(dkd_registerForm \|\| dkd_loginForm\)/);
+});
+
+test('normal players skip legacy tutorial and paid trial-career gates', () => {
+  assert.match(dkd_realCareer, /dkd_fullCareer = true/);
+  assert.match(dkd_realCareer, /dkd_career\.dkd_tutorial = true/);
+  assert.match(dkd_realCareer, /v04-real-career-start/);
+  assert.match(dkd_realCareer, /Gerçek sipariş havuzundan iş seç/);
+  assert.match(dkd_realCareer, /BİR SİPARİŞ DAHA/);
+});
+
+test('real order detail and result use server delivery-point fields instead of synthetic review avatars', () => {
+  const dkd_orderStart = dkd_realCareer.indexOf('dkd_Game.prototype.dkd_view_order = function');
+  const dkd_messagesStart = dkd_realCareer.indexOf('dkd_Game.prototype.dkd_view_messages = function');
+  const dkd_orderView = dkd_realCareer.slice(dkd_orderStart, dkd_messagesStart);
+  assert.match(dkd_orderView, /dkd_cloudCustomerName/);
+  assert.match(dkd_orderView, /dkd_cloudCustomerRole/);
+  assert.match(dkd_orderView, /dkd_cloudCustomerNote/);
+  const dkd_resultStart = dkd_realCareer.indexOf('dkd_Game.prototype.dkd_view_result = function');
+  const dkd_verificationStart = dkd_realCareer.indexOf('dkd_Game.prototype.dkd_view_verification = function');
+  const dkd_resultView = dkd_realCareer.slice(dkd_resultStart, dkd_verificationStart);
+  assert.match(dkd_resultView, /dkd_cloudCustomerName/);
+  assert.doesNotMatch(dkd_resultView, /dkd_avatar|dkd_result\.dkd_review/);
+});
+
+test('company identity has animated colorful flat-design components', () => {
+  assert.match(dkd_realCareer, /dkd-v04-brand-hero/);
+  assert.match(dkd_realCareer, /dkd-v04-brand-emblems/);
+  assert.match(dkd_realCareer, /dkd-v04-brand-preview/);
+  assert.match(dkd_realCareer, /dkd-v04-brand-float/);
+  assert.doesNotMatch(dkd_realCareer, /linear-gradient|radial-gradient|box-shadow/);
+});
+
+test('delivery button is moved higher above mobile controls', () => {
+  assert.match(dkd_realCareer, /#dkd-deliver\{bottom:194px\}/);
+  assert.match(dkd_realCareer, /max-height:740px\)\{#dkd-deliver\{bottom:178px\}/);
+});
+
+test('normal-facing real-career pages remove legacy trial language', () => {
+  assert.match(dkd_realCareer, /KARİYER AKTİF/);
+  assert.match(dkd_realCareer, /Gerçek siparişler · Çevrimiçi kariyer/);
+  assert.match(dkd_realCareer, /Hazır yazılmış sahte konuşmalar gösterilmez/);
+  assert.match(dkd_realCareer, /Final puanlaması/);
+  assert.doesNotMatch(dkd_realCareer, /DENEME KARİYERİNİ AÇ|Deneme kariyeri|ÜCRETSİZ/);
 });
 
 test('menu and drive music have isolated buses and old voices are stopped on mode switch', () => {
@@ -75,10 +136,12 @@ test('delivery button has a vivid animated v0.4 treatment without gradients or g
   assert.doesNotMatch(dkd_runtime, /linear-gradient|radial-gradient|box-shadow/);
 });
 
-test('build loads v0.4 runtime last and scrubs legacy demo rankings', () => {
+test('build loads real-career cleanup after v0.4 runtime and scrubs legacy demo rankings', () => {
   const dkd_runtimeIndex = dkd_build.indexOf("'dkd-v04-runtime.mjs'");
+  const dkd_realCareerIndex = dkd_build.indexOf("'dkd-v04-real-career.mjs'");
   const dkd_modelIndex = dkd_build.indexOf("'dkd-v03-reuploaded-model.mjs'");
   assert.ok(dkd_runtimeIndex > dkd_modelIndex);
+  assert.ok(dkd_realCareerIndex > dkd_runtimeIndex);
   assert.match(dkd_build, /dkd_demoRankings = \[\]/);
   assert.match(dkd_build, /v0\.4/);
 });
