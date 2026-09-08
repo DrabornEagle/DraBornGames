@@ -1,5 +1,5 @@
 // DraBornGo / Last Mile v0.4 runtime bridge.
-// Loaded last so it can replace legacy local-demo surfaces without touching v0.3 3D model patches.
+// Admin-preview + real Supabase job lifecycle. Loaded after the v0.3 visual/model patches.
 
 const dkd_v04Original = {
   dkd_bind: dkd_Game.prototype.dkd_bind,
@@ -7,30 +7,24 @@ const dkd_v04Original = {
   dkd_render: dkd_Game.prototype.dkd_render,
   dkd_save: dkd_Game.prototype.dkd_save,
   dkd_action: dkd_Game.prototype.dkd_action,
-  dkd_refreshOrders: dkd_Game.prototype.dkd_refreshOrders,
   dkd_view_intro: dkd_Game.prototype.dkd_view_intro,
-  dkd_view_home: dkd_Game.prototype.dkd_view_home,
   dkd_view_phone: dkd_Game.prototype.dkd_view_phone,
-  dkd_view_dispatch: dkd_Game.prototype.dkd_view_dispatch,
-  dkd_view_choose: dkd_Game.prototype.dkd_view_choose,
-  dkd_view_vault: dkd_Game.prototype.dkd_view_vault,
-  dkd_view_messages: dkd_Game.prototype.dkd_view_messages,
-  dkd_view_call: dkd_Game.prototype.dkd_view_call,
   dkd_view_settings: dkd_Game.prototype.dkd_view_settings,
-  dkd_view_guide: dkd_Game.prototype.dkd_view_guide,
-  dkd_view_verification: dkd_Game.prototype.dkd_view_verification,
 };
 
 const dkd_v04AudioOriginal = {
   dkd_start: dkd_Audio.prototype.dkd_start,
-  dkd_effect: dkd_Audio.prototype.dkd_effect,
-  dkd_pause: dkd_Audio.prototype.dkd_pause,
+  dkd_update: dkd_Audio.prototype.dkd_update,
 };
 
 function dkd_v04ClockParts() {
   const dkd_timeText = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', hour12: false });
   const dkd_parts = dkd_timeText.split(':');
-  return { dkd_hour: dkd_parts[0] || '00', dkd_minute: dkd_parts[1] || '00', dkd_text: `${dkd_parts[0] || '00'}:${dkd_parts[1] || '00'}` };
+  return {
+    dkd_hour: dkd_parts[0] || '00',
+    dkd_minute: dkd_parts[1] || '00',
+    dkd_text: `${dkd_parts[0] || '00'}:${dkd_parts[1] || '00'}`,
+  };
 }
 
 function dkd_v04Seed(dkd_value) {
@@ -49,96 +43,305 @@ function dkd_v04Init(dkd_game) {
   dkd_game.dkd_v04AuthKnown = false;
   dkd_game.dkd_v04Authenticated = false;
   dkd_game.dkd_v04AdminReady = false;
-  dkd_game.dkd_v04CloudChecking = false;
   dkd_game.dkd_v04AuthEmail = '';
   dkd_game.dkd_v04Cloud = null;
   dkd_game.dkd_v04JobsLoading = false;
-  dkd_game.dkd_v04JobsLoaded = false;
   dkd_game.dkd_v04SaveTimer = null;
   dkd_game.dkd_test = null;
   if (dkd_game.dkd_career) dkd_game.dkd_career.dkd_training = false;
-  if (dkd_game.dkd_state?.dkd_training) {
-    dkd_game.dkd_state = dkd_game.dkd_career;
-    if (dkd_game.dkd_audio) dkd_game.dkd_audio.dkd_state = dkd_game.dkd_state;
-    if (dkd_game.dkd_scene) dkd_game.dkd_scene.dkd_state = dkd_game.dkd_state;
-  }
   if (Array.isArray(dkd_demoRankings)) dkd_demoRankings.splice(0, dkd_demoRankings.length);
-  if (dkd_game.dkd_audio) {
-    dkd_game.dkd_audio.dkd_tracks = ['Neon Vardiya', 'Islak Asfalt', 'Åehir NabzÄ±', 'Gece HattÄ±', 'Åafak RotasÄ±'];
-  }
+  if (dkd_game.dkd_audio) dkd_game.dkd_audio.dkd_tracks = ['Neon Vardiya', 'Islak Asfalt', 'Åehir NabzÄ±', 'Gece HattÄ±', 'Åafak RotasÄ±'];
 }
 
-function dkd_v04MergeCatalog(dkd_game, dkd_cloud) {
-  const dkd_serverPackages = Array.isArray(dkd_cloud?.dkd_packages) ? dkd_cloud.dkd_packages : [];
-  for (const dkd_source of dkd_serverPackages) {
-    let dkd_target = dkd_packages.find(dkd_item => dkd_item.dkd_id === dkd_source.dkd_id);
-    const dkd_values = {
-      dkd_id: String(dkd_source.dkd_id || ''),
-      dkd_name: String(dkd_source.dkd_name || 'Last-Mile Paketi'),
-      dkd_tr: String(dkd_source.dkd_name || 'Last-Mile paketi').toLocaleLowerCase('tr-TR'),
-      dkd_icon: String(dkd_source.dkd_icon || 'box'),
-      dkd_base: Math.max(0, Number(dkd_source.dkd_base_reward) || 0),
-      dkd_weight: Math.max(1, Math.ceil(Number(dkd_source.dkd_weight_kg) || 1)),
-      dkd_decay: Math.max(0, Number(dkd_source.dkd_decay) || 0),
-      dkd_sensitivity: Math.max(.1, Number(dkd_source.dkd_sensitivity) || 1),
-      dkd_level: Math.max(1, Math.floor(Number(dkd_source.dkd_min_level) || 1)),
-      dkd_note: String(dkd_source.dkd_note || 'Last-Mile gÃ¶rev koÅŸullarÄ±nÄ± takip et.'),
-    };
-    if (dkd_target) Object.assign(dkd_target, dkd_values);
-    else if (dkd_values.dkd_id) dkd_packages.push(dkd_values);
-  }
-
-  const dkd_serverCustomers = Array.isArray(dkd_cloud?.dkd_customers) ? dkd_cloud.dkd_customers : [];
-  for (const dkd_source of dkd_serverCustomers) {
-    let dkd_target = dkd_customers.find(dkd_item => dkd_item.dkd_id === dkd_source.dkd_id);
-    const dkd_values = {
-      dkd_id: String(dkd_source.dkd_id || ''),
-      dkd_name: String(dkd_source.dkd_name || 'Teslim NoktasÄ±'),
-      dkd_age: 21,
-      dkd_role: String(dkd_source.dkd_role || 'Teslimat noktasÄ±'),
-      dkd_trait: String(dkd_source.dkd_trait || 'Standart'),
-      dkd_color: String(dkd_source.dkd_color || '#d7b294'),
-      dkd_hair: String(dkd_source.dkd_hair || '#322b2a'),
-      dkd_note: String(dkd_source.dkd_note || 'Teslimat giriÅŸini kullan.'),
-      dkd_kind: String(dkd_source.dkd_package_id || 'dkd_hot'),
-      dkd_lastmile: true,
-    };
-    if (dkd_target) Object.assign(dkd_target, dkd_values);
-    else if (dkd_values.dkd_id) dkd_customers.push(dkd_values);
-  }
-
-  dkd_game.dkd_v04Cloud = dkd_cloud;
-}
-
-function dkd_v04ServerCustomer(dkd_game, dkd_packageId) {
-  const dkd_cloudCustomers = Array.isArray(dkd_game.dkd_v04Cloud?.dkd_customers) ? dkd_game.dkd_v04Cloud.dkd_customers : [];
-  const dkd_source = dkd_cloudCustomers.find(dkd_item => dkd_item.dkd_package_id === dkd_packageId) || dkd_cloudCustomers[0];
-  if (dkd_source) return dkd_customers.find(dkd_item => dkd_item.dkd_id === dkd_source.dkd_id) || dkd_customers[0];
-  return dkd_customers[0];
+function dkd_v04PackageId(dkd_serverId) {
+  const dkd_id = String(dkd_serverId || '');
+  if (dkd_packages.some(dkd_item => dkd_item.dkd_id === dkd_id)) return dkd_id;
+  const dkd_map = {
+    dkd_document: 'dkd_confidential',
+    dkd_store: 'dkd_hot',
+    dkd_parts: 'dkd_oversized',
+    dkd_medical_sample: 'dkd_medical',
+    dkd_cold_chain: 'dkd_frozen',
+  };
+  return dkd_map[dkd_id] || 'dkd_hot';
 }
 
 function dkd_v04CreateCloudOrder(dkd_game, dkd_serverEntry, dkd_index) {
-  const dkd_job = dkd_serverEntry?.dkd_job || {};
+  const dkd_job = dkd_serverEntry?.dkd_job || dkd_serverEntry || {};
   const dkd_mission = dkd_serverEntry?.dkd_mission || {};
   const dkd_origin = dkd_serverEntry?.dkd_origin || {};
   const dkd_destination = dkd_serverEntry?.dkd_destination || {};
   const dkd_seed = dkd_v04Seed(dkd_job.dkd_id || `${Date.now()}-${dkd_index}`);
   const dkd_order = dkd_makeOrder(dkd_game.dkd_state, dkd_game.dkd_graph, dkd_seed, 'normal');
-  const dkd_packageId = String(dkd_job.dkd_package_id || dkd_mission.dkd_package_id || dkd_order.dkd_package);
+  const dkd_packageId = dkd_v04PackageId(dkd_job.dkd_package_id || dkd_mission.dkd_package_id);
   const dkd_package = dkd_packages.find(dkd_item => dkd_item.dkd_id === dkd_packageId) || dkd_packages[0];
-  const dkd_customer = dkd_v04ServerCustomer(dkd_game, dkd_packageId);
+  const dkd_customer = dkd_customers.find(dkd_item => dkd_item.dkd_kind === dkd_packageId) || dkd_customers[0];
   const dkd_weatherId = dkd_weathers.some(dkd_item => dkd_item.dkd_id === dkd_job.dkd_weather_id) ? dkd_job.dkd_weather_id : 'dkd_clear';
   const dkd_reward = Math.max(0, Math.floor(Number(dkd_job.dkd_reward) || Number(dkd_package.dkd_base) || 0));
+  const dkd_deadline = Math.max(90, Math.floor(Number(dkd_job.dkd_time_limit_sec) || Number(dkd_order.dkd_deadline) || 300));
+
   dkd_order.dkd_id = `dkd_cloud_${dkd_job.dkd_id || dkd_seed}`;
   dkd_order.dkd_cloudJobId = String(dkd_job.dkd_id || '');
-  dkd_order.dkd_cloudMissionId = String(dkd_mission.dkd_id || '');
+  dkd_order.dkd_cloudMissionId = String(dkd_job.dkd_template_id || dkd_mission.dkd_id || '');
   dkd_order.dkd_cloudMissionName = String(dkd_mission.dkd_name || 'Last-Mile GÃ¶revi');
-  dkd_order.dkd_cloudDescription = String(dkd_mission.dkd_description || 'GÃ¶rev merkezden canlÄ± olarak oluÅŸturuldu.');
   dkd_order.dkd_cloudOrigin = String(dkd_origin.dkd_name || 'Kurye Merkezi');
   dkd_order.dkd_cloudDestination = String(dkd_destination.dkd_name || 'Teslimat BÃ¶lgesi');
-  dkd_order.dkd_serverReward = dkd_reward;
   dkd_order.dkd_customer = dkd_customer.dkd_id;
-  dkd_order.dkd_package = dkd_package.dkd_id;
+  dkd_order.dkd_package = dkd_packageId;
   dkd_order.dkd_weather = dkd_weatherId;
+  dkd_order.dkd_deadline = dkd_deadline;
   dkd_order.dkd_destination = `${dkd_order.dkd_cloudDestination} Â· ${dkd_order.dkd_cloudMissionName}`;
-  dkd_order.dkd_deadline = Math.max(90, Number(dkd_job.dkd_time_²È="25‘)½‰%°‘­‘}É•…Í½¸è€Í¡¥™Ñ}…‰…¹‘½¹•œô¤ì(€€€ô(€€€¥˜€¡‘­‘}½µµ…¹€ôôô€‘•±¥Ù•Èœ€˜˜Ñ¡¥Ì¹‘­‘}ÉÕ¸ü¹‘­‘}½É‘•Èü¹‘­‘}±½Õ‘)½‰%¤ì(€€€€€½¹ÍĞ‘­‘}±½Õ‘=É‘•È€ôÑ¡¥Ì¹‘­‘}ÉÕ¸¹‘­‘}½É‘•Èì(€€€€€½¹ÍĞ‘­‘}©½‰%€ô‘­‘}±½Õ‘=É‘•È¹‘­‘}±½Õ‘)½‰%ì(€€€€€½¹ÍĞ‘­‘}Í•ÉÙ•ÉI•İ…É€ô5…Ñ ¹µ…à À°5…Ñ ¹™±½½È¡9Õµ‰•È¡‘­‘}±½Õ‘=É‘•È¹‘­‘}Í•ÉÙ•ÉI•İ…É¤ñğ€À¤¤ì(€€€€€‘­‘}ØÀÑ=É¥¥¹…°¹‘­‘}…Ñ¥½¸¹…±°¡Ñ¡¥Ì°‘­‘}…Ñ¥½¸¤ì(€€€€€¥˜€¡Ñ¡¥Ì¹‘­‘}É•ÍÕ±Ğ€˜˜‘­‘}Í•ÉÙ•ÉI•İ…É€ø€À¤ì(€€€€€€€½¹ÍĞ‘­‘}‘•±Ñ„€ô‘­‘}Í•ÉÙ•ÉI•İ…É€´9Õµ‰•È¡Ñ¡¥Ì¹‘­‘}É•ÍÕ±Ğ¹‘­‘}Á…äñğ€À¤ì(€€€€€€€Ñ¡¥Ì¹‘­‘}ÍÑ…Ñ”¹‘­‘}İ…±±•Ğ€ô5…Ñ ¹µ…à À°Ñ¡¥Ì¹‘­‘}ÍÑ…Ñ”¹‘­‘}İ…±±•Ğ€¬‘­‘}‘•±Ñ„¤ì(€€€€€€€½¹ÍĞ‘­‘}±…ÍÑQÉ…¹Í…Ñ¥½¸€ôÑ¡¥Ì¹‘­‘}ÍÑ…Ñ”¹‘­‘}ÑÉ…¹Í…Ñ¥½¹ÍmÑ¡¥Ì¹‘­‘}ÍÑ…Ñ”¹‘­‘}ÑÉ…¹Í…Ñ¥½¹Ì¹±•¹Ñ €´€Åtì(€€€€€€€¥˜€¡‘­‘}±…ÍÑQÉ…¹Í…Ñ¥½¸¤‘­‘}±…ÍÑQÉ…¹Í…Ñ¥½¸¹‘­‘}…µ½Õ¹Ğ€ô‘­‘}Í•ÉÙ•ÉI•İ…Éì(€€€€€€€Ñ¡¥Ì¹‘­‘}É•ÍÕ±Ğ¹‘­‘}Á…ä€ô‘­‘}Í•ÉÙ•ÉI•İ…Éì(€€€€€€€¥˜€¡Ñ¡¥Ì¹‘­‘}ÍÑ…Ñ”¹‘­‘}±…ÍÑIÕ¸¤Ñ¡¥Ì¹‘­‘}ÍÑ…Ñ”¹‘­‘}±…ÍÑIÕ¸¹‘­‘}Á…ä€ô‘­‘}Í•ÉÙ•ÉI•İ…Éì(€€€€€€€Ñ¡¥Ì¹‘­‘}Í•¹ ±½Õµ½µÁ±•Ñ”µ©½ˆœ°ì(€€€€€€€€€‘­‘}©½‰}¥è‘­‘}©½‰%°(€€€€€€€€€‘­‘}µ•ÑÉ¥Ìèì(€€€€€€€€€€€‘­‘}•±…ÁÍ•èÑ¡¥Ì¹‘­‘}É•ÍÕ±Ğ¹‘­‘}Ñ¥µ”°(€€€€€€€€€€€‘­‘}‘¥ÍÑ…¹”èÑ¡¥Ì¹‘­‘}É•ÍÕ±Ğ¹‘­‘}‘¥ÍÑ…¹”°(€€€€€€€€€€€‘­‘}É…Ñ¥¹œèÑ¡¥Ì¹‘­‘}É•ÍÕ±Ğ¹‘­‘}É…Ñ¥¹œ°(€€€€€€€€€€€‘­‘}µ…ÍÑ•ÈèÑ¡¥Ì¹‘­‘}É•ÍÕ±Ğ¹‘­‘}µ…ÍÑ•È°(€€€€€€€€€€€‘­‘}±•…¸èÑ¡¥Ì¹‘­‘}É•ÍÕ±Ğ¹‘­‘}±•…¸°(€€€€€€€€€€€‘­‘}½¹}Ñ¥µ”èÑ¡¥Ì¹‘­‘}É•ÍÕ±Ğ¹‘­‘}½¹Q¥µ”°(€€€€€€€€€€€‘­‘}Í½É”èÑ¡¥Ì¹‘­‘}É•ÍÕ±Ğ¹‘­‘}Í½É”ü¹‘­‘}Ñ½Ñ…°ñğ€À°(€€€€€€€€€€€‘­‘}É•İ…Éè‘­‘}Í•ÉÙ•ÉI•İ…É°(€€€€€€€€€ô°(€€€€€€€ô¤ì(€€€€€€€Ñ¡¥Ì¹‘­‘}Í…Ù” ¤ì(€€€€€€€¥˜€¡Ñ¡¥Ì¹‘­‘}Á…•9…µ”€ôôô€É•ÍÕ±Ğœ¤Ñ¡¥Ì¹‘­‘}É•¹‘•È É•ÍÕ±Ğœ¤ì(€€€€€ô(€€€€€É•ÑÕÉ¸ì(€€€ô(€€€‘­‘}ØÀÑ=É¥¥¹…°¹‘­‘}…Ñ¥½¸¹…±°¡Ñ¡¥Ì°‘­‘}…Ñ¥½¸¤ì(€€€¥˜€¡‘­‘}½µµ…¹€ôôô€ÑÉ…¬œ€˜˜Ñ¡¥Ì¹‘­‘}…Õ‘¥¼¤ì(€€€€€Ñ¡¥Ì¹‘­‘}…Õ‘¥¼¹‘­‘}ØÀÑÉ¥Ù•	•…Ğ€ô€Àì(€€€€€Ñ¡¥Ì¹‘­‘}…Õ‘¥¼¹‘­‘}ØÀÑÉ¥Ù•9•áĞ€ôÑ¡¥Ì¹‘­‘}…Õ‘¥¼¹‘­‘}½¹Ñ•áĞü¹ÕÉÉ•¹ÑQ¥µ”ñğ€Àì(€€€ô(€ô°)ô¤ì()=‰©•Ğ¹…ÍÍ¥¸¡‘­‘}Õ‘¥¼¹ÁÉ½Ñ½ÑåÁ”°ì(€‘­‘}ÍÑ…ÉĞ ¤ì(€€€‘­‘}ØÀÑÕ‘¥½=É¥¥¹…°¹‘­‘}ÍÑ…ÉĞ¹…±°¡Ñ¡¥Ì¤ì(€€€¥˜€ …Ñ¡¥Ì¹‘­‘}½¹Ñ•áĞñğÑ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ5ÕÍ¥Œ¤É•ÑÕÉ¸ì(€€€½¹ÍĞ‘­‘}¹½Ü€ôÑ¡¥Ì¹‘­‘}½¹Ñ•áĞ¹ÕÉÉ•¹ÑQ¥µ”ì(€€€Ñ¡¥Ì¹‘­‘}µÕÍ¥Œ¹…¥¸¹Í•ÑY…±Õ•ÑQ¥µ” À°‘­‘}¹½Ü¤ì(€€€Ñ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ5ÕÍ¥Œ€ôÑ¡¥Ì¹‘­‘}½¹Ñ•áĞ¹É•…Ñ•…¥¸ ¤ì(€€€Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•5ÕÍ¥Œ€ôÑ¡¥Ì¹‘­‘}½¹Ñ•áĞ¹É•…Ñ•…¥¸ ¤ì(€€€Ñ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ5ÕÍ¥Œ¹…¥¸¹Ù…±Õ”€ô€Àì(€€€Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•5ÕÍ¥Œ¹…¥¸¹Ù…±Õ”€ô€Àì(€€€Ñ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ5ÕÍ¥Œ¹½¹¹•Ğ¡Ñ¡¥Ì¹‘­‘}µ…ÍÑ•È¤ì(€€€Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•5ÕÍ¥Œ¹½¹¹•Ğ¡Ñ¡¥Ì¹‘­‘}µ…ÍÑ•È¤ì(€€€Ñ¡¥Ì¹‘­‘}ØÀÑM•¹”€ô€µ•¹Ôœì(€€€Ñ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ	•…Ğ€ô€Àì(€€€Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•	•…Ğ€ô€Àì(€€€Ñ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ9•áĞ€ô‘­‘}¹½Ü€¬€¸ÀÔì(€€€Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•9•áĞ€ô‘­‘}¹½Ü€¬€¸ÀÔì(€ô°((€‘­‘}Í•ÑM•¹”¡‘­‘}Í•¹”¤ì(€€€Ñ¡¥Ì¹‘­‘}ÍÑ…ÉĞ ¤ì(€€€½¹ÍĞ‘­‘}¹•áÑM•¹”€ô‘­‘}Í•¹”€ôôô€‘É¥Ù”œ€ü€‘É¥Ù”œ€è€µ•¹Ôœì(€€€¥˜€¡Ñ¡¥Ì¹‘­‘}ØÀÑM•¹”€ôôô‘­‘}¹•áÑM•¹”¤É•ÑÕÉ¸ì(€€€Ñ¡¥Ì¹‘­‘}ØÀÑM•¹”€ô‘­‘}¹•áÑM•¹”ì(€€€¥˜€ …Ñ¡¥Ì¹‘­‘}½¹Ñ•áĞ¤É•ÑÕÉ¸ì(€€€½¹ÍĞ‘­‘}¹½Ü€ôÑ¡¥Ì¹‘­‘}½¹Ñ•áĞ¹ÕÉÉ•¹ÑQ¥µ”ì(€€€¥˜€¡‘­‘}¹•áÑM•¹”€ôôô€‘É¥Ù”œ¤ì(€€€€€Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•9•áĞ€ô‘­‘}¹½Ü€¬€¸ÀĞì(€€€€€Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•	•…Ğ€ô€Àì(€€€ô•±Í”ì(€€€€€Ñ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ9•áĞ€ô‘­‘}¹½Ü€¬€¸ÀĞì(€€€€€Ñ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ	•…Ğ€ô€Àì(€€€ô(€ô°((€‘­‘}•™™•Ğ¡‘­‘}­¥¹¤ì(€€€Ñ¡¥Ì¹‘­‘}ÍÑ…ÉĞ ¤ì(€€€¥˜€ …Ñ¡¥Ì¹‘­‘}½¹Ñ•áĞñğÑ¡¥Ì¹‘­‘}µÕÑ•¤É•ÑÕÉ¸ì(€€€½¹ÍĞ‘­‘}¹½Ü€ôÑ¡¥Ì¹‘­‘}½¹Ñ•áĞ¹ÕÉÉ•¹ÑQ¥µ”ì(€€€¥˜€¡‘­‘}­¥¹€ôôô€ÍÕ•ÍÌœ¤ì(€€€€€Ñ¡¥Ì¹‘­‘}¹½Ñ” ÔÈÌ¸ÈÔ°€¸Äà°€¸ÄØ°€ÑÉ¥…¹±”œ°Ñ¡¥Ì¹‘­‘}•™™•ÑÌ°‘­‘}¹½Ü¤ì(€€€€€Ñ¡¥Ì¹‘­‘}¹½Ñ” ÜàÌ¸ää°€¸ÈØ°€¸ÄĞ°€Í¥¹”œ°Ñ¡¥Ì¹‘­‘}•™™•ÑÌ°‘­‘}¹½Ü€¬€¸Àà¤ì(€€€€€Ñ¡¥Ì¹‘­‘}¹½Ñ” ÄÀĞØ¸Ô°€¸ĞÈ°€¸ÄÈ°€Í¥¹”œ°Ñ¡¥Ì¹‘­‘}•™™•ÑÌ°‘­‘}¹½Ü€¬€¸ÄØ¤ì(€€€€€Ñ¡¥Ì¹‘­‘}¹½Ñ” ÄÌÀ¸àÄ°€¸ÌÈ°€¸ÄÈ°€ÑÉ¥…¹±”œ°Ñ¡¥Ì¹‘­‘}•™™•ÑÌ°‘­‘}¹½Ü¤ì(€€€€€É•ÑÕÉ¸ì(€€€ô(€€€¥˜€¡‘­‘}­¥¹€ôôô€‘¥¹œœ¤ì(€€€€€Ñ¡¥Ì¹‘­‘}¹½Ñ” ØÔä¸ÈÔ°€¸ÄÈ°€¸ÄÌ°€ÑÉ¥…¹±”œ°Ñ¡¥Ì¹‘­‘}•™™•ÑÌ°‘­‘}¹½Ü¤ì(€€€€€Ñ¡¥Ì¹‘­‘}¹½Ñ” äàÜ¸ÜÜ°€¸Äà°€¸Àà°€Í¥¹”œ°Ñ¡¥Ì¹‘­‘}•™™•ÑÌ°‘­‘}¹½Ü€¬€¸ÀÔÔ¤ì(€€€€€É•ÑÕÉ¸ì(€€€ô(€€€¥˜€¡‘­‘}­¥¹€ôôô€¡¥Ğœ¤ì(€€€€€Ñ¡¥Ì¹‘­‘}¹½Ñ” ÜÌ¸ĞÈ°€¸ÈĞ°€¸Ì°€Í…İÑ½½Ñ œ°Ñ¡¥Ì¹‘­‘}•™™•ÑÌ°‘­‘}¹½Ü¤ì(€€€€€Ñ¡¥Ì¹‘­‘}¹½Ñ” ÄÄÀ°€¸Àä°€¸ÄØ°€ÍÅÕ…É”œ°Ñ¡¥Ì¹‘­‘}•™™•ÑÌ°‘­‘}¹½Ü€¬€¸ÀÈÔ¤ì(€€€€€É•ÑÕÉ¸ì(€€€ô(€€€‘­‘}ØÀÑÕ‘¥½=É¥¥¹…°¹‘­‘}•™™•Ğ¹…±°¡Ñ¡¥Ì°‘­‘}­¥¹¤ì(€ô°((€‘­‘}ÕÁ‘…Ñ”¡‘­‘}ÉÕ¸¤ì(€€€¥˜€ …Ñ¡¥Ì¹‘­‘}½¹Ñ•áĞñğÑ¡¥Ì¹‘­‘}½¹Ñ•áĞ¹ÍÑ…Ñ”€„ôô€ÉÕ¹¹¥¹œœ¤É•ÑÕÉ¸ì(€€€Ñ¡¥Ì¹‘­‘}ÍÑ…ÉĞ ¤ì(€€€½¹ÍĞ‘­‘}¹½Ü€ôÑ¡¥Ì¹‘­‘}½¹Ñ•áĞ¹ÕÉÉ•¹ÑQ¥µ”ì(€€€½¹ÍĞ‘­‘}µÕÍ¥1•Ù•°€ô‘­‘}±…µÀ¡9Õµ‰•È¡Ñ¡¥Ì¹‘­‘}ÍÑ…Ñ”¹‘­‘}Í•ÑÑ¥¹Ì¹‘­‘}µÕÍ¥Œ¤ñğ€À°€À°€Ä¤ì(€€€½¹ÍĞ‘­‘}•™™•Ñ1•Ù•°€ô‘­‘}±…µÀ¡9Õµ‰•È¡Ñ¡¥Ì¹‘­‘}ÍÑ…Ñ”¹‘­‘}Í•ÑÑ¥¹Ì¹‘­‘}•™™•ÑÌ¤ñğ€À°€À°€Ä¤ì(€€€Ñ¡¥Ì¹‘­‘}•™™•ÑÌ¹…¥¸¹Í•ÑQ…É•ÑÑQ¥µ”¡‘­‘}•™™•Ñ1•Ù•°°‘­‘}¹½Ü°€¸ÀÔ¤ì(€€€Ñ¡¥Ì¹‘­‘}µÕÍ¥Œ¹…¥¸¹Í•ÑQ…É•ÑÑQ¥µ” À°‘­‘}¹½Ü°€¸ÀÌ¤ì(€€€½¹ÍĞ‘­‘}‘É¥Ù•M•¹”€ôÑ¡¥Ì¹‘­‘}ØÀÑM•¹”€ôôô€‘É¥Ù”œì(€€€Ñ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ5ÕÍ¥Œ¹…¥¸¹Í•ÑQ…É•ÑÑQ¥µ”¡‘­‘}‘É¥Ù•M•¹”€ü€À€è‘­‘}µÕÍ¥1•Ù•°€¨€¸ÜÈ°‘­‘}¹½Ü°€¸ÈÈ¤ì(€€€Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•5ÕÍ¥Œ¹…¥¸¹Í•ÑQ…É•ÑÑQ¥µ”¡‘­‘}‘É¥Ù•M•¹”€ü‘­‘}µÕÍ¥1•Ù•°€è€À°‘­‘}¹½Ü°€¸ÈÈ¤ì((€€€½¹ÍĞ‘­‘}…Ñ¥Ù”€ô‘­‘}ÉÕ¸€˜˜€…‘­‘}ÉÕ¸¹‘­‘}Á…ÕÍ•€˜˜€…‘­‘}ÉÕ¸¹‘­‘}™¥¹¥Í¡•€˜˜€…‘­‘}ÉÕ¸¹‘­‘}™…¥±•ì(€€€Ñ¡¥Ì¹‘­‘}µ½Ñ½É…¥¸¹…¥¸¹Í•ÑQ…É•ÑÑQ¥µ”¡‘­‘}…Ñ¥Ù”€ü€¸ÀÄĞ€¬‘­‘}ÉÕ¸¹‘­‘}ÍÁ••€¨€¸ÀÀĞ€è€À°‘­‘}¹½Ü°€¸Àà¤ì(€€€Ñ¡¥Ì¹‘­‘}µ½Ñ½È¹™É•ÅÕ•¹ä¹Í•ÑQ…É•ÑÑQ¥µ”¡‘­‘}…Ñ¥Ù”€ü€ĞĞ€¬‘­‘}ÉÕ¸¹‘­‘}ÍÁ••€¨€Ô¸È€è€ĞĞ°‘­‘}¹½Ü°€¸ÀÜ¤ì(€€€Ñ¡¥Ì¹‘­‘}É…¥¹…¥¸¹…¥¸¹Í•ÑQ…É•ÑÑQ¥µ”¡‘­‘}…Ñ¥Ù”€ü‘­‘}ÉÕ¸¹‘­‘}İ•…Ñ¡•È¹‘­‘}É…¥¸€¨€¸Ğ€¬5…Ñ ¹…‰Ì¡‘­‘}ÉÕ¸¹‘­‘}İ•…Ñ¡•È¹‘­‘}İ¥¹ñğ€À¤€¨€¸ÀÄÈ€è€À°‘­‘}¹½Ü°€¸Ì¤ì((€€€¥˜€ …‘­‘}‘É¥Ù•M•¹”¤ì(€€€€€¥˜€¡Ñ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ9•áĞ€ğ‘­‘}¹½Ü€´€¸Ü¤Ñ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ9•áĞ€ô‘­‘}¹½Ü€¬€¸ÀĞì(€€€€€½¹ÍĞ‘­‘}É½½ÑÌ€ôlÄÄÀ°€ÄĞØ¸àÌ°€ÄÌÀ¸àÄ°€ÄØĞ¸àÅtì(€€€€€İ¡¥±”€¡Ñ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ9•áĞ€ğ‘­‘}¹½Ü€¬€¸ÄÈ¤ì(€€€€€€€½¹ÍĞ‘­‘}É½½Ğ€ô‘­‘}É½½ÑÍm5…Ñ ¹™±½½È¡Ñ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ	•…Ğ€¼€à¤€”‘­‘}É½½ÑÌ¹±•¹Ñ¡tì(€€€€€€€¥˜€¡Ñ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ	•…Ğ€”€Ğ€ôôô€À¤Ñ¡¥Ì¹‘­‘}¹½Ñ”¡‘­‘}É½½Ğ°€¸ÜÈ°€¸Àä°€Í¥¹”œ°Ñ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ5ÕÍ¥Œ°Ñ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ9•áĞ¤ì(€€€€€€€¥˜€¡Ñ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ	•…Ğ€”€à€ôôô€À¤Ñ¡¥Ì¹‘­‘}¹½Ñ”¡‘­‘}É½½Ğ€¼€È°€Ä¸Ô°€¸ÀÔÔ°€ÑÉ¥…¹±”œ°Ñ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ5ÕÍ¥Œ°Ñ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ9•áĞ¤ì(€€€€€€€¥˜€¡Ñ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ	•…Ğ€”€Ğ€ôôô€È¤Ñ¡¥Ì¹‘­‘}¹½Ñ”¡‘­‘}É½½Ğ€¨€È°€¸ÌÈ°€¸ÀÌÔ°€ÑÉ¥…¹±”œ°Ñ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ5ÕÍ¥Œ°Ñ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ9•áĞ¤ì(€€€€€€€Ñ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ	•…Ğ¬¬ì(€€€€€€€Ñ¡¥Ì¹‘­‘}ØÀÑ5•¹Õ9•áĞ€¬ô€¸ÌĞì(€€€€€ô(€€€€€É•ÑÕÉ¸ì(€€€ô((€€€½¹ÍĞ‘­‘}Í•ÑÌ€ôl(€€€€€lÄÄÀ°€ÄÌÀ¸àÄ°€ÄØĞ¸àÄ°€ÄĞØ¸àÍt°(€€€€€läà°€ÄÄØ¸ÔĞ°€ÄĞØ¸àÌ°€ÄÌÀ¸àÅt°(€€€€€lÄÌÀ¸àÄ°€ÄÔÔ¸ÔØ°€ÄäØ°€ÄÜĞ¸ØÅt°(€€€€€lÄÈÌ¸ĞÜ°€ÄĞØ¸àÌ°€ÄàÔ°€ÄØĞ¸àÅt°(€€€€€làÜ¸ÌÄ°€ÄÀÌ¸àÌ°€ÄÌÀ¸àÄ°€ÄÄØ¸ÔÑt°(€€€tì(€€€½¹ÍĞ‘­‘}¹½Ñ•Ì€ô‘­‘}Í•ÑÍm5…Ñ ¹…‰Ì¡9Õµ‰•È¡Ñ¡¥Ì¹‘­‘}ÑÉ…¬¤ñğ€À¤€”‘­‘}Í•ÑÌ¹±•¹Ñ¡tì(€€€¥˜€¡Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•9•áĞ€ğ‘­‘}¹½Ü€´€¸Ü¤Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•9•áĞ€ô‘­‘}¹½Ü€¬€¸ÀĞì(€€€İ¡¥±”€¡Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•9•áĞ€ğ‘­‘}¹½Ü€¬€¸ÄÈ¤ì(€€€€€½¹ÍĞ‘­‘}É½½Ğ€ô‘­‘}¹½Ñ•Ím5…Ñ ¹™±½½È¡Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•	•…Ğ€¼€ÄØ¤€”€Ñtì(€€€€€¥˜€¡Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•	•…Ğ€”€Ğ€ôôô€À¤ì(€€€€€€€Ñ¡¥Ì¹‘­‘}¹½Ñ”¡‘­‘}É½½Ğ€¼€È°€¸ÌĞ°€¸ÄÔ°€Í¥¹”œ°Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•5ÕÍ¥Œ°Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•9•áĞ¤ì(€€€€€€€Ñ¡¥Ì¹‘­‘}¹½Ñ” Ğä°€¸ÄÈ°€¸ÄĞ°€ÑÉ¥…¹±”œ°Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•5ÕÍ¥Œ°Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•9•áĞ¤ì(€€€€€ô(€€€€€¥˜€¡Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•	•…Ğ€”€È€ôôô€À¤Ñ¡¥Ì¹‘­‘}¹½Ñ”¡‘­‘}É½½Ğ€¨lÈ°Ì°È¸Ô°Ñum5…Ñ ¹™±½½È¡Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•	•…Ğ€¼€È¤€”€Ñt°€¸Äà°€¸ÀÌÔ°€ÑÉ¥…¹±”œ°Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•5ÕÍ¥Œ°Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•9•áĞ¤ì(€€€€€¥˜€¡Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•	•…Ğ€”€à€ôôô€Ğ¤Ñ¡¥Ì¹‘­‘}¹½Ñ” ÄäØ°€¸ÀÔÔ°€¸ÀĞÔ°€ÍÅÕ…É”œ°Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•5ÕÍ¥Œ°Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•9•áĞ¤ì(€€€€€Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•	•…Ğ¬¬ì(€€€€€Ñ¡¥Ì¹‘­‘}ØÀÑÉ¥Ù•9•áĞ€¬ô€¸ÄàÔì(€€€ô(€ô°((€‘­‘}Á…ÕÍ”¡‘­‘}Á…ÕÍ•¤ì(€€€‘­‘}ØÀÑÕ‘¥½=É¥¥¹…°¹‘­‘}Á…ÕÍ”¹…±°¡Ñ¡¥Ì°‘­‘}Á…ÕÍ•¤ì(€ô°)ô¤ì(
+  if (dkd_order.dkd_offer) dkd_order.dkd_offer.dkd_total = dkd_reward;
+  return dkd_order;
+}
+
+function dkd_v04AdminGate(dkd_game) {
+  if (!dkd_game.dkd_v04AuthKnown) {
+    return `<div class="dkd-screen dkd-intro dkd-enter"><div class="dkd-intro-bottom"><span class="dkd-kicker">v0.4 / SUPABASE</span><h1>YÃ–NETÄ°CÄ°<br/><span>Ã–NÄ°ZLEMESÄ°.</span></h1><p>Oturum durumu kontrol ediliyorâ€¦</p></div></div>`;
+  }
+  if (!dkd_game.dkd_v04Authenticated) {
+    return `<div class="dkd-page dkd-enter"><div class="dkd-page-body"><span class="dkd-kicker">DraBornGo / Last Mile v0.4</span><h1 style="font-size:34px;margin:12px 0">YÃ¶netici giriÅŸi</h1><p class="dkd-muted dkd-text-sm">Bu geliÅŸtirme sÃ¼rÃ¼mÃ¼nde oyun iÃ§eriÄŸi yalnÄ±zca Last-Mile admin hesabÄ±na aÃ§Ä±ktÄ±r.</p><form id="dkd-v04-login-form"><div class="dkd-field"><label>E-posta</label><input name="dkd_email" type="email" autocomplete="username" required/></div><div class="dkd-field"><label>Åifre</label><input name="dkd_password" type="password" autocomplete="current-password" minlength="6" required/></div><button class="dkd-button" type="submit">YÃ–NETÄ°CÄ° OLARAK GÄ°RÄ°Å YAP</button></form></div></div>`;
+  }
+  return `<div class="dkd-page dkd-enter"><div class="dkd-page-body"><span class="dkd-kicker">LAST-MILE / YETKÄ°</span><h2>YÃ¶netici doÄŸrulamasÄ± yapÄ±lÄ±yor.</h2><p class="dkd-muted dkd-text-sm">Supabase rolÃ¼ ve v0.4 iÃ§erik kapÄ±sÄ± kontrol ediliyor.</p></div></div>`;
+}
+
+function dkd_v04UpdateClock() {
+  const dkd_parts = dkd_v04ClockParts();
+  const dkd_clock = document.getElementById('dkd-v04-clock');
+  if (dkd_clock) dkd_clock.innerHTML = `${dkd_parts.dkd_hour}<span>:</span>${dkd_parts.dkd_minute}`;
+  const dkd_introClock = document.getElementById('dkd-v04-intro-clock');
+  if (dkd_introClock) dkd_introClock.textContent = dkd_parts.dkd_text;
+}
+
+function dkd_v04ApplyMusicMode(dkd_audio, dkd_drive) {
+  if (!dkd_audio?.dkd_context || !dkd_audio.dkd_v04MenuMusic || !dkd_audio.dkd_v04DriveMusic) return;
+  const dkd_now = dkd_audio.dkd_context.currentTime;
+  const dkd_volume = Math.max(0, Math.min(1, Number(dkd_audio.dkd_state?.dkd_settings?.dkd_music) || 0));
+  dkd_audio.dkd_v04MenuMusic.gain.setTargetAtTime(dkd_drive ? 0 : dkd_volume, dkd_now, .22);
+  dkd_audio.dkd_v04DriveMusic.gain.setTargetAtTime(dkd_drive ? dkd_volume : 0, dkd_now, .22);
+}
+
+dkd_Audio.prototype.dkd_start = function dkd_v04AudioStart() {
+  dkd_v04AudioOriginal.dkd_start.call(this);
+  if (!this.dkd_context || this.dkd_v04MenuMusic) return;
+  this.dkd_v04MenuMusic = this.dkd_context.createGain();
+  this.dkd_v04DriveMusic = this.dkd_context.createGain();
+  this.dkd_v04MenuMusic.gain.value = 0;
+  this.dkd_v04DriveMusic.gain.value = 0;
+  this.dkd_v04MenuMusic.connect(this.dkd_master);
+  this.dkd_v04DriveMusic.connect(this.dkd_master);
+  try { this.dkd_music.disconnect(); } catch {}
+  this.dkd_music.connect(this.dkd_v04MenuMusic);
+  this.dkd_music.connect(this.dkd_v04DriveMusic);
+};
+
+dkd_Audio.prototype.dkd_update = function dkd_v04AudioUpdate(dkd_run) {
+  dkd_v04AudioOriginal.dkd_update.call(this, dkd_run);
+  if (this.dkd_music?.gain) this.dkd_music.gain.value = 1;
+  dkd_v04ApplyMusicMode(this, Boolean(dkd_run && !dkd_run.dkd_paused && !dkd_run.dkd_finished && !dkd_run.dkd_failed));
+};
+
+dkd_Game.prototype.dkd_bind = function dkd_v04Bind() {
+  dkd_v04Original.dkd_bind.call(this);
+  dkd_v04Init(this);
+  document.addEventListener('submit', dkd_event => {
+    if (dkd_event.target.id !== 'dkd-v04-login-form') return;
+    dkd_event.preventDefault();
+    const dkd_fields = new FormData(dkd_event.target);
+    this.dkd_send('auth-login', {
+      dkd_email: String(dkd_fields.get('dkd_email') || '').trim(),
+      dkd_password: String(dkd_fields.get('dkd_password') || ''),
+    });
+    this.dkd_toast('YÃ¶netici oturumu aÃ§Ä±lÄ±yorâ€¦');
+  });
+  this.dkd_send('auth-state-request', {});
+  this.dkd_v04ClockTimer = setInterval(dkd_v04UpdateClock, 10000);
+};
+
+dkd_Game.prototype.dkd_receive = function dkd_v04Receive(dkd_payload) {
+  dkd_v04Init(this);
+  dkd_v04Original.dkd_receive.call(this, dkd_payload);
+
+  if (dkd_payload.dkd_type === 'auth-state') {
+    this.dkd_v04AuthKnown = true;
+    this.dkd_v04Authenticated = dkd_payload.dkd_data?.dkd_authenticated === true;
+    this.dkd_v04AuthEmail = String(dkd_payload.dkd_data?.dkd_email || '');
+    this.dkd_v04AdminReady = false;
+    if (this.dkd_v04Authenticated) this.dkd_send('cloud-bootstrap', {});
+    this.dkd_render(this.dkd_state?.dkd_profile ? 'home' : 'intro');
+    return;
+  }
+
+  if (dkd_payload.dkd_type === 'cloud-bootstrap') {
+    const dkd_response = dkd_payload.dkd_data || {};
+    const dkd_cloud = dkd_response.dkd_data || dkd_response;
+    this.dkd_v04Cloud = dkd_cloud;
+    this.dkd_v04AdminReady = dkd_cloud?.dkd_role === 'admin' && dkd_cloud?.dkd_enabled !== false;
+    if (this.dkd_v04AdminReady) {
+      this.dkd_career.dkd_training = false;
+      this.dkd_career.dkd_fullCareer = true;
+      this.dkd_state = this.dkd_career;
+      this.dkd_audio.dkd_state = this.dkd_state;
+      this.dkd_scene.dkd_state = this.dkd_state;
+      this.dkd_toast('Last-Mile v0.4 gerÃ§ek veri baÄŸlantÄ±sÄ± hazÄ±r.');
+      this.dkd_render(this.dkd_state.dkd_profile ? 'home' : 'intro');
+    } else {
+      this.dkd_toast('Bu hesap Last-Mile admin yetkisine sahip deÄŸil.');
+      this.dkd_render('intro');
+    }
+    return;
+  }
+
+  if (dkd_payload.dkd_type === 'cloud-jobs') {
+    this.dkd_v04JobsLoading = false;
+    const dkd_rows = Array.isArray(dkd_payload.dkd_data) ? dkd_payload.dkd_data : [];
+    this.dkd_orders = dkd_rows.filter(Boolean).map((dkd_entry, dkd_index) => dkd_v04CreateCloudOrder(this, dkd_entry, dkd_index));
+    if (this.dkd_pageName === 'dispatch') this.dkd_render('dispatch');
+    return;
+  }
+
+  if (dkd_payload.dkd_type === 'cloud-error') {
+    this.dkd_v04JobsLoading = false;
+    this.dkd_toast(String(dkd_payload.dkd_data || 'Last-Mile sunucu iÅŸlemi tamamlanamadÄ±.'));
+  }
+};
+
+dkd_Game.prototype.dkd_refreshOrders = function dkd_v04RefreshOrders() {
+  dkd_v04Init(this);
+  this.dkd_orders = [];
+  if (!this.dkd_v04AdminReady || this.dkd_v04JobsLoading) return;
+  this.dkd_v04JobsLoading = true;
+  this.dkd_send('cloud-claim-jobs', { dkd_count: 4, dkd_level: dkd_level(this.dkd_state) });
+};
+
+dkd_Game.prototype.dkd_save = function dkd_v04Save() {
+  dkd_v04Original.dkd_save.call(this);
+  dkd_v04Init(this);
+  if (!this.dkd_v04AdminReady) return;
+  clearTimeout(this.dkd_v04SaveTimer);
+  this.dkd_v04SaveTimer = setTimeout(() => {
+    this.dkd_send('cloud-save', { dkd_game_state: this.dkd_career });
+  }, 650);
+};
+
+dkd_Game.prototype.dkd_action = function dkd_v04Action(dkd_action) {
+  dkd_v04Init(this);
+  const [dkd_command, ...dkd_parts] = String(dkd_action || '').split(':');
+  const dkd_value = dkd_parts.join(':');
+
+  if (dkd_command === 'v04-demo-toggle') {
+    if (!this.dkd_v04AdminReady) return this.dkd_toast('YÃ¶netici yetkisi gerekli.');
+    this.dkd_send('admin-demo-toggle', { dkd_enabled: dkd_value === 'on' });
+    return;
+  }
+
+  if (dkd_command === 'v04-logout') {
+    this.dkd_send('auth-logout', {});
+    return;
+  }
+
+  if (dkd_command === 'orders-refresh') {
+    this.dkd_refreshOrders();
+    return this.dkd_render('dispatch');
+  }
+
+  if (dkd_command === 'reject') {
+    const dkd_index = Number(dkd_value);
+    const dkd_order = this.dkd_orders[dkd_index];
+    if (dkd_order?.dkd_cloudJobId) this.dkd_send('cloud-cancel-job', { dkd_job_id: dkd_order.dkd_cloudJobId, dkd_reason: 'offer_rejected' });
+    this.dkd_orders.splice(dkd_index, 1);
+    this.dkd_toast('GÃ¶rev reddedildi.');
+    return this.dkd_render('dispatch');
+  }
+
+  if (dkd_command === 'start-run' && this.dkd_selectedOrder?.dkd_cloudJobId) {
+    this.dkd_send('cloud-accept-job', { dkd_job_id: this.dkd_selectedOrder.dkd_cloudJobId });
+  }
+
+  if (dkd_command === 'abandon' && this.dkd_run?.dkd_order?.dkd_cloudJobId) {
+    this.dkd_send('cloud-cancel-job', { dkd_job_id: this.dkd_run.dkd_order.dkd_cloudJobId, dkd_reason: 'shift_abandoned' });
+  }
+
+  if (dkd_command === 'deliver' && this.dkd_run?.dkd_order?.dkd_cloudJobId) {
+    const dkd_jobId = this.dkd_run.dkd_order.dkd_cloudJobId;
+    const dkd_metrics = {
+      dkd_elapsed_sec: Math.round(Number(this.dkd_run.dkd_elapsed) || 0),
+      dkd_distance_m: Math.round(Number(this.dkd_run.dkd_distance) || 0),
+      dkd_damage: Math.round(Number(this.dkd_run.dkd_damage) || 0),
+      dkd_quality: Math.round(Number(this.dkd_run.dkd_quality) || 0),
+      dkd_collisions: Math.round(Number(this.dkd_run.dkd_collisions) || 0),
+    };
+    const dkd_result = dkd_v04Original.dkd_action.call(this, dkd_action);
+    if (this.dkd_result) {
+      dkd_metrics.dkd_rating = Number(this.dkd_result.dkd_rating) || 0;
+      dkd_metrics.dkd_pay = Number(this.dkd_result.dkd_pay) || 0;
+      dkd_metrics.dkd_on_time = this.dkd_result.dkd_onTime === true;
+      this.dkd_send('cloud-complete-job', { dkd_job_id: dkd_jobId, dkd_metrics });
+    }
+    return dkd_result;
+  }
+
+  return dkd_v04Original.dkd_action.call(this, dkd_action);
+};
+
+dkd_Game.prototype.dkd_render = function dkd_v04Render(dkd_pageName, dkd_arg = null) {
+  dkd_v04Init(this);
+  if (this.dkd_v04AuthKnown && !this.dkd_v04AdminReady && dkd_pageName !== 'intro') dkd_pageName = 'intro';
+  const dkd_result = dkd_v04Original.dkd_render.call(this, dkd_pageName, dkd_arg);
+  dkd_v04UpdateClock();
+  dkd_v04ApplyMusicMode(this.dkd_audio, dkd_pageName === 'drive');
+  return dkd_result;
+};
+
+dkd_Game.prototype.dkd_view_intro = function dkd_v04Intro() {
+  dkd_v04Init(this);
+  if (!this.dkd_v04AdminReady) return dkd_v04AdminGate(this);
+  const dkd_parts = dkd_v04ClockParts();
+  return dkd_v04Original.dkd_view_intro.call(this)
+    .replace(/\d{2}:\d{2}\s*Â·\s*ANTALYA/, `<span id="dkd-v04-intro-clock">${dkd_parts.dkd_text}</span> Â· ANKARA`)
+    .replace('Ãœcretsiz deneme sÃ¼rÃ¼mÃ¼ Â· GerÃ§ek Ã¶deme ve Ã¶dÃ¼l yok.', 'v0.4 yÃ¶netici Ã¶nizlemesi Â· Supabase gerÃ§ek veri baÄŸlantÄ±sÄ±');
+};
+
+dkd_Game.prototype.dkd_view_phone = function dkd_v04Phone() {
+  const dkd_parts = dkd_v04ClockParts();
+  return dkd_v04Original.dkd_view_phone.call(this)
+    .replace(/<h1>\d{2}<span>:\<\/span>\d{2}<\/h1>/, `<h1 id="dkd-v04-clock">${dkd_parts.dkd_hour}<span>:</span>${dkd_parts.dkd_minute}</h1>`);
+};
+
+dkd_Game.prototype.dkd_view_dispatch = function dkd_v04Dispatch() {
+  if (!this.dkd_orders.length && !this.dkd_v04JobsLoading) this.dkd_refreshOrders();
+  const dkd_status = this.dkd_v04JobsLoading
+    ? '<div class="dkd-notice">Supabase gÃ¶rev havuzu yenileniyorâ€¦</div>'
+    : !this.dkd_orders.length
+      ? '<div class="dkd-notice">Åu anda uygun organik gÃ¶rev bulunamadÄ±. Yenile dÃ¼ÄŸmesiyle tekrar kontrol edebilirsin.</div>'
+      : '';
+  const dkd_body = `<div class="dkd-between"><div><span class="dkd-kicker">LAST-MILE / ANKARA</span><h2 style="margin-top:8px">GerÃ§ek gÃ¶rev havuzu.</h2></div>${dkd_iconButton('refresh','orders-refresh','GÃ¶revleri yenile')}</div><div class="dkd-space"></div>${dkd_status}<div class="dkd-space"></div>${this.dkd_orders.map((dkd_order, dkd_index) => {
+    const dkd_package = dkd_packages.find(dkd_item => dkd_item.dkd_id === dkd_order.dkd_package) || dkd_packages[0];
+    const dkd_customer = dkd_customers.find(dkd_item => dkd_item.dkd_id === dkd_order.dkd_customer) || dkd_customers[0];
+    const dkd_weather = dkd_weathers.find(dkd_item => dkd_item.dkd_id === dkd_order.dkd_weather) || dkd_weathers[0];
+    return `<div class="dkd-order"><div class="dkd-between"><span class="dkd-chip dkd-accent">${dkd_icon(dkd_package.dkd_icon)}${dkd_package.dkd_name.toLocaleUpperCase('tr-TR')}</span><span class="dkd-mini-stats">${dkd_icon(dkd_weather.dkd_icon,16)}${dkd_weather.dkd_name}</span></div><h3>${dkd_escape(dkd_order.dkd_cloudDestination || dkd_order.dkd_destination)}</h3><small>${dkd_escape(dkd_order.dkd_cloudMissionName || 'Last-Mile gÃ¶revi')}</small><div class="dkd-order-stats"><div><b>${(dkd_order.dkd_safe.dkd_distance / 1000).toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})} km</b><small>ROTA</small></div><div><b>${dkd_time(dkd_order.dkd_deadline)}</b><small>SÃœRE</small></div><div><b class="dkd-accent">${dkd_currency(dkd_order.dkd_offer.dkd_total)}</b><small>SUNUCU Ã–DÃœLÃœ</small></div></div><div class="dkd-row">${dkd_avatar(dkd_customer.dkd_id)}<div><b>${dkd_customer.dkd_name}</b><small>${dkd_escape(dkd_order.dkd_cloudOrigin || 'Kurye Merkezi')} â†’ ${dkd_escape(dkd_order.dkd_cloudDestination || 'Teslimat')}</small></div></div><div class="dkd-order-footer">${dkd_button('ROTAYI Ä°NCELE', `order:${dkd_index}`, 'nav')}${dkd_iconButton('close',`reject:${dkd_index}`,'GÃ¶revi reddet')}</div></div>`;
+  }).join('')}`;
+  return this.dkd_page('SipariÅŸler', dkd_body, '', 'Supabase organik gÃ¶rev sistemi');
+};
+
+dkd_Game.prototype.dkd_view_rankings = function dkd_v04Rankings() {
+  return this.dkd_page('SÄ±ralamalar', `<span class="dkd-kicker">GERÃ‡EK OYUNCU VERÄ°SÄ°</span><h2 style="margin:12px 0">SÄ±ralama hazÄ±rlanÄ±yor.</h2><div class="dkd-notice">Sahte rakip yok. GerÃ§ek oyuncu skorlarÄ± oluÅŸtuÄŸunda bu ekran yalnÄ±zca sunucu tarafÄ±ndan doÄŸrulanmÄ±ÅŸ kayÄ±tlarÄ± gÃ¶sterecek.</div><div class="dkd-space"></div><div class="dkd-leader dkd-me"><span class="dkd-place">â€”</span><div><b>${dkd_escape(this.dkd_state.dkd_profile?.dkd_username || 'YÃ–NETÄ°CÄ°')}</b><small style="display:block">Yerel kariyer sonucu Â· genel sÄ±ralamaya dahil deÄŸil</small></div><span class="dkd-score">â€”</span></div>`);
+};
+
+dkd_Game.prototype.dkd_view_daily = function dkd_v04Daily() {
+  dkd_tickDay(this.dkd_state);
+  const dkd_state = this.dkd_state;
+  const dkd_tasks = dkd_dailyRequirements(dkd_state);
+  return this.dkd_page('GÃ¼nlÃ¼k GÃ¶revler', `<span class="dkd-kicker">BUGÃœN / ${dkd_state.dkd_daily.dkd_date}</span><h2 style="margin:12px 0">GÃ¼nlÃ¼k hedeflerin.</h2>${dkd_tasks.map(dkd_task => `<div class="dkd-list-line"><span class="dkd-chapter-number ${dkd_task.dkd_have>=dkd_task.dkd_need?'dkd-done':''}">${dkd_task.dkd_have>=dkd_task.dkd_need?'âœ“':dkd_icon('flag',15)}</span><div class="dkd-expand"><b class="dkd-text-sm">${dkd_task.dkd_name}</b>${dkd_progressBar(dkd_task.dkd_have,dkd_task.dkd_need)}</div><small>${Math.min(dkd_task.dkd_need,Math.floor(dkd_task.dkd_have))}/${dkd_task.dkd_need}</small></div>`).join('')}<div class="dkd-space"></div>${dkd_button(dkd_state.dkd_daily.dkd_claimed?'BUGÃœNKÃœ KASA ALINDI':'GÃœNLÃœK KASA / 750 TL + ROZET','claim-daily','box','dkd-secondary')}<div class="dkd-divider"></div><span class="dkd-kicker">TOPLULUK</span><div class="dkd-notice">Sentetik topluluk sayacÄ± kaldÄ±rÄ±ldÄ±. GerÃ§ek topluluk etkinliÄŸi sunucu verisi oluÅŸtuÄŸunda aÃ§Ä±lacak.</div>`);
+};
+
+dkd_Game.prototype.dkd_view_settings = function dkd_v04Settings() {
+  const dkd_state = this.dkd_state;
+  const dkd_demoEnabled = this.dkd_v04Cloud?.dkd_demo_enabled === true || this.dkd_v04Cloud?.dkd_demo === true;
+  const dkd_admin = `<div class="dkd-divider"></div><h3>Last-Mile yÃ¶netici</h3><div class="dkd-card"><span class="dkd-kicker">${dkd_escape(this.dkd_v04AuthEmail || 'OTURUM')}</span><h3 style="margin:8px 0">Supabase baÄŸlantÄ±sÄ± ${this.dkd_v04AdminReady?'hazÄ±r':'kontrol ediliyor'}</h3><p class="dkd-muted dkd-text-sm">Demo gÃ¶revleri organik gÃ¶revlerden ayrÄ±dÄ±r ve varsayÄ±lan kapalÄ±dÄ±r.</p><div class="dkd-space"></div>${dkd_button(dkd_demoEnabled?'DEMO GÃ–REVLERÄ°NÄ° KAPAT':'DEMO GÃ–REVLERÄ°NÄ° AÃ‡',`v04-demo-toggle:${dkd_demoEnabled?'off':'on'}`,'fingerprint','dkd-secondary')}<div class="dkd-space"></div>${dkd_button('YÃ–NETÄ°CÄ° OTURUMUNU KAPAT','v04-logout','close','dkd-warning')}</div>`;
+  return this.dkd_page('Ayarlar', `<div class="dkd-between"><div><span class="dkd-brand">SON KÄ°LOMETRE</span><small style="display:block;margin-top:5px">v0.4 Â· Expo SDK 57 Â· Supabase</small></div><span class="dkd-chip">TÃœRKÃ‡E</span></div><div class="dkd-divider"></div><h3>GÃ¶rÃ¼ntÃ¼ ve ses</h3><div class="dkd-segment">${[['low','Ekonomik'],['balanced','Dengeli'],['high','YÃ¼ksek']].map(dkd_item=>`<button data-dkd-action="quality:${dkd_item[0]}" class="${dkd_state.dkd_settings.dkd_quality===dkd_item[0]?'dkd-selected':''}">${dkd_item[1]}</button>`).join('')}</div><div class="dkd-field"><label>Efekt sesi</label><input type="range" min="0" max="100" value="${Math.round(dkd_state.dkd_settings.dkd_effects*100)}" data-dkd-setting="dkd_effects"/></div><div class="dkd-field"><label>MÃ¼zik</label><input type="range" min="0" max="100" value="${Math.round(dkd_state.dkd_settings.dkd_music*100)}" data-dkd-setting="dkd_music"/></div><div class="dkd-divider"></div><h3>KayÄ±t ve bilgi</h3><div class="dkd-stack">${dkd_button('KAYDI DIÅA AKTAR','export-save','share','dkd-secondary')}${dkd_button('YEDEKTEN GERÄ° YÃœKLE','import-save','refresh','dkd-secondary')}${dkd_button('NASIL OYNANIR','guide','info','dkd-secondary')}</div>${dkd_admin}`);
+};
+
+dkd_Game.prototype.dkd_view_privacy = function dkd_v04Privacy() {
+  return this.dkd_page('Veri ve v0.4 kapsamÄ±', `<div class="dkd-privacy-list"><h3>Supabase gerÃ§ek veri</h3><p>v0.4 yÃ¶netici Ã¶nizlemesinde gÃ¶rev yaÅŸam dÃ¶ngÃ¼sÃ¼ ve kariyer ilerlemesi Supabase Last-Mile alanÄ±na senkronize edilir. Mobil uygulamada yalnÄ±zca publishable key bulunur; service-role anahtarÄ± istemciye gÃ¶mÃ¼lmez.</p><h3>Cihaz yedeÄŸi</h3><p>AsyncStorage kaydÄ± Ã§evrimdÄ±ÅŸÄ± gÃ¼venli yedek olarak tutulur. Sunucu baÄŸlantÄ±sÄ± geri geldiÄŸinde admin ilerlemesi tekrar senkronize edilir.</p><h3>SÄ±ralama ve topluluk</h3><p>Sentetik rakip ve sentetik topluluk sayacÄ± gÃ¶sterilmez. GerÃ§ek kullanÄ±cÄ± verisi oluÅŸmadan genel sÄ±ralama Ã¼retilmez.</p><h3>Ã–dÃ¼ller</h3><p>v0.4 geliÅŸtirme aÅŸamasÄ±nda gerÃ§ek fiziksel Ã¶dÃ¼l kazanÄ±mÄ± etkin deÄŸildir.</p></div>`);
+};
