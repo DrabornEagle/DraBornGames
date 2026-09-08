@@ -39,6 +39,7 @@ test('v0.3 scooter + sürücü paketi eksiksiz ve güvenli okunur', () => {
       let dkd_unsigned = 0;
       let dkd_shift = 0;
       let dkd_byte = 0;
+      const dkd_indexOffset = dkd_offset;
       do {
         assert.ok(dkd_offset < dkd_bytes.length);
         dkd_byte = dkd_bytes[dkd_offset++];
@@ -48,7 +49,10 @@ test('v0.3 scooter + sürücü paketi eksiksiz ve güvenli okunur', () => {
       } while (dkd_byte & 0x80);
       const dkd_delta = (dkd_unsigned >>> 1) ^ -(dkd_unsigned & 1);
       dkd_previousIndex += dkd_delta;
-      assert.ok(dkd_previousIndex >= 0 && dkd_previousIndex < dkd_vertexCount);
+      assert.ok(
+        dkd_previousIndex >= 0 && dkd_previousIndex < dkd_vertexCount,
+        `mesh=${dkd_meshIndex} index=${dkd_index} byte=${dkd_indexOffset} vertices=${dkd_vertexCount} unsigned=${dkd_unsigned} delta=${dkd_delta} current=${dkd_previousIndex}`
+      );
     }
   }
   assert.equal(dkd_offset, dkd_bytes.length);
