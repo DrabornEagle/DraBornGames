@@ -52,8 +52,9 @@ test('v0.4 server jobs are available to authenticated player sessions', () => {
 });
 
 test('settings rely on Supabase and keep only the how-to action from backup controls', () => {
-  const dkd_settingsStart = dkd_runtime.indexOf('dkd_Game.prototype.dkd_view_settings');
-  const dkd_privacyStart = dkd_runtime.indexOf('dkd_Game.prototype.dkd_view_privacy');
+  const dkd_settingsStart = dkd_runtime.indexOf('dkd_Game.prototype.dkd_view_settings = function');
+  const dkd_privacyStart = dkd_runtime.indexOf('dkd_Game.prototype.dkd_view_privacy = function');
+  assert.ok(dkd_settingsStart >= 0 && dkd_privacyStart > dkd_settingsStart);
   const dkd_settings = dkd_runtime.slice(dkd_settingsStart, dkd_privacyStart);
   assert.match(dkd_settings, /NASIL OYNANIR/);
   assert.doesNotMatch(dkd_settings, /KAYDI DIŞA AKTAR|YEDEKTEN GERİ YÜKLE/);
