@@ -41,7 +41,8 @@ const dkd_sources = [
   'dkd-v03-reuploaded-gzip-manifest.mjs',
   'dkd-v03-reuploaded-model.mjs',
   'dkd-v04-runtime.mjs',
-  'dkd-v04-real-career.mjs'
+  'dkd-v04-real-career.mjs',
+  'dkd-v04-ui-audio-polish.mjs'
 ];
 
 const dkd_threeCode = await dkd_fs.readFile(dkd_path.join(dkd_root, 'node_modules/three/build/three.cjs'), 'utf8');
