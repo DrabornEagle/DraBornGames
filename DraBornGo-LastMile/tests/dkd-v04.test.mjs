@@ -23,7 +23,11 @@ test('v0.4 real clock replaces fixed phone time', () => {
 
 test('v0.4 server jobs and admin demo toggle are wired', () => {
   assert.match(dkd_runtime, /cloud-claim-jobs/);
+  assert.match(dkd_runtime, /cloud-accept-job/);
+  assert.match(dkd_runtime, /cloud-cancel-job/);
   assert.match(dkd_runtime, /cloud-complete-job/);
+  assert.match(dkd_app, /accept_job/);
+  assert.match(dkd_app, /cancel_job/);
   assert.match(dkd_runtime, /v04-demo-toggle/);
   assert.match(dkd_runtime, /Sahte rakip yok/);
 });
@@ -45,6 +49,8 @@ test('build loads v0.4 runtime last and scrubs legacy demo rankings', () => {
 test('edge function only calls the dkd_lastmile RPC namespace', () => {
   assert.match(dkd_edge, /dkd_lastmile_bootstrap/);
   assert.match(dkd_edge, /dkd_lastmile_claim_job/);
+  assert.match(dkd_edge, /dkd_lastmile_accept_job/);
+  assert.match(dkd_edge, /dkd_lastmile_cancel_job/);
   assert.match(dkd_edge, /dkd_lastmile_complete_job/);
   assert.match(dkd_edge, /dkd_lastmile_toggle_demo/);
   assert.doesNotMatch(dkd_edge, /dkd_last_mile_/);
