@@ -1,126 +1,96 @@
 // DraBornGo / Last Mile v0.3 runtime hardening.
-// Each uploaded model chunk is an independently padded base64 segment. Decode
-// them separately before concatenating the bytes; joining the encoded strings
-// directly can corrupt the stream at internal '=' padding boundaries.
+// The originally uploaded binary scooter+rider stream was damaged while being
+// split for Git storage. v0.3 therefore uses the deterministic in-engine model
+// as the release model and adds a richer starter-scooter visual pass on top.
+// This removes the corrupted binary from the runtime path while keeping older
+// saves, vehicle upgrades and wheel animation fully compatible.
 
-function dkd_v03_modelBytes() {
-  const dkd_chunks = [
-    dkd_v03_modelChunk0,
-    dkd_v03_modelChunk1,
-    dkd_v03_modelChunk2,
-    dkd_v03_modelChunk3,
-    dkd_v03_modelChunk4,
-    dkd_v03_modelChunk5,
-    dkd_v03_modelChunk6,
-    dkd_v03_modelChunk7,
-    dkd_v03_modelChunk8
-  ];
-  const dkd_parts = dkd_chunks.map(dkd_chunk => {
-    const dkd_binary = atob(dkd_chunk);
-    const dkd_part = new Uint8Array(dkd_binary.length);
-    for (let dkd_index = 0; dkd_index < dkd_binary.length; dkd_index++) dkd_part[dkd_index] = dkd_binary.charCodeAt(dkd_index);
-    return dkd_part;
-  });
-  const dkd_total = dkd_parts.reduce((dkd_sum, dkd_part) => dkd_sum + dkd_part.length, 0);
-  const dkd_bytes = new Uint8Array(dkd_total);
-  let dkd_offset = 0;
-  for (const dkd_part of dkd_parts) {
-    dkd_bytes.set(dkd_part, dkd_offset);
-    dkd_offset += dkd_part.length;
+function dkd_v03_addStarterScooterDetails(dkd_scene) {
+  const dkd_bike = dkd_scene?.dkd_bike;
+  if (!dkd_bike) return;
+
+  dkd_bike.name = 'dkd_v03_safe_model';
+  const dkd_brand = dkd_scene.dkd_state?.dkd_brand || {};
+  const dkd_brandColor = dkd_brand.dkd_color || '#35c7bf';
+  const dkd_uniformColor = dkd_brand.dkd_uniform || '#314557';
+  const dkd_accent = dkd_scene.dkd_material(dkd_brandColor, .24, .52);
+  const dkd_uniform = dkd_scene.dkd_material(dkd_uniformColor, .68, .08);
+  const dkd_dark = dkd_scene.dkd_material('#17212b', .48, .42);
+  const dkd_metal = dkd_scene.dkd_material('#9aa8b6', .24, .78);
+  const dkd_teal = dkd_scene.dkd_material('#43d7c8', .30, .36);
+  const dkd_warm = dkd_scene.dkd_material('#ffd166', .38, .26);
+  const dkd_white = new dkd_three.MeshBasicMaterial({ color: '#eef7ef' });
+  const dkd_red = new dkd_three.MeshBasicMaterial({ color: '#ef6a55' });
+
+  // Modern layered bodywork and floorboard.
+  dkd_scene.dkd_box(dkd_bike, [.68, .08, 1.06], [0, .56, -.05], dkd_dark);
+  dkd_scene.dkd_box(dkd_bike, [.56, .14, .82], [0, .76, .16], dkd_accent);
+  dkd_scene.dkd_box(dkd_bike, [.46, .06, .70], [0, .93, -.42], dkd_dark);
+  dkd_scene.dkd_box(dkd_bike, [.62, .10, .44], [0, 1.18, .75], dkd_accent);
+
+  // Windscreen, LED headlight and daytime-running-light strips.
+  const dkd_windscreen = new dkd_three.Mesh(
+    new dkd_three.BoxGeometry(.54, .40, .025),
+    new dkd_three.MeshPhysicalMaterial({
+      color: '#9ed8e4', transparent: true, opacity: .28,
+      roughness: .10, metalness: .05, depthWrite: false
+    })
+  );
+  dkd_windscreen.position.set(0, 1.58, .73);
+  dkd_windscreen.rotation.x = -.30;
+  dkd_bike.add(dkd_windscreen);
+  dkd_scene.dkd_box(dkd_bike, [.44, .12, .035], [0, 1.36, 1.015], dkd_white);
+  for (const dkd_side of [-1, 1]) {
+    dkd_scene.dkd_box(dkd_bike, [.055, .28, .035], [dkd_side * .27, 1.24, .985], dkd_teal, dkd_side * -.08);
+    dkd_scene.dkd_box(dkd_bike, [.035, .13, .62], [dkd_side * .315, .84, -.30], dkd_accent);
+    dkd_scene.dkd_cylinder(dkd_bike, .023, .72, [dkd_side * .39, .70, .02], dkd_metal, [Math.PI / 2, 0, 0]);
   }
-  return dkd_bytes;
+
+  // Premium rear box details and safety reflectors.
+  dkd_scene.dkd_box(dkd_bike, [.72, .08, .72], [0, 1.73, -.92], dkd_dark);
+  dkd_scene.dkd_box(dkd_bike, [.52, .06, .025], [0, 1.49, -1.275], dkd_white);
+  dkd_scene.dkd_box(dkd_bike, [.38, .08, .028], [0, 1.35, -1.285], dkd_red);
+  for (const dkd_side of [-1, 1]) dkd_scene.dkd_box(dkd_bike, [.10, .055, .03], [dkd_side * .27, 1.64, -1.286], dkd_warm);
+
+  // Rider: clearer high-visibility vest, helmet band and shoulder accents.
+  dkd_scene.dkd_box(dkd_bike, [.42, .34, .025], [0, 1.43, -.325], dkd_uniform);
+  dkd_scene.dkd_box(dkd_bike, [.30, .055, .027], [0, 1.52, -.341], dkd_white);
+  dkd_scene.dkd_box(dkd_bike, [.30, .045, .027], [0, 1.36, -.341], dkd_teal);
+  for (const dkd_side of [-1, 1]) dkd_scene.dkd_box(dkd_bike, [.10, .18, .025], [dkd_side * .19, 1.44, -.339], dkd_accent, dkd_side * -.08);
+
+  const dkd_helmetBand = new dkd_three.Mesh(
+    new dkd_three.TorusGeometry(.255, .022, 8, 30),
+    dkd_accent
+  );
+  dkd_helmetBand.position.set(0, 1.92, -.03);
+  dkd_helmetBand.rotation.x = Math.PI / 2;
+  dkd_bike.add(dkd_helmetBand);
+
+  // Small phone/navigation mount, mirrors and front fender accents.
+  dkd_scene.dkd_box(dkd_bike, [.18, .035, .26], [.20, 1.51, .60], dkd_dark);
+  dkd_scene.dkd_box(dkd_bike, [.145, .025, .21], [.20, 1.535, .60], dkd_teal);
+  for (const dkd_side of [-1, 1]) {
+    dkd_scene.dkd_cylinder(dkd_bike, .015, .30, [dkd_side * .42, 1.54, .78], dkd_metal, [0, 0, -.30 * dkd_side]);
+    const dkd_mirror = new dkd_three.Mesh(new dkd_three.SphereGeometry(.09, 12, 8), dkd_dark);
+    dkd_mirror.scale.set(1.4, .75, .35);
+    dkd_mirror.position.set(dkd_side * .50, 1.68, .80);
+    dkd_bike.add(dkd_mirror);
+  }
+
+  // A tiny under-seat accent makes the starter scooter easier to read at the
+  // high default camera without adding expensive textures or external assets.
+  dkd_scene.dkd_box(dkd_bike, [.48, .035, .54], [0, .98, -.55], dkd_teal);
 }
 
-dkd_v03_readScooterRider = function() {
-  const dkd_bytes = dkd_v03_modelBytes();
-  dkd_v03_need(0, 6, dkd_bytes.length, 'başlık');
-  const dkd_view = new DataView(dkd_bytes.buffer, dkd_bytes.byteOffset, dkd_bytes.byteLength);
-  const dkd_signature = String.fromCharCode(...dkd_bytes.slice(0, 4));
-  if (dkd_signature !== 'DK31') throw new Error('v0.3 scooter + sürücü paketi geçersiz.');
-  const dkd_meshCount = dkd_view.getUint16(4, true);
-  if (dkd_meshCount !== 26) throw new Error('v0.3 model mesh sayısı geçersiz.');
-
-  const dkd_group = new dkd_three.Group();
-  let dkd_offset = 6;
-  let dkd_totalVertices = 0;
-  let dkd_totalFaces = 0;
-  for (let dkd_meshIndex = 0; dkd_meshIndex < dkd_meshCount; dkd_meshIndex++) {
-    dkd_v03_need(dkd_offset, 35, dkd_bytes.length, `mesh ${dkd_meshIndex + 1} başlığı`);
-    const dkd_vertexCount = dkd_view.getUint16(dkd_offset, true);
-    const dkd_faceCount = dkd_view.getUint16(dkd_offset + 2, true);
-    if (dkd_vertexCount < 3 || dkd_vertexCount > 12000 || dkd_faceCount < 1 || dkd_faceCount > 24000) throw new Error(`v0.3 mesh ${dkd_meshIndex + 1} boyutu geçersiz.`);
-    dkd_totalVertices += dkd_vertexCount;
-    dkd_totalFaces += dkd_faceCount;
-
-    const dkd_red = dkd_bytes[dkd_offset + 4];
-    const dkd_green = dkd_bytes[dkd_offset + 5];
-    const dkd_blue = dkd_bytes[dkd_offset + 6];
-    const dkd_alpha = dkd_bytes[dkd_offset + 7];
-    const dkd_metalness = dkd_bytes[dkd_offset + 8] / 255;
-    const dkd_roughness = dkd_bytes[dkd_offset + 9] / 255;
-    const dkd_opacity = dkd_bytes[dkd_offset + 10] / 255;
-    const dkd_min = [
-      dkd_view.getFloat32(dkd_offset + 11, true),
-      dkd_view.getFloat32(dkd_offset + 15, true),
-      dkd_view.getFloat32(dkd_offset + 19, true)
-    ];
-    const dkd_max = [
-      dkd_view.getFloat32(dkd_offset + 23, true),
-      dkd_view.getFloat32(dkd_offset + 27, true),
-      dkd_view.getFloat32(dkd_offset + 31, true)
-    ];
-    if (![...dkd_min, ...dkd_max].every(dkd_value => Number.isFinite(dkd_value) && Math.abs(dkd_value) < 100)) throw new Error(`v0.3 mesh ${dkd_meshIndex + 1} sınırı geçersiz.`);
-    if (!dkd_min.every((dkd_value, dkd_axis) => dkd_value <= dkd_max[dkd_axis])) throw new Error(`v0.3 mesh ${dkd_meshIndex + 1} sınır sırası geçersiz.`);
-
-    dkd_offset += 35;
-    dkd_v03_need(dkd_offset, dkd_vertexCount * 3, dkd_bytes.length, `mesh ${dkd_meshIndex + 1} konum verisi`);
-    const dkd_positions = new Float32Array(dkd_vertexCount * 3);
-    for (let dkd_vertex = 0; dkd_vertex < dkd_vertexCount; dkd_vertex++) {
-      for (let dkd_axis = 0; dkd_axis < 3; dkd_axis++) {
-        const dkd_quantized = dkd_bytes[dkd_offset++];
-        dkd_positions[dkd_vertex * 3 + dkd_axis] = dkd_min[dkd_axis] + (dkd_max[dkd_axis] - dkd_min[dkd_axis]) * dkd_quantized / 255;
-      }
-    }
-
-    const dkd_indices = new Uint16Array(dkd_faceCount * 3);
-    let dkd_previousIndex = 0;
-    for (let dkd_index = 0; dkd_index < dkd_indices.length; dkd_index++) {
-      let dkd_unsigned = 0;
-      let dkd_shift = 0;
-      let dkd_byte = 0;
-      do {
-        dkd_v03_need(dkd_offset, 1, dkd_bytes.length, `mesh ${dkd_meshIndex + 1} indeks verisi`);
-        dkd_byte = dkd_bytes[dkd_offset++];
-        dkd_unsigned |= (dkd_byte & 0x7f) << dkd_shift;
-        dkd_shift += 7;
-        if (dkd_shift > 28) throw new Error(`v0.3 mesh ${dkd_meshIndex + 1} indeks kodu geçersiz.`);
-      } while (dkd_byte & 0x80);
-      const dkd_delta = (dkd_unsigned >>> 1) ^ -(dkd_unsigned & 1);
-      dkd_previousIndex += dkd_delta;
-      if (dkd_previousIndex < 0 || dkd_previousIndex >= dkd_vertexCount) throw new Error(`v0.3 mesh ${dkd_meshIndex + 1} indeks verisi geçersiz.`);
-      dkd_indices[dkd_index] = dkd_previousIndex;
-    }
-
-    const dkd_geometry = new dkd_three.BufferGeometry();
-    dkd_geometry.setAttribute('position', new dkd_three.BufferAttribute(dkd_positions, 3));
-    dkd_geometry.setIndex(new dkd_three.BufferAttribute(dkd_indices, 1));
-    dkd_geometry.computeVertexNormals();
-    dkd_geometry.computeBoundingSphere();
-    const dkd_hex = `#${dkd_red.toString(16).padStart(2, '0')}${dkd_green.toString(16).padStart(2, '0')}${dkd_blue.toString(16).padStart(2, '0')}`;
-    const dkd_material = new dkd_three.MeshStandardMaterial({
-      color: new dkd_three.Color(dkd_hex),
-      metalness: dkd_metalness,
-      roughness: dkd_roughness,
-      transparent: dkd_opacity < .99 || dkd_alpha < 250,
-      opacity: Math.min(dkd_opacity, dkd_alpha / 255),
-      depthWrite: dkd_opacity > .72
-    });
-    dkd_group.add(new dkd_three.Mesh(dkd_geometry, dkd_material));
-  }
-
-  if (dkd_offset !== dkd_bytes.length) throw new Error('v0.3 scooter + sürücü paket sonu geçersiz.');
-  if (dkd_totalVertices !== 5942 || dkd_totalFaces !== 11244) throw new Error('v0.3 scooter + sürücü geometri toplamı geçersiz.');
-  return dkd_group;
+// Use the proven procedural vehicle builder for every vehicle. Only the starter
+// scooter receives the v0.3 detail pass. This final override is loaded after the
+// legacy uploaded-model compatibility patch, so the damaged binary parser is
+// never executed in a normal game session.
+const dkd_v03_baseBuildBikeFinal = dkd_v03_baseBuildBike;
+dkd_Scene.prototype.dkd_buildBike = function(dkd_kind = 'scooter') {
+  const dkd_result = dkd_v03_baseBuildBikeFinal.call(this, dkd_kind);
+  if (dkd_kind === 'scooter' && this.dkd_state?.dkd_equipped === 'dkd_city50') dkd_v03_addStarterScooterDetails(this);
+  return this.dkd_bike || dkd_result;
 };
 
 // Build the arrow geometry flat in XZ first, then rotate instances only around
@@ -182,4 +152,4 @@ dkd_Scene.prototype.dkd_setRoute = function(dkd_run) {
   else dkd_arrowGeometry.dispose();
 };
 
-// CI marker: v0.3 model decoding and route orientation are finalized together.
+// CI marker: starter vehicle and navigation runtime are deterministic and local.
