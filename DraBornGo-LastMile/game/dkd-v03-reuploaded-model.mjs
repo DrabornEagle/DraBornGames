@@ -1,5 +1,5 @@
 // DraBornGo / Last Mile v0.3 re-uploaded scooter + rider integration.
-// The validated user model is stored as five small gzip/base64 chunks. Android
+// The validated user model is stored as eight small gzip/base64 chunks. Android
 // WebView decompresses it once, entirely offline, then the exact combined
 // scooter+rider geometry replaces the temporary City 50 model.
 
@@ -17,7 +17,10 @@ async function dkd_v03_reuploadedReadBytes() {
       dkd_v03_reuploadedGzipChunk1,
       dkd_v03_reuploadedGzipChunk2,
       dkd_v03_reuploadedGzipChunk3,
-      dkd_v03_reuploadedGzipChunk4
+      dkd_v03_reuploadedGzipChunk4,
+      dkd_v03_reuploadedGzipChunk5,
+      dkd_v03_reuploadedGzipChunk6,
+      dkd_v03_reuploadedGzipChunk7
     ].join('');
     if (!dkd_base64 || dkd_base64.length < 1000) throw new Error('Yüklenen scooter + sürücü modeli bulunamadı.');
     if (typeof DecompressionStream !== 'function') throw new Error('Bu Android WebView gzip model açmayı desteklemiyor.');
@@ -28,7 +31,7 @@ async function dkd_v03_reuploadedReadBytes() {
 
     const dkd_stream = new Blob([dkd_compressed]).stream().pipeThrough(new DecompressionStream('gzip'));
     const dkd_bytes = new Uint8Array(await new Response(dkd_stream).arrayBuffer());
-    if (dkd_bytes.length !== 55706) throw new Error(`Yüklenen model boyutu geçersiz: ${dkd_bytes.length}`);
+    if (dkd_bytes.length !== dkd_v03_reuploadedExpectedBytes) throw new Error(`Yüklenen model boyutu geçersiz: ${dkd_bytes.length}`);
     if (String.fromCharCode(...dkd_bytes.slice(0, 4)) !== 'DK32') throw new Error('Yüklenen scooter + sürücü modeli geçersiz.');
     return dkd_bytes;
   })().catch(dkd_error => {
@@ -178,8 +181,6 @@ dkd_Scene.prototype.dkd_buildBike = function(dkd_kind = 'scooter') {
   return dkd_fallback;
 };
 
-// New installs and existing careers migrated to this build start with High
-// rendering quality. Once applied, later manual quality choices are preserved.
 const dkd_v03_reuploadedBaseDefaultState = dkd_defaultState;
 dkd_defaultState = function() {
   const dkd_state = dkd_v03_reuploadedBaseDefaultState();
@@ -196,7 +197,6 @@ dkd_restoreState = function(dkd_raw) {
   return dkd_state;
 };
 
-// Remove only the level-zero “İlk garajın” helper text from the home page.
 const dkd_v03_reuploadedBaseHomeView = dkd_Game.prototype.dkd_view_home;
 dkd_Game.prototype.dkd_view_home = function(...dkd_args) {
   return dkd_v03_reuploadedBaseHomeView.apply(this, dkd_args)
