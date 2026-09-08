@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as dkd_fs from 'node:fs';
 import * as dkd_path from 'node:path';
+import * as dkd_vm from 'node:vm';
 import { createHash as dkd_createHash } from 'node:crypto';
 import { fileURLToPath as dkd_fileURLToPath } from 'node:url';
 
@@ -10,12 +11,12 @@ const dkd_read = dkd_pathname => dkd_fs.readFileSync(dkd_path.join(dkd_root, dkd
 
 function dkd_modelBytes() {
   const dkd_source = dkd_read('game/dkd-v03-reuploaded-model-data.mjs');
-  const dkd_start = dkd_source.indexOf('[');
-  const dkd_end = dkd_source.indexOf('];', dkd_start + 1);
-  assert.ok(dkd_start >= 0 && dkd_end > dkd_start, 'Yeniden yüklenen model veri dizisi okunamadı.');
-  const dkd_body = dkd_source.slice(dkd_start + 1, dkd_end);
-  const dkd_chunks = [...dkd_body.matchAll(/'([A-Za-z0-9+/=]+)'/g)].map(dkd_match => dkd_match[1]);
-  assert.ok(dkd_chunks.length >= 1, 'Yeniden yüklenen model base64 verisi okunamadı.');
+  const dkd_context = {};
+  dkd_vm.createContext(dkd_context);
+  dkd_vm.runInContext(`${dkd_source}\nglobalThis.dkd_testModelChunks = dkd_v03_reuploadedModelChunks;`, dkd_context, { timeout: 1000 });
+  const dkd_chunks = dkd_context.dkd_testModelChunks;
+  assert.ok(Array.isArray(dkd_chunks) && dkd_chunks.length >= 1, 'Yeniden yüklenen model base64 verisi okunamadı.');
+  assert.ok(dkd_chunks.every(dkd_chunk => typeof dkd_chunk === 'string' && /^[A-Za-z0-9+/=]+$/.test(dkd_chunk)), 'Yeniden yüklenen model base64 parçaları geçersiz.');
   const dkd_base64 = dkd_chunks.join('');
   assert.equal(dkd_base64.length % 4, 0, 'Yeniden yüklenen model base64 uzunluğu geçersiz.');
   return Buffer.from(dkd_base64, 'base64');
