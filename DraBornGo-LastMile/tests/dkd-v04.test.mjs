@@ -7,6 +7,7 @@ const dkd_read = dkd_path => fs.readFileSync(new URL(`../${dkd_path}`, import.me
 const dkd_app = dkd_read('App.tsx');
 const dkd_runtime = dkd_read('game/dkd-v04-runtime.mjs');
 const dkd_realCareer = dkd_read('game/dkd-v04-real-career.mjs');
+const dkd_polish = dkd_read('game/dkd-v04-ui-audio-polish.mjs');
 const dkd_build = dkd_read('scripts/dkd-build-game.mjs');
 const dkd_edge = dkd_read('supabase/functions/dkd-last-mile-api/index.ts');
 
@@ -109,8 +110,36 @@ test('company identity has animated colorful flat-design components', () => {
 });
 
 test('delivery button is moved higher above mobile controls', () => {
-  assert.match(dkd_realCareer, /#dkd-deliver\{bottom:194px\}/);
-  assert.match(dkd_realCareer, /max-height:740px\)\{#dkd-deliver\{bottom:178px\}/);
+  assert.match(dkd_polish, /#dkd-deliver\{bottom:280px!important/);
+  assert.match(dkd_polish, /max-height:760px\)\{#dkd-deliver\{bottom:250px!important/);
+});
+
+test('order cards and real-order details show customer profile avatars', () => {
+  assert.match(dkd_polish, /dkd-v04-order-customer/);
+  assert.match(dkd_polish, /dkd_v04PolishCustomerAvatar\(dkd_order\)/);
+  assert.match(dkd_polish, /dkd_avatar\(dkd_customerId/);
+  assert.match(dkd_polish, /dkd_cloudCustomerName/);
+});
+
+test('messages are populated from current real order notes and refresh with cloud jobs', () => {
+  assert.match(dkd_polish, /dkd_v04PolishVisibleOrders/);
+  assert.match(dkd_polish, /dkd_cloudCustomerNote/);
+  assert.match(dkd_polish, /Sipariş mesajları yükleniyor/);
+  assert.match(dkd_polish, /dkd_payload\?\.dkd_type === 'cloud-jobs' && this\.dkd_pageName === 'messages'/);
+  assert.doesNotMatch(dkd_polish, /sahte konuşma|hazır karakter/i);
+});
+
+test('home level and rating badges are spaced lower under the player name', () => {
+  assert.match(dkd_polish, /\.dkd-home-header \.dkd-profile-pills\{margin-top:24px!important\}/);
+});
+
+test('drive music uses a louder new 124 bpm-style pulse while keeping separate buses', () => {
+  assert.match(dkd_polish, /dkd_driveVolume = Math\.min\(1\.35, dkd_setting \* 1\.55\)/);
+  assert.match(dkd_polish, /drive-polish/);
+  assert.match(dkd_polish, /dkd_v04StopMusicVoices/);
+  assert.match(dkd_polish, /\.121/);
+  assert.match(dkd_polish, /\[0,4,8,12\]/);
+  assert.doesNotMatch(dkd_polish, /linear-gradient|radial-gradient|box-shadow/);
 });
 
 test('normal-facing real-career pages remove legacy trial language', () => {
@@ -136,12 +165,14 @@ test('delivery button has a vivid animated v0.4 treatment without gradients or g
   assert.doesNotMatch(dkd_runtime, /linear-gradient|radial-gradient|box-shadow/);
 });
 
-test('build loads real-career cleanup after v0.4 runtime and scrubs legacy demo rankings', () => {
+test('build loads UI audio polish after real-career cleanup and scrubs legacy demo rankings', () => {
   const dkd_runtimeIndex = dkd_build.indexOf("'dkd-v04-runtime.mjs'");
   const dkd_realCareerIndex = dkd_build.indexOf("'dkd-v04-real-career.mjs'");
+  const dkd_polishIndex = dkd_build.indexOf("'dkd-v04-ui-audio-polish.mjs'");
   const dkd_modelIndex = dkd_build.indexOf("'dkd-v03-reuploaded-model.mjs'");
   assert.ok(dkd_runtimeIndex > dkd_modelIndex);
   assert.ok(dkd_realCareerIndex > dkd_runtimeIndex);
+  assert.ok(dkd_polishIndex > dkd_realCareerIndex);
   assert.match(dkd_build, /dkd_demoRankings = \[\]/);
   assert.match(dkd_build, /v0\.4/);
 });
