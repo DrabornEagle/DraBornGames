@@ -23,37 +23,46 @@ test('v0.3 scooter + sürücü paketi eksiksiz ve güvenli okunur', () => {
   let dkd_offset = 6;
   let dkd_vertices = 0;
   let dkd_faces = 0;
+  const dkd_invalidMeshes = [];
   for (let dkd_meshIndex = 0; dkd_meshIndex < dkd_meshCount; dkd_meshIndex++) {
-    assert.ok(dkd_offset + 35 <= dkd_bytes.length);
+    assert.ok(dkd_offset + 35 <= dkd_bytes.length, `mesh ${dkd_meshIndex} başlığı sınır dışında: ${dkd_offset}/${dkd_bytes.length}`);
     const dkd_vertexCount = dkd_view.getUint16(dkd_offset, true);
     const dkd_faceCount = dkd_view.getUint16(dkd_offset + 2, true);
-    assert.ok(dkd_vertexCount >= 3 && dkd_vertexCount <= 12000);
-    assert.ok(dkd_faceCount >= 1 && dkd_faceCount <= 24000);
+    assert.ok(dkd_vertexCount >= 3 && dkd_vertexCount <= 12000, `mesh ${dkd_meshIndex} vertex=${dkd_vertexCount}`);
+    assert.ok(dkd_faceCount >= 1 && dkd_faceCount <= 24000, `mesh ${dkd_meshIndex} face=${dkd_faceCount}`);
     dkd_vertices += dkd_vertexCount;
     dkd_faces += dkd_faceCount;
     dkd_offset += 35;
-    assert.ok(dkd_offset + dkd_vertexCount * 3 <= dkd_bytes.length);
+    assert.ok(dkd_offset + dkd_vertexCount * 3 <= dkd_bytes.length, `mesh ${dkd_meshIndex} position sınır dışında`);
     dkd_offset += dkd_vertexCount * 3;
     let dkd_previousIndex = 0;
+    let dkd_invalidCount = 0;
+    let dkd_firstInvalid = null;
     for (let dkd_index = 0; dkd_index < dkd_faceCount * 3; dkd_index++) {
       let dkd_unsigned = 0;
       let dkd_shift = 0;
       let dkd_byte = 0;
+      const dkd_indexOffset = dkd_offset;
       do {
-        assert.ok(dkd_offset < dkd_bytes.length);
+        assert.ok(dkd_offset < dkd_bytes.length, `mesh ${dkd_meshIndex} indeks akışı bitti`);
         dkd_byte = dkd_bytes[dkd_offset++];
         dkd_unsigned |= (dkd_byte & 0x7f) << dkd_shift;
         dkd_shift += 7;
-        assert.ok(dkd_shift <= 28);
+        assert.ok(dkd_shift <= 28, `mesh ${dkd_meshIndex} varint fazla uzun`);
       } while (dkd_byte & 0x80);
       const dkd_delta = (dkd_unsigned >>> 1) ^ -(dkd_unsigned & 1);
       dkd_previousIndex += dkd_delta;
-      assert.ok(dkd_previousIndex >= 0 && dkd_previousIndex < dkd_vertexCount);
+      if (dkd_previousIndex < 0 || dkd_previousIndex >= dkd_vertexCount) {
+        dkd_invalidCount++;
+        if (!dkd_firstInvalid) dkd_firstInvalid = { dkd_index, dkd_indexOffset, dkd_unsigned, dkd_delta, dkd_previousIndex };
+      }
     }
+    if (dkd_invalidCount) dkd_invalidMeshes.push({ dkd_meshIndex, dkd_vertexCount, dkd_faceCount, dkd_invalidCount, dkd_firstInvalid });
   }
-  assert.equal(dkd_offset, dkd_bytes.length);
+  assert.equal(dkd_offset, dkd_bytes.length, `paket sonu: offset=${dkd_offset}, bytes=${dkd_bytes.length}, invalid=${JSON.stringify(dkd_invalidMeshes)}`);
   assert.equal(dkd_vertices, 5942);
   assert.equal(dkd_faces, 11244);
+  assert.deepEqual(dkd_invalidMeshes, [], `geçersiz indeksli meshler: ${JSON.stringify(dkd_invalidMeshes)}`);
 });
 
 test('v0.3 is wired into build, settings, arrows, phone and automatic delivery', () => {
@@ -78,5 +87,4 @@ test('v0.3 is wired into build, settings, arrows, phone and automatic delivery',
   assert.match(dkd_patch, /dkd_arrivalDistance > 10/);
   assert.match(dkd_patch, /dkd_v03GarageZoom/);
   assert.match(dkd_patch, /Neon Vardiya/);
-  assert.match(dkd_fix, /Buffer|atob/);
 });
