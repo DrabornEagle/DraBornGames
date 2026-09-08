@@ -1,34 +1,56 @@
 # DraBornGo / Son Kilometre
 
-**v0.2.0 — Expo Go SDK 57 için oynanabilir geliştirme sürümü.**
+**v0.4.0 — Expo Go SDK 57 + gerçek Last-Mile Supabase görev altyapısı.**
 
-DraBornGo / Last Mile; oyuncunun eski bir başlangıç scooter'ı ve küçük kurye şirketiyle başlayıp teslimatlar, hava koşulları, trafik, araç geliştirmeleri, özel müşteriler ve Final Görevi üzerinden ilerlediği dikey ekran 3D kurye oyunudur.
+DraBornGo / Last Mile; oyuncunun başlangıç scooter'ı ve küçük kurye şirketiyle başlayıp teslimatlar, hava koşulları, trafik, araç geliştirmeleri ve kariyer hedefleri üzerinden ilerlediği dikey ekran 3D kurye oyunudur.
 
-Bu sürüm geliştirme/test sürümüdür. Supabase, gerçek ödeme, canlı çevrimiçi sıralama, sunucu anti-cheat ve gerçek fiziksel ödül doğrulaması bağlı değildir. APK/AAB üretilmez; test Expo Go üzerinden yapılır.
+v0.4 geliştirme aşamasında APK/AAB üretilmez; Android testleri **Expo Go 57.x** üzerinden yapılır.
 
-## v0.2 değişiklikleri
+## v0.4
 
-- Başlangıç aracı **Şehir 50**, gönderilen modern scooter 3D geometrisiyle değiştirildi.
-- **Güvenli** ve **Ara Sokak** seçeneklerinin aynı rota ve ekranda aynı km ile görünmesi engellenmek için sipariş oluşturma iyileştirildi. Güvenli rota geniş yolları tercih eder, Ara Sokak gerçek kısa rotayı kullanır; iki seçenek aynı çıkarsa kullanıcıya gösterilmeden farklı hedef aranır.
-- Yoldaki limon renkli rota oklarının 3D yönü düzeltildi; ok ucu gerçek ilerleme yönünü gösterir.
-- Mobil direksiyon kontrolündeki ters yön problemi düzeltildi.
-- Rota seçim ve sürüş ekranındaki görünür **OpenStreetMap katılımcıları** yazısı kaldırıldı. Kaynak/lisans bilgisi Veri ve deneme kapsamı ekranında korunur.
-- Uygulama sürümü `0.2.0`, ekran etiketi `v0.2`, Android `versionCode` değeri `200` oldu.
-- Expo SDK **57** korunur. Expo Go 57.x hattında test edilir.
-- Kaynak değişikliklerinden sonra oyun HTML paketi GitHub Actions ile otomatik üretilir; test, TypeScript kontrolü ve Expo bağımlılık kontrolü çalıştırılır.
+- DraBornGo Supabase projesinde diğer alanlara dokunmadan özel `Last-Mile` şeması kuruldu.
+- Last-Mile tablolarının tamamı `dkd_lastmile_*` standardına geçirildi.
+- Normal vardiyalar gerçek `dkd_lastmile_delivery_jobs` kayıtları oluşturur.
+- Görev yaşam döngüsü: teklif, kabul, iptal ve tamamlama.
+- İlerleme cihaz yedeğinin yanında Supabase'e senkronize edilir.
+- v0.4 içerikleri geliştirme sürecinde Last-Mile admin rolüne kilitlidir.
+- Demo görevleri varsayılan kapalıdır; yalnızca admin ayarından açılır.
+- Eski sentetik sıralama rakipleri üretilen v0.4 paketinden temizlenir.
+- Sentetik topluluk sayaçları gösterilmez.
+- Yerel test kariyeri kullanıcı akışından kaldırıldı.
+- Telefon ekranındaki sabit `23:42` kaldırıldı; cihazın gerçek yerel saati kullanılır.
+- Menü ve sürüş müziği ayrı ses kanallarına ayrıldı; geçişte crossfade uygulanır ve menü müziği sürüş sırasında devam etmez.
+- Yeni görevler ve içerikler eklendi.
+- Supabase service-role/secret anahtarı mobil uygulamaya gömülmez.
 
-## v0.101 geri dönüş yedeği
-
-v0.101 sürümü GitHub'da ayrı ve değiştirilmeyen bir yedek dalında tutulur:
+## Supabase Last-Mile tabloları
 
 ```text
-backup/DraBornGo-LastMile-v0.101
-801c3cd55b894293a70f991f78f3564269d6897c
+Last-Mile.dkd_lastmile_profiles
+Last-Mile.dkd_lastmile_system_config
+Last-Mile.dkd_lastmile_city_zones
+Last-Mile.dkd_lastmile_content_packages
+Last-Mile.dkd_lastmile_content_customers
+Last-Mile.dkd_lastmile_mission_templates
+Last-Mile.dkd_lastmile_player_progress
+Last-Mile.dkd_lastmile_delivery_jobs
+Last-Mile.dkd_lastmile_admin_audit
 ```
 
-Gerekirse bu sürüme birebir geri dönülebilir.
+Ayrıntılar: `docs/SUPABASE-V04.md`
 
-## Termux kurulumu
+## Geri dönüş noktası
+
+v0.4 öncesindeki v0.3 ana sürümü GitHub'da ayrı dalda korunur:
+
+```text
+backup/DraBornGo-LastMile-v0.3-pre-v0.4
+7935054a6bd649d3b7d5e6c9e4f4899faaadade1
+```
+
+Daha eski v0.101 yedeği de korunmaya devam eder.
+
+## Güncel Termux kurulumu
 
 Hedef klasör:
 
@@ -36,108 +58,46 @@ Hedef klasör:
 $HOME/projects/DraBornGames/DraBornGo-LastMile
 ```
 
-İlk kurulum veya temiz eşitleme için:
+Tek komutla kurulum/güncelleme ve başlatma:
 
 ```bash
-pkg update -y && pkg upgrade -y
-pkg install -y git nodejs-lts util-linux curl
+pkg update -y && pkg upgrade -y && pkg install -y git nodejs-lts util-linux curl && \
+bash -o pipefail -c 'curl -fsSL https://raw.githubusercontent.com/DrabornEagle/DraBornGames/main/DraBornGo-LastMile/scripts/dkd-install.sh | bash'
+```
 
-mkdir -p "$HOME/projects"
+Mevcut kurulumda GitHub `main` ile güvenli tek seferlik eşitleme:
 
-if [ ! -d "$HOME/projects/DraBornGames/.git" ]; then
-  git clone https://github.com/DrabornEagle/DraBornGames.git "$HOME/projects/DraBornGames"
-fi
+```bash
+cd "$HOME/projects/DraBornGames/DraBornGo-LastMile" && bash scripts/dkd-sync.sh once
+```
 
-cd "$HOME/projects/DraBornGames"
-git fetch origin --prune
-git switch main 2>/dev/null || git switch -c main --track origin/main
-git reset --hard origin/main
+GitHub ile sürekli eşitleme:
 
+```bash
+cd "$HOME/projects/DraBornGames/DraBornGo-LastMile" && npm run sync:watch
+```
+
+Expo Go'yu LAN üzerinden başlatmak için:
+
+```bash
+cd "$HOME/projects/DraBornGames/DraBornGo-LastMile" && npm ci --no-audit --no-fund && npm run build:game && npm run start:lan
+```
+
+Metro önbelleğini temizleyerek başlatmak gerekirse:
+
+```bash
+cd "$HOME/projects/DraBornGames/DraBornGo-LastMile" && npx expo start --go --lan --clear
+```
+
+## Doğrulama
+
+```bash
 cd "$HOME/projects/DraBornGames/DraBornGo-LastMile"
 npm ci --no-audit --no-fund
 npm run build:game
 npm test
 npm run typecheck
 npx expo install --check
-
-bash scripts/dkd-termux.sh
 ```
 
-Daha kısa kurulum yöntemi:
-
-```bash
-pkg update -y && pkg upgrade -y
-pkg install -y git nodejs-lts util-linux curl
-bash -o pipefail -c 'curl -fsSL https://raw.githubusercontent.com/DrabornEagle/DraBornGames/main/DraBornGo-LastMile/scripts/dkd-install.sh | bash'
-```
-
-Başlatıcı GitHub `main` dalını 30 saniyede bir kontrol eder. Yeni commit geldiğinde lokal repo güvenli biçimde `origin/main` ile eşitlenir ve Metro gerektiğinde yeniden başlatılır. Lokal değişiklik varsa eşitleme betiği bunları doğrudan silmek yerine stash / preserved branch ile korur.
-
-## Expo Go testi
-
-Projede:
-
-```bash
-cd "$HOME/projects/DraBornGames/DraBornGo-LastMile"
-bash scripts/dkd-termux.sh
-```
-
-Aynı Android telefonda Expo Go kullanılıyorsa başlatıcı varsayılan olarak:
-
-```text
-exp://127.0.0.1:8081
-```
-
-adresini kullanır. Gerekirse LAN yöntemi:
-
-```bash
-cd "$HOME/projects/DraBornGames/DraBornGo-LastMile"
-npm run start:lan
-```
-
-Metro önbelleğini temizlemek gerekirse:
-
-```bash
-cd "$HOME/projects/DraBornGames/DraBornGo-LastMile"
-npx expo start --go --localhost --clear
-```
-
-## Doğrulama
-
-Kaynak değişikliği sonrası standart kontrol:
-
-```bash
-npm ci --no-audit --no-fund
-npm run build:game
-npm test
-npm run typecheck
-EXPO_OFFLINE=1 npx expo install --check
-EXPO_OFFLINE=1 npx expo export --platform android --output-dir dist-android
-```
-
-Son komut APK üretmez; yalnızca Android JavaScript/Hermes export kontrolüdür.
-
-Üretilen dosyalar:
-
-```text
-assets/dkd-lastmile.html
-src/generated/dkd-game-html.ts
-```
-
-Bu dosyalar `scripts/dkd-build-game.mjs` tarafından oluşturulur ve GitHub otomatik üretim iş akışıyla güncel tutulur.
-
-## Temel oyun içeriği
-
-- Ankara merkezinden paketlenmiş yol ağı ve tek yön bilgileri.
-- Three.js/WebGL tabanlı 3D şehir ve sürüş.
-- Hava, trafik, yakıt, bakım, paket hasarı ve sıcaklık sistemleri.
-- Scooter, motosiklet, otomobil ve kargo araçları.
-- Güvenli rota / Ara Sokak rota seçimi.
-- Şirket, garaj, cüzdan, mesajlar, özel müşteriler ve Final Görevi.
-- Yerel kariyer kaydı, test kariyeri ve JSON yedekleme.
-- Düşük / Dengeli / Yüksek grafik ayarları.
-- Expo Go üzerinden Android geliştirme testi.
-
-## Geliştirme notu
-
-GitHub `main` bu projenin kaynak doğrusu olarak kullanılır. Telefon tarafında lokal repo düzenli olarak `origin/main` ile eşit tutulur. v0.101 yedeği ayrı dalda korunur; v0.2 ve sonraki çalışmalar `main` üzerinden devam eder.
+APK/AAB çıktısı v0.4 için bilerek alınmaz.

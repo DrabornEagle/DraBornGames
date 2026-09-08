@@ -1,13 +1,11 @@
-# v0.3 re-uploaded scooter+rider generation trigger
+# v0.4 real-data/admin-preview Expo Go bundle generation
 name: DKD Last Mile autogen
 
 on:
   push:
     branches:
       - main
-      - work/DraBornGo-LastMile-v0.2
-      - work/DraBornGo-LastMile-v0.3
-      - fix/DraBornGo-LastMile-v0.3-reuploaded-glb
+      - work/DraBornGo-LastMile-v0.4
     paths:
       - 'DraBornGo-LastMile/game/**'
       - 'DraBornGo-LastMile/tests/**'
@@ -68,5 +66,5 @@ jobs:
             echo 'Generated files already current.'
             exit 0
           fi
-          git commit -m 'build(lastmile): regenerate v0.3 Expo Go bundle'
+          git commit -m 'build(lastmile): regenerate v0.4 Expo Go bundle'
           git push origin HEAD:${{ github.ref_name }}
