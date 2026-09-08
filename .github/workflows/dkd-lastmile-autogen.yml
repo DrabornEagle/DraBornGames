@@ -6,7 +6,6 @@ on:
       - main
       - work/DraBornGo-LastMile-v0.2
       - work/DraBornGo-LastMile-v0.3
-      - fix/DraBornGo-LastMile-v0.3-home-refine
     paths:
       - 'DraBornGo-LastMile/game/**'
       - 'DraBornGo-LastMile/tests/**'
