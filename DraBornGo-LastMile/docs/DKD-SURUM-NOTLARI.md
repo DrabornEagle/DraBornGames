@@ -1,3 +1,21 @@
+# v0.3.0 · 8 Eylül 2026
+
+Expo Go / Android geliştirme sürümü.
+
+- Başlangıç scooterı ve sürücüsü güvenli yerel Three.js geometrisiyle yenilendi. Ön gövde katmanları, cam, LED/DRL detayları, yan şeritler, arka kutu reflektörleri, görünürlük yeleği, kask bandı, telefon tutucu ve aynalar eklendi.
+- Daha önce yüklenen scooter+sürücü ikili verisinin GitHub'a parçalı aktarımda bozulduğu doğrulandı. Bozuk byte akışı yayın çalışma yolundan tamamen çıkarıldı; oyun artık bu veriyi çözmeye çalışmıyor. Kurtarma kopyası ayrı arşiv dalında korunuyor.
+- Başlangıç aracı mevcut marka rengi, üniforma rengi, aksesuarlar, teker animasyonu ve eski kayıtlarla uyumlu çalışıyor.
+- Yardımcı direksiyon yeni ve taşınan kayıtlarda varsayılan kapalı; sürüş kamerası varsayılan `Yüksek`.
+- Rota okları XZ zemininde gerçek yol başlangıcı → hedef doğrultusuna dönüyor; virajlarda ters/yan gösterim düzeltildi.
+- Kurye merkezi kamerası genişletildi ve iki parmakla yakınlaştırma/uzaklaştırma eklendi.
+- Telefon başlığı `DraBornGo` olarak güncellendi.
+- Teslimat noktasına varıldığında zorunlu duraklar tamamlanmışsa teslimat otomatik sonuçlanıyor.
+- Müzik ve efekt varsayılan seviyeleri yükseltildi; modern ses katmanı ve geri bildirimler korunuyor.
+- Paket sürümü `0.3.0`, Android `versionCode 300`, Expo SDK 57.
+- Oyun paketi çalışma anında harici CDN veya ağ isteği yapmıyor.
+- GitHub Actions doğrulaması; oyun paketi üretimi, tüm Node testleri, TypeScript kontrolü, Expo bağımlılık kontrolü ve JavaScript boşluk kontrolünü kapsıyor.
+- APK/AAB bu geliştirme akışında üretilmiyor; fiziksel test hedefi Expo Go.
+
 # v0.101.0 · Türkçe ve renkli arayüz
 
 - Oyun içi uygulama ve sayfa başlıkları, paketler, araçlar, özel müşteriler, hikâyeler, sezonlar, müzikler, 3D tabelalar ve paylaşım metinleri Türkçe.
