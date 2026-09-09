@@ -38,9 +38,11 @@ test('courier center board is larger and higher', () => {
   assert.match(dkd_runtime, /dkd_v05_live_courier_center_sign/);
 });
 
-test('live season runtime is authoritative and bundled last', () => {
+test('live season runtime loads after sign layout and before final verification', () => {
   const dkd_signIndex = dkd_build.indexOf("'dkd-v05-sign-layout-hotfix.mjs'");
   const dkd_liveIndex = dkd_build.indexOf("'dkd-v05-live-season-admin.mjs'");
+  const dkd_verifyIndex = dkd_build.indexOf("'dkd-v05-live-season-verification.mjs'");
   assert.ok(dkd_signIndex >= 0);
   assert.ok(dkd_liveIndex > dkd_signIndex);
+  assert.ok(dkd_verifyIndex > dkd_liveIndex);
 });
