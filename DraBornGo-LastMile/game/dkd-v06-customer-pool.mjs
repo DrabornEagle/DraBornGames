@@ -1,7 +1,7 @@
 // DraBornGo / Last Mile v0.6 customer portrait diversity patch.
 // Uses only portraits supplied by the user in Musteriler.zip. No generated artwork.
 
-const dkd_v06CustomerPortraitPool = [
+const dkd_v06CustomerPortraitPool = Array.from(new Set([
   ...dkd_v06CustomerPortraitPoolPart00,
   ...dkd_v06CustomerPortraitPoolPart01,
   ...dkd_v06CustomerPortraitPoolPart02,
@@ -10,7 +10,7 @@ const dkd_v06CustomerPortraitPool = [
   ...dkd_v06CustomerPortraitPoolPart05,
   ...dkd_v06CustomerPortraitPoolPart06,
   ...dkd_v06CustomerPortraitPoolPart07,
-].filter(Boolean);
+].filter(Boolean)));
 
 const dkd_v06CustomerPoolPrevious = {
   dkd_receive: dkd_Game.prototype.dkd_receive,
