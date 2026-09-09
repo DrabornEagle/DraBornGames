@@ -30,9 +30,11 @@ test('roadside city layer adds dense trees and urban furniture', () => {
   assert.match(dkd_patch, /dkd_v05CityDetailCounts/);
 });
 
-test('city audio sign hotfix is the final runtime source', () => {
+test('city audio sign layer stays before the final road-edge safety layer', () => {
   const dkd_city = dkd_build.indexOf("'dkd-v05-city-audio-sign-hotfix.mjs'");
   const dkd_previous = dkd_build.indexOf("'dkd-v05-roadwork-audio-hotfix.mjs'");
+  const dkd_final = dkd_build.indexOf("'dkd-v05-palm-roadedge-hotfix.mjs'");
   assert.ok(dkd_city > dkd_previous);
-  assert.match(dkd_build, /MP3 ses ayrımı · yoğun şehir detayları/);
+  assert.ok(dkd_final > dkd_city);
+  assert.match(dkd_build, /MP3 ses ayrımı · yol-güvenli şehir detayları/);
 });
