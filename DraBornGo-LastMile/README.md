@@ -10,9 +10,17 @@ v0.5 geliştirme aşamasında APK/AAB üretilmez; Android testleri **Expo Go 57.
 
 - Şirket Kimliği ekranındaki `ANA RENK`, seçili amblem ve `KURYE STİLİ` rozetleri tek satırda gösterilir.
 - Ana ekranda oyuncunun Ad Soyad başlığı daha aşağı taşındı; Seviye ve Yıldız/Puan rozetleri doğrudan altında konumlandırıldı.
+- Son Garaj düzenlemesinde Ad Soyad + Seviye/Puan grubu ekran üzerinde bir kademe daha aşağı alındı.
+- Ana sayfa artık ayrı, daha enerjik `Kızılay Rush` prosedürel menü temasını kullanır; diğer menü ekranlarında oyuncunun seçtiği müzik geri yüklenir.
 - Müzik sistemi sekiz farklı prosedürel parçaya çıkarıldı: Neon Vardiya, Gece Rotası, Yağmur Hattı, Şehir Nabzı, Son Paket, Kızılay Rush, Asfalt 06 ve Sabaha Karşı.
 - Müzik ekranında bir parçaya dokunmak artık gerçek ses buffer'ını değiştirir; yalnızca kart seçimi değişmez.
 - Her yeni vardiyada önceki vardiyadan farklı bir sürüş parçası otomatik seçilir.
+- Başlangıç aracının kullanıcıya görünen adı `Şehir 50` yerine `Başlangıç Scooterı` olarak değiştirildi.
+- Garaj ekranı modern, renkli ve animasyonlu bir atölye/filo merkezine dönüştürüldü.
+- `YAKIT / ŞARJ` ve `ARAÇ DURUMU` kartları durum rengine göre değişen vurgu, hareketli doluluk çubuğu ve düşük seviyede uyarı animasyonu kullanır.
+- Yakıt %5'in veya araç durumu %10'un altındaysa vardiya, cloud sipariş kabul isteği gönderilmeden önce yerelde durdurulur.
+- Bu durumda ham `server_error` yerine yakıt ve bakım değerlerini gösteren renkli, animasyonlu servis penceresi açılır; kullanıcı doğrudan Garaj'a geçebilir.
+- Sunucudan yine `server_error` / bakım-yakıt ilişkili bir hata dönerse aynı servis penceresine dönüştürülür ve ham hata metni oyuncuya gösterilmez.
 - Trafik çizim kapasitesi 72 araca yükseltildi ve aktif trafik en az 56 araçla çalışır.
 - Trafik araçları on farklı gövde/kabin renk ailesi kullanır.
 - Rota trafiğinin bir bölümü aktif güzergâha odaklanmaya devam eder; yol boş görünmez.
@@ -51,6 +59,13 @@ Last-Mile.dkd_lastmile_admin_audit
 Ayrıntılar: `docs/SUPABASE-V04.md`
 
 ## Geri dönüş noktaları
+
+v0.5 Garaj/servis hotfix öncesindeki doğrulanmış ana sürüm:
+
+```text
+backup/DraBornGo-LastMile-v0.5-pre-garage-hotfix
+aa6ad274dc981dcc70bf0d059c0a94422bf06243
+```
 
 v0.5 öncesindeki doğrulanmış v0.4 ana sürümü:
 
