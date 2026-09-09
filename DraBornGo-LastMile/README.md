@@ -1,26 +1,37 @@
 # DraBornGo / Son Kilometre
 
-**v0.4.0 — Expo Go SDK 57 + gerçek Last-Mile Supabase görev altyapısı.**
+**v0.5.0 — Expo Go SDK 57 + gerçek Last-Mile Supabase görev altyapısı.**
 
 DraBornGo / Last Mile; oyuncunun başlangıç scooter'ı ve küçük kurye şirketiyle başlayıp teslimatlar, hava koşulları, trafik, araç geliştirmeleri ve kariyer hedefleri üzerinden ilerlediği dikey ekran 3D kurye oyunudur.
 
-v0.4 geliştirme aşamasında APK/AAB üretilmez; Android testleri **Expo Go 57.x** üzerinden yapılır.
+v0.5 geliştirme aşamasında APK/AAB üretilmez; Android testleri **Expo Go 57.x** üzerinden yapılır.
 
-## v0.4
+## v0.5
 
-- DraBornGo Supabase projesinde diğer alanlara dokunmadan özel `Last-Mile` şeması kuruldu.
-- Last-Mile tablolarının tamamı `dkd_lastmile_*` standardına geçirildi.
+- Şirket Kimliği ekranındaki `ANA RENK`, seçili amblem ve `KURYE STİLİ` rozetleri tek satırda gösterilir.
+- Ana ekranda oyuncunun Ad Soyad başlığı daha aşağı taşındı; Seviye ve Yıldız/Puan rozetleri doğrudan altında konumlandırıldı.
+- Müzik sistemi sekiz farklı prosedürel parçaya çıkarıldı: Neon Vardiya, Gece Rotası, Yağmur Hattı, Şehir Nabzı, Son Paket, Kızılay Rush, Asfalt 06 ve Sabaha Karşı.
+- Müzik ekranında bir parçaya dokunmak artık gerçek ses buffer'ını değiştirir; yalnızca kart seçimi değişmez.
+- Her yeni vardiyada önceki vardiyadan farklı bir sürüş parçası otomatik seçilir.
+- Trafik çizim kapasitesi 72 araca yükseltildi ve aktif trafik en az 56 araçla çalışır.
+- Trafik araçları on farklı gövde/kabin renk ailesi kullanır.
+- Rota trafiğinin bir bölümü aktif güzergâha odaklanmaya devam eder; yol boş görünmez.
+- Rota engellerinin yoğunluğu yaklaşık 10–24 aralığına yükseltildi.
+- Engel çeşitleri bariyer, koni, kasa, palet, lastik, yol çalışması, çukur ve yol variline çıkarıldı.
+- Engel ve trafik çarpışmaları kargo bütünlüğüne zarar verir; bütünlük %0 olduğunda gerçek cloud siparişi iptal edilir.
+- Ödül Kasası yarım panel yerine tam ekran, renkli ve animasyonlu sezon hedef merkezine dönüştürüldü.
+- v0.4 gerçek veri, hesap, cihaz saati, cloud-save ve admin/demo altyapısı korunur.
+
+## v0.4 altyapısı
+
+- DraBornGo Supabase projesinde diğer alanlara dokunmadan özel `Last-Mile` şeması kullanılır.
+- Last-Mile tabloları `dkd_lastmile_*` standardındadır.
 - Normal vardiyalar gerçek `dkd_lastmile_delivery_jobs` kayıtları oluşturur.
 - Görev yaşam döngüsü: teklif, kabul, iptal ve tamamlama.
 - İlerleme cihaz yedeğinin yanında Supabase'e senkronize edilir.
-- v0.4 içerikleri geliştirme sürecinde Last-Mile admin rolüne kilitlidir.
 - Demo görevleri varsayılan kapalıdır; yalnızca admin ayarından açılır.
-- Eski sentetik sıralama rakipleri üretilen v0.4 paketinden temizlenir.
-- Sentetik topluluk sayaçları gösterilmez.
-- Yerel test kariyeri kullanıcı akışından kaldırıldı.
-- Telefon ekranındaki sabit `23:42` kaldırıldı; cihazın gerçek yerel saati kullanılır.
-- Menü ve sürüş müziği ayrı ses kanallarına ayrıldı; geçişte crossfade uygulanır ve menü müziği sürüş sırasında devam etmez.
-- Yeni görevler ve içerikler eklendi.
+- Eski sentetik sıralama rakipleri üretilen pakete eklenmez.
+- Telefon ekranında cihazın gerçek yerel saati kullanılır.
 - Supabase service-role/secret anahtarı mobil uygulamaya gömülmez.
 
 ## Supabase Last-Mile tabloları
@@ -39,9 +50,16 @@ Last-Mile.dkd_lastmile_admin_audit
 
 Ayrıntılar: `docs/SUPABASE-V04.md`
 
-## Geri dönüş noktası
+## Geri dönüş noktaları
 
-v0.4 öncesindeki v0.3 ana sürümü GitHub'da ayrı dalda korunur:
+v0.5 öncesindeki doğrulanmış v0.4 ana sürümü:
+
+```text
+backup/DraBornGo-LastMile-v0.4-pre-v0.5
+75f0b4571f00275747b0cd08d1d3b4483288ebd4
+```
+
+v0.4 öncesindeki v0.3 ana sürümü:
 
 ```text
 backup/DraBornGo-LastMile-v0.3-pre-v0.4
@@ -100,4 +118,4 @@ npm run typecheck
 npx expo install --check
 ```
 
-APK/AAB çıktısı v0.4 için bilerek alınmaz.
+APK/AAB çıktısı v0.5 için bilerek alınmaz.
