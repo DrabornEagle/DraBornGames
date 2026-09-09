@@ -26,11 +26,21 @@ Durum: **Üretim dalında aktif ve doğrulanmış.**
 - Last-Mile ödül foreign-key indeksleri eklendi.
 - GitHub test, typecheck, Expo SDK kontrolü, deterministic game build ve Android JavaScript export başarıyla geçti. APK üretilmedi.
 
+### v0.5 · Sürüş / Görev Akışı Hotfix — 9 Eylül 2026
+
+- Yoldaki engellerin eski geniş dairesel çarpışma alanı yerine görünür nesnenin yönlendirilmiş fiziksel ayak izi kullanılıyor; engelin yanından geçerken oluşan hayalet kargo hasarı engellendi.
+- Görev reddedilirken kalan `dkd_v05PendingStart` vardiya başlangıç durumu temizleniyor; iptal cevabı artık yanlışlıkla “Vardiya başlatılamadı” modalına dönüşmüyor.
+- Reddedilen görev seçili görevse seçim temizleniyor ve açık başlangıç modalı kapatılıyor.
+- `SON KİLOMETRE / KURYE MERKEZİ` tabelası biraz sağa kaydırıldı (`x: -4.25 → -3.60`).
+- Yeni hotfix v0.5 katmanlarının en sonunda yükleniyor ve dört regression testi eklendi.
+- Hotfix dalı üzerinde build, generated-file eşleşmesi, test, typecheck, Expo SDK kontrolü ve Android JavaScript export başarılı geçti; ardından değişiklikler `main` dalına alındı.
+
 ### Checkpointler
 
 - Üretim: `main`
-- Çalışma aynası: `work/DraBornGo-LastMile-v0.5-live-season`
-- Geri dönüş: `backup/DraBornGo-LastMile-v0.5-pre-live-season`
+- Güncel sürüş hotfix çalışma aynası: `work/DraBornGo-LastMile-v0.5-drive-fix`
+- Sürüş hotfix öncesi geri dönüş: `backup/DraBornGo-LastMile-v0.5-before-drive-fix`
+- Gerçek sezon öncesi geri dönüş: `backup/DraBornGo-LastMile-v0.5-pre-live-season`
 
 ### Sonraki geliştirme havuzu
 
