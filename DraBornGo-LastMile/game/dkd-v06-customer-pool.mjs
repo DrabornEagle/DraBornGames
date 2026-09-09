@@ -10,6 +10,7 @@ const dkd_v06CustomerPortraitPool = Array.from(new Set([
   ...dkd_v06CustomerPortraitPoolPart05,
   ...dkd_v06CustomerPortraitPoolPart06,
   ...dkd_v06CustomerPortraitPoolPart07,
+  ...dkd_v06CustomerPortraitPoolPart08,
 ].filter(Boolean)));
 
 const dkd_v06CustomerPoolPrevious = {
