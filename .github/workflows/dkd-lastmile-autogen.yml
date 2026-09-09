@@ -14,6 +14,7 @@ on:
       - work/DraBornGo-LastMile-v0.5-palm-roadedge-fix
       - work/DraBornGo-LastMile-v0.5-sign-layout-2
       - work/DraBornGo-LastMile-v0.5-live-season
+      - work/DraBornGo-LastMile-v0.5-drive-fix
     paths:
       - 'DraBornGo-LastMile/game/**'
       - 'DraBornGo-LastMile/tests/**'
