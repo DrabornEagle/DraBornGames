@@ -2,7 +2,7 @@
 
 ## v0.6 · Müşteri Havuzu ve Gerçek İçerik — 10 Eylül 2026
 
-Durum: **Kod, oyun paketi ve CI doğrulaması tamamlandı; üretim Supabase migration dosyası hazır.**
+Durum: **GitHub üretim dalına alındı ve tüm CI kapıları geçti. Supabase üretim migration dosyası hazır; uygulanması yetkili Supabase oturumu gerektiriyor.**
 
 ### Tamamlananlar
 
@@ -14,20 +14,22 @@ Durum: **Kod, oyun paketi ve CI doğrulaması tamamlandı; üretim Supabase migr
 - `Last-Mile` alanına 47 aktif gerçek müşteri kaydı ve genişletilmiş gerçek görev şablonu havuzu ekleyen idempotent migration hazırlandı: `20260909212000_dkd_lastmile_v06_customer_content.sql`.
 - Migration yalnızca `Last-Mile.dkd_lastmile_content_customers` ve `Last-Mile.dkd_lastmile_mission_templates` üzerinde çalışıyor; diğer DraBornGo verilerine dokunmuyor.
 - Admin seviye 50, plaka kaydı, gerçek saat, MP3 menü/sürüş ayrımı, gerçek sezon ve final doğrulama akışı korunuyor.
-- Deterministic game bundle, Node test paketi, TypeScript typecheck ve Expo SDK dependency kontrolü GitHub Actions üzerinde başarıyla geçti.
-- Üretilen HTML ve `src/generated/dkd-game-html.ts` deterministic autogen tarafından güncellendi.
+- Deterministic game bundle, Node test paketi, TypeScript typecheck, Expo SDK dependency kontrolü ve Android JavaScript export GitHub Actions üzerinde başarıyla geçti.
+- Üretilen HTML ve `src/generated/dkd-game-html.ts` deterministic autogen tarafından doğrulandı.
 - Geçici v0.6 finalize workflow temizlendi; kalıcı iki Last Mile workflow korunuyor.
+- PR #9 `main` dalına merge edildi; üretim commit'i: `4c2721c8b3aaca59aef5ec4ebb4b8aec542f4997`.
+- Merge sonrası `DKD Last Mile autogen` ve `DKD Last Mile checks` workflow'ları başarıyla tamamlandı.
 
 ### Supabase üretim durumu
 
 - Migration dosyası sürüm kontrolünde hazır ve tekrar çalıştırılabilir (`ON CONFLICT ... DO UPDATE`).
 - Bağlı Supabase sohbet aracının bu proje için üretim SQL yetkisi bulunmadığından production veritabanına buradan yazma/doğrulama yapılamıyor.
-- Production senkronu yetkili Supabase CLI oturumunda `npx supabase link --project-ref dpcwciapowxqocvswxce` ve `npx supabase db push` ile uygulanacak.
+- Production senkronu yetkili Supabase CLI oturumunda `npx supabase@latest link --project-ref dpcwciapowxqocvswxce` ve `npx supabase@latest db push` ile uygulanacak.
 
 ### Checkpointler
 
-- Üretim hedefi: `main`
-- v0.6 müşteri havuzu çalışma dalı: `work/DraBornGo-LastMile-v0.6-customer-pool`
+- Üretim: `main` @ `4c2721c8b3aaca59aef5ec4ebb4b8aec542f4997`
+- v0.6 müşteri havuzu çalışma aynası: `work/DraBornGo-LastMile-v0.6-customer-pool`
 - v0.6 müşteri havuzu öncesi geri dönüş: `backup/DraBornGo-LastMile-v0.6-before-customer-pool`
 - v0.6 öncesi geri dönüş: `backup/DraBornGo-LastMile-v0.6-pre`
 
