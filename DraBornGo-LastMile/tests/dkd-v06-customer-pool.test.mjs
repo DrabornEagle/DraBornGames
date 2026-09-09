@@ -10,9 +10,13 @@ test('v0.6 müşteri havuzu ZIP içindeki 47 farklı portreyi içerir', async ()
     const dkd_source = await readFile(new URL(`../${dkd_file}`, import.meta.url), 'utf8');
     dkd_portraits.push(...(dkd_source.match(/data:image\/jpeg;base64,[A-Za-z0-9+/=]+/g) || []));
   }
-  assert.equal(dkd_portraits.length, 47);
-  assert.equal(new Set(dkd_portraits).size, 47);
-  for (const dkd_portrait of dkd_portraits) assert.ok(dkd_portrait.length > 800, 'Portre verisi beklenenden kısa');
+  const dkd_uniquePortraits = [...new Set(dkd_portraits)];
+  assert.ok(dkd_portraits.length >= 47, 'Portre parçası eksik');
+  assert.equal(dkd_uniquePortraits.length, 47);
+  for (const dkd_portrait of dkd_uniquePortraits) assert.ok(dkd_portrait.length > 800, 'Portre verisi beklenenden kısa');
+
+  const dkd_runtime = await readFile(new URL('../game/dkd-v06-customer-pool.mjs', import.meta.url), 'utf8');
+  assert.match(dkd_runtime, /Array\.from\(new Set\(/);
 });
 
 test('sipariş ve mesaj ekranları sipariş bazlı portre eşlemesini kullanır', async () => {
