@@ -43,7 +43,7 @@ Deno.serve(async (dkd_request: Request) => {
     });
     if (dkd_profileError) throw dkd_profileError;
 
-    if (dkd_action === 'health') return dkd_json({ dkd_ok: true, dkd_version: '0.5', dkd_user_id: dkd_user.id, dkd_role });
+    if (dkd_action === 'health') return dkd_json({ dkd_ok: true, dkd_version: '0.6', dkd_user_id: dkd_user.id, dkd_role });
 
     if (dkd_action === 'bootstrap') {
       const { data: dkd_data, error: dkd_error } = await dkd_admin.rpc('dkd_lastmile_bootstrap', { dkd_user_id: dkd_user.id });
@@ -60,12 +60,8 @@ Deno.serve(async (dkd_request: Request) => {
       const dkd_deliveries = Math.max(0, Math.floor(Number(dkd_state.dkd_deliveries ?? 0) || 0));
       const { data: dkd_saved, error: dkd_error } = await dkd_admin.rpc('dkd_lastmile_save_progress', { dkd_user_id: dkd_user.id, dkd_game_state: dkd_state, dkd_level, dkd_xp, dkd_wallet, dkd_deliveries });
       if (dkd_error) throw dkd_error;
-      return dkd_json({ dkd_ok: Boolean(dkd_saved), dkd_synced_at: new Date().toISOString() });
+      return dkd_json({ dkd_ok: Boolean(dkd_saved), dkd_synced_at: new Date().toISOString(), dkd_version: '0.6' });
     }
-
-    // Physical-reward claims are intentionally not accepted as direct client actions.
-    // A valid Final score enters pending_verification only through authenticated cloud-save,
-    // where the private Last-Mile RPC records the current season/reward and verification snapshot.
 
     if (dkd_action === 'toggle_demo') {
       if (dkd_role !== 'admin') return dkd_json({ dkd_error: 'admin_required' }, 403);
