@@ -1,5 +1,48 @@
 # DraBornGo / Son Kilometre — İlerleme Kaydı
 
+## v0.6 · Müşteri Havuzu ve Gerçek İçerik — 10 Eylül 2026
+
+Durum: **Kod, oyun paketi ve CI doğrulaması tamamlandı; üretim Supabase migration dosyası hazır.**
+
+### Tamamlananlar
+
+- v0.6.0 / Android versionCode 600 / Expo SDK 57 ailesi korunuyor; APK üretilmiyor, Expo Go geliştirme akışı devam ediyor.
+- Sipariş ağına 47 farklı müşteri profil görseli bağlandı. Kaynak ZIP içindeki tekrarlar ayıklandı; eksik benzersiz iki slot yeni görsel üretilmeden mevcut yerel Selin ve Ece portreleriyle tamamlandı.
+- Profil seçimi sipariş kimliğine göre kararlı hash ile yapılıyor; aynı sipariş Siparişler ve Mesajlar ekranında aynı müşteriyi gösteriyor.
+- Aynı anda listelenen siparişlerde havuz elverdiği sürece profil tekrarını önleyen eşleme eklendi.
+- Müşteri notları, rol, teslim noktası ve rota bilgileri gerçek sipariş verisinden gösteriliyor.
+- `Last-Mile` alanına 47 aktif gerçek müşteri kaydı ve genişletilmiş gerçek görev şablonu havuzu ekleyen idempotent migration hazırlandı: `20260909212000_dkd_lastmile_v06_customer_content.sql`.
+- Migration yalnızca `Last-Mile.dkd_lastmile_content_customers` ve `Last-Mile.dkd_lastmile_mission_templates` üzerinde çalışıyor; diğer DraBornGo verilerine dokunmuyor.
+- Admin seviye 50, plaka kaydı, gerçek saat, MP3 menü/sürüş ayrımı, gerçek sezon ve final doğrulama akışı korunuyor.
+- Deterministic game bundle, Node test paketi, TypeScript typecheck ve Expo SDK dependency kontrolü GitHub Actions üzerinde başarıyla geçti.
+- Üretilen HTML ve `src/generated/dkd-game-html.ts` deterministic autogen tarafından güncellendi.
+- Geçici v0.6 finalize workflow temizlendi; kalıcı iki Last Mile workflow korunuyor.
+
+### Supabase üretim durumu
+
+- Migration dosyası sürüm kontrolünde hazır ve tekrar çalıştırılabilir (`ON CONFLICT ... DO UPDATE`).
+- Bağlı Supabase sohbet aracının bu proje için üretim SQL yetkisi bulunmadığından production veritabanına buradan yazma/doğrulama yapılamıyor.
+- Production senkronu yetkili Supabase CLI oturumunda `npx supabase link --project-ref dpcwciapowxqocvswxce` ve `npx supabase db push` ile uygulanacak.
+
+### Checkpointler
+
+- Üretim hedefi: `main`
+- v0.6 müşteri havuzu çalışma dalı: `work/DraBornGo-LastMile-v0.6-customer-pool`
+- v0.6 müşteri havuzu öncesi geri dönüş: `backup/DraBornGo-LastMile-v0.6-before-customer-pool`
+- v0.6 öncesi geri dönüş: `backup/DraBornGo-LastMile-v0.6-pre`
+
+### Sonraki geliştirme havuzu
+
+- İstanbul gerçek yol/veri paketi
+- İzmir gerçek yol/veri paketi
+- Bursa gerçek yol/veri paketi
+- Antalya gerçek yol/veri paketi
+- Gerçek sezon sonuç yönetimi / admin doğrulama paneli
+- Canlı doğrulanmış sıralama
+- Final anti-cheat telemetri doğrulamasının daha ileri server-authoritative katmanı
+
+---
+
 ## v0.5 · Gerçek Sezon — 9 Eylül 2026
 
 Durum: **Üretim dalında aktif ve doğrulanmış.**
@@ -41,15 +84,5 @@ Durum: **Üretim dalında aktif ve doğrulanmış.**
 - Güncel sürüş hotfix çalışma aynası: `work/DraBornGo-LastMile-v0.5-drive-fix`
 - Sürüş hotfix öncesi geri dönüş: `backup/DraBornGo-LastMile-v0.5-before-drive-fix`
 - Gerçek sezon öncesi geri dönüş: `backup/DraBornGo-LastMile-v0.5-pre-live-season`
-
-### Sonraki geliştirme havuzu
-
-- İstanbul gerçek yol/veri paketi
-- İzmir gerçek yol/veri paketi
-- Bursa gerçek yol/veri paketi
-- Antalya gerçek yol/veri paketi
-- Gerçek sezon sonuç yönetimi / admin doğrulama paneli
-- Canlı doğrulanmış sıralama
-- Final anti-cheat telemetri doğrulamasının daha ileri server-authoritative katmanı
 
 > Not: Supabase projesindeki Last-Mile dışı advisor uyarıları bu çalışma kapsamında değiştirilmedi; diğer DraBornGo modüllerine dokunmama kuralı korundu.
