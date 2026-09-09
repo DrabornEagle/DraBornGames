@@ -1,5 +1,6 @@
-# v0.5 real-data/player-auth Expo Go bundle generation
-# Validates player accounts, rendered MP3 music, strict menu/drive audio isolation, road-safe city detail and v0.5 UI.
+# v0.6 real-data/player-auth Expo Go bundle generation
+# Validates player accounts, generated customer portraits, level-50 admin guard, plate registration,
+# rendered MP3 music, strict menu/drive audio isolation, road-safe city detail and v0.6 UI.
 name: DKD Last Mile autogen
 
 on:
@@ -14,6 +15,7 @@ on:
       - work/DraBornGo-LastMile-v0.5-palm-roadedge-fix
       - work/DraBornGo-LastMile-v0.5-sign-layout-2
       - work/DraBornGo-LastMile-v0.5-live-season
+      - work/DraBornGo-LastMile-v0.6
     paths:
       - 'DraBornGo-LastMile/game/**'
       - 'DraBornGo-LastMile/tests/**'
@@ -82,5 +84,5 @@ jobs:
             echo 'Generated files already current.'
             exit 0
           fi
-          git commit -m 'build(lastmile): regenerate v0.5 Expo Go bundle'
+          git commit -m 'build(lastmile): regenerate v0.6 Expo Go bundle'
           git push origin HEAD:${{ github.ref_name }}
