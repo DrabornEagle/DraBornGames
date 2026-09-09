@@ -2,6 +2,7 @@ import * as dkd_fs from 'node:fs/promises';
 import * as dkd_path from 'node:path';
 import { fileURLToPath as dkd_fileURLToPath } from 'node:url';
 import { gunzipSync as dkd_gunzipSync, unzipSync as dkd_unzipSync, inflateRawSync as dkd_inflateRawSync } from 'node:zlib';
+import { createHash as dkd_createHash } from 'node:crypto';
 
 const dkd_root = dkd_path.resolve(dkd_path.dirname(dkd_fileURLToPath(import.meta.url)), '..');
 const dkd_files = Array.from({ length: 6 }, (_, dkd_index) => `game/models/v061/dkd-v061-model-${dkd_index}.mjs`);
@@ -28,7 +29,6 @@ for (const dkd_file of dkd_files) {
 
 const dkd_candidates = new Map();
 dkd_candidates.set('joined_text', Buffer.from(dkd_parts.join(''), 'base64'));
-dkd_candidates.set('joined_text_strip_mid_padding', Buffer.from(dkd_parts.map((dkd_part, dkd_index) => dkd_index < dkd_parts.length - 1 ? dkd_part.replace(/=+$/, '') : dkd_part).join(''), 'base64'));
 dkd_candidates.set('decoded_parts_concat', Buffer.concat(dkd_parts.map(dkd_part => Buffer.from(dkd_part, 'base64'))));
 
 for (const [dkd_name, dkd_bytes] of dkd_candidates) {
@@ -42,3 +42,24 @@ for (const [dkd_name, dkd_bytes] of dkd_candidates) {
     }
   }
 }
+
+// Chunk 4 is the only 5501-character segment (mod 4 = 1). The original split size was
+// 5500 characters, so locate a single accidental extra base64 character by gzip+SHA validation.
+const dkd_targetSha = '8dc66ee133b1651571ebfcd8c74238b091c45a4a9405ea25a2bf57c62f51e2a1';
+const dkd_chunkIndex = 4;
+const dkd_chunk = dkd_parts[dkd_chunkIndex];
+let dkd_found = null;
+for (let dkd_position = 0; dkd_position < dkd_chunk.length; dkd_position += 1) {
+  const dkd_repaired = dkd_chunk.slice(0, dkd_position) + dkd_chunk.slice(dkd_position + 1);
+  const dkd_text = [...dkd_parts.slice(0, dkd_chunkIndex), dkd_repaired, ...dkd_parts.slice(dkd_chunkIndex + 1)].join('');
+  try {
+    const dkd_raw = dkd_gunzipSync(Buffer.from(dkd_text, 'base64'));
+    if (dkd_raw.length !== 29530 || dkd_raw.subarray(0, 4).toString('ascii') !== 'DK61') continue;
+    const dkd_sha = dkd_createHash('sha256').update(dkd_raw).digest('hex');
+    if (dkd_sha !== dkd_targetSha) continue;
+    dkd_found = { dkd_position, dkd_character: dkd_chunk[dkd_position], dkd_context: dkd_chunk.slice(Math.max(0, dkd_position - 10), dkd_position + 11), dkd_sha };
+    break;
+  } catch {}
+}
+console.log('REPAIR_RESULT', JSON.stringify(dkd_found));
+if (!dkd_found) process.exitCode = 2;
