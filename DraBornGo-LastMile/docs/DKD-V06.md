@@ -11,8 +11,10 @@
 
 ## v0.6 changes
 
-- Order/customer cards use a 47-profile customer portrait pool.
-- Source portrait duplicates are removed at runtime; two missing unique slots are completed from the already-bundled Selin/Ece local portraits without generating new artwork.
+- Order/customer cards use a validated customer portrait pool.
+- Embedded portrait data is checked before assignment; malformed/partial JPEG, PNG or WebP data is excluded automatically.
+- If an image still fails at browser decode time, the card immediately switches to a known-good bundled portrait instead of showing a blank frame or broken-image alt text.
+- Source portrait duplicates are removed at runtime and the already-bundled local portraits are available as safe fallbacks without generating new artwork.
 - Portrait assignment is deterministic per order id and stays consistent across Siparişler and Mesajlar.
 - Concurrent visible orders avoid portrait reuse while unused portraits remain available.
 - Real customer notes, roles, origins and destinations are rendered from cloud job data.
