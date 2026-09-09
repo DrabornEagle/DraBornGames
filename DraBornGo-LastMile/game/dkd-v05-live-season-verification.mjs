@@ -81,6 +81,6 @@ dkd_Game.prototype.dkd_view_guide = function dkd_v05VerifyGuide() {
   let dkd_html = dkd_v05VerifyPrevious.dkd_view_guide.call(this);
   dkd_html = String(dkd_html)
     .replace(/<h3>Final puanlaması \/ deneme<\/h3>/g, '<h3>Final puanlaması / gerçek sezon</h3>')
-    .replace(/Eşit yerel skorda daha kısa süre öne geçer\. Gerçek ödül yarışması etkin değildir\./g, 'Eşit doğrulanmış skorda daha kısa süre öne geçer. Gerçek sezon ödülleri beceri yarışmasıyla belirlenir; Final sonucu sunucu doğrulamasından geçer.');
+    .replace(/Eşit yerel skorda daha kısa süre öne geçer\.[^<]*/g, 'Eşit doğrulanmış skorda daha kısa süre öne geçer. Gerçek sezon ödülleri beceri yarışmasıyla belirlenir; Final sonucu sunucu doğrulamasından geçer.');
   return dkd_html;
 };
