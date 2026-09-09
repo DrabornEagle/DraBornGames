@@ -1,0 +1,57 @@
+name: DKD Last Mile v0.6.1 device hotfix
+
+on:
+  push:
+    branches:
+      - work/DraBornGo-LastMile-v0.6.2
+    paths:
+      - 'DraBornGo-LastMile/**'
+      - '.github/workflows/dkd-lastmile-v061-device-hotfix.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dkd-lastmile-v061-device-hotfix
+  cancel-in-progress: true
+
+jobs:
+  dkd-device-hotfix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    defaults:
+      run:
+        working-directory: DraBornGo-LastMile
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: DraBornGo-LastMile/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build:game
+      - run: npm test
+      - run: npm run typecheck
+      - name: Expo SDK 57 compatibility
+        run: EXPO_OFFLINE=1 npx expo install --check
+      - name: Android JavaScript export - no APK
+        run: EXPO_OFFLINE=1 npx expo export --platform android --output-dir .dkd-device-hotfix-export
+      - name: Source hygiene
+        run: git diff --check
+      - name: Commit deterministic generated game bundle
+        run: |
+          rm -rf .dkd-device-hotfix-export
+          git config user.name 'DKD Last Mile Bot'
+          git config user.email 'dkd-lastmile-bot@users.noreply.github.com'
+          git add assets/dkd-lastmile.html src/generated/dkd-game-html.ts
+          if git diff --cached --quiet; then
+            echo 'Generated files already current.'
+            exit 0
+          fi
+          git commit -m 'build(lastmile): refresh v0.6.1 device hotfix bundle'
+          git push origin HEAD:${{ github.ref_name }}
