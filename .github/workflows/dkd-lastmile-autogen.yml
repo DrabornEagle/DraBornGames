@@ -1,17 +1,12 @@
-# v0.4 real-data/player-auth Expo Go bundle generation
-# Validates normal accounts, automatic admin role, personal demo mode and organic jobs.
-# Retry marker: traffic/obstacle bundle publish after transient GitHub 500.
+# v0.5 real-data/player-auth Expo Go bundle generation
+# Validates player accounts, admin tooling, procedural music, dense traffic/obstacles and v0.5 UI.
 name: DKD Last Mile autogen
 
 on:
   push:
     branches:
       - main
-      - work/DraBornGo-LastMile-v0.4
-      - work/DraBornGo-LastMile-v0.4-auth-open
-      - work/DraBornGo-LastMile-v0.4-real-career-cleanup
-      - work/DraBornGo-LastMile-v0.4-ui-audio-polish
-      - work/DraBornGo-LastMile-v0.4-traffic-obstacles
+      - work/DraBornGo-LastMile-v0.5
     paths:
       - 'DraBornGo-LastMile/game/**'
       - 'DraBornGo-LastMile/tests/**'
@@ -72,5 +67,5 @@ jobs:
             echo 'Generated files already current.'
             exit 0
           fi
-          git commit -m 'build(lastmile): regenerate v0.4 Expo Go bundle'
+          git commit -m 'build(lastmile): regenerate v0.5 Expo Go bundle'
           git push origin HEAD:${{ github.ref_name }}
