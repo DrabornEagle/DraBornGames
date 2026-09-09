@@ -43,7 +43,7 @@ Deno.serve(async (dkd_request: Request) => {
     });
     if (dkd_profileError) throw dkd_profileError;
 
-    if (dkd_action === 'health') return dkd_json({ dkd_ok: true, dkd_version: '0.4', dkd_user_id: dkd_user.id, dkd_role });
+    if (dkd_action === 'health') return dkd_json({ dkd_ok: true, dkd_version: '0.5', dkd_user_id: dkd_user.id, dkd_role });
 
     if (dkd_action === 'bootstrap') {
       const { data: dkd_data, error: dkd_error } = await dkd_admin.rpc('dkd_lastmile_bootstrap', { dkd_user_id: dkd_user.id });
@@ -61,6 +61,19 @@ Deno.serve(async (dkd_request: Request) => {
       const { data: dkd_saved, error: dkd_error } = await dkd_admin.rpc('dkd_lastmile_save_progress', { dkd_user_id: dkd_user.id, dkd_game_state: dkd_state, dkd_level, dkd_xp, dkd_wallet, dkd_deliveries });
       if (dkd_error) throw dkd_error;
       return dkd_json({ dkd_ok: Boolean(dkd_saved), dkd_synced_at: new Date().toISOString() });
+    }
+
+    if (dkd_action === 'submit_reward_claim') {
+      const dkd_rewardId = String(dkd_body.dkd_reward_id ?? '').slice(0, 100);
+      const dkd_finalScore = Math.max(0, Math.min(100000, Math.floor(Number(dkd_body.dkd_final_score ?? 0) || 0)));
+      if (!/^dkd_[a-z0-9_]+$/i.test(dkd_rewardId) || dkd_finalScore <= 0) return dkd_json({ dkd_error: 'invalid_reward_claim' }, 400);
+      const { data: dkd_claim, error: dkd_error } = await dkd_admin.rpc('dkd_lastmile_submit_reward_claim', {
+        dkd_user_id: dkd_user.id,
+        dkd_reward_id: dkd_rewardId,
+        dkd_final_score: dkd_finalScore,
+      });
+      if (dkd_error) throw dkd_error;
+      return dkd_json({ dkd_ok: true, dkd_data: dkd_claim });
     }
 
     if (dkd_action === 'toggle_demo') {
