@@ -1,5 +1,5 @@
 # v0.5 real-data/player-auth Expo Go bundle generation
-# Validates player accounts, admin tooling, procedural music, dense traffic/obstacles and v0.5 UI.
+# Validates player accounts, rendered MP3 music, visible roadwork, service rescue, dense traffic and v0.5 UI.
 name: DKD Last Mile autogen
 
 on:
@@ -9,10 +9,12 @@ on:
       - work/DraBornGo-LastMile-v0.5
       - work/DraBornGo-LastMile-v0.5-garage-hotfix
       - work/DraBornGo-LastMile-v0.5-capacity-flow
+      - work/DraBornGo-LastMile-v0.5-roadwork-audio
     paths:
       - 'DraBornGo-LastMile/game/**'
       - 'DraBornGo-LastMile/tests/**'
       - 'DraBornGo-LastMile/scripts/dkd-build-game.mjs'
+      - 'DraBornGo-LastMile/scripts/dkd-render-music.py'
       - 'DraBornGo-LastMile/package.json'
       - 'DraBornGo-LastMile/app.json'
       - '.github/workflows/dkd-lastmile-autogen.yml'
@@ -52,6 +54,13 @@ jobs:
           if (lock.packages && lock.packages['']) lock.packages[''].version = pkg.version;
           fs.writeFileSync('package-lock.json', JSON.stringify(lock, null, 2) + '\n');
           NODE
+      - name: Render original MP3 soundtrack when missing
+        run: |
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y ffmpeg
+          fi
+          python3 scripts/dkd-render-music.py
       - run: npm ci --no-audit --no-fund
       - run: npm run build:game
       - run: npm test
@@ -64,7 +73,7 @@ jobs:
         run: |
           git config user.name 'DKD Last Mile Bot'
           git config user.email 'dkd-lastmile-bot@users.noreply.github.com'
-          git add package-lock.json assets/dkd-lastmile.html src/generated/dkd-game-html.ts
+          git add package-lock.json assets/dkd-lastmile.html src/generated/dkd-game-html.ts game/audio/*.mp3
           if git diff --cached --quiet; then
             echo 'Generated files already current.'
             exit 0
