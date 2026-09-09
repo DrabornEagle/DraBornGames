@@ -57,7 +57,8 @@ const dkd_sources = [
   'dkd-v05-palm-roadedge-hotfix.mjs',
   'dkd-v05-sign-layout-hotfix.mjs',
   'dkd-v05-live-season-admin.mjs',
-  'dkd-v05-live-season-verification.mjs'
+  'dkd-v05-live-season-verification.mjs',
+  'dkd-v05-drive-collision-shift-sign-hotfix.mjs'
 ];
 
 const dkd_mediaFiles = [
