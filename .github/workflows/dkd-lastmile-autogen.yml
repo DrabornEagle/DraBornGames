@@ -12,6 +12,7 @@ on:
       - work/DraBornGo-LastMile-v0.5-roadwork-audio
       - work/DraBornGo-LastMile-v0.5-city-audio-sign
       - work/DraBornGo-LastMile-v0.5-palm-roadedge-fix
+      - work/DraBornGo-LastMile-v0.5-sign-layout-2
     paths:
       - 'DraBornGo-LastMile/game/**'
       - 'DraBornGo-LastMile/tests/**'
