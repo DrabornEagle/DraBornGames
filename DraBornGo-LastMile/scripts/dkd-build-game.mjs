@@ -110,7 +110,9 @@ async function dkd_prepareV061RawModel() {
     if (!dkd_match) throw new Error(`v0.6.1 model parçası okunamadı: ${dkd_file}`);
     return dkd_match[1];
   }));
-  const dkd_compressed = Buffer.from(dkd_parts.join(''), 'base64');
+  // Each checked-in part is base64-encoded independently. Decode each part first;
+  // concatenating padded base64 strings corrupts the gzip stream on Android/WebView.
+  const dkd_compressed = Buffer.concat(dkd_parts.map(dkd_part => Buffer.from(dkd_part, 'base64')));
   const dkd_raw = dkd_gunzipSync(dkd_compressed);
   if (dkd_raw.length !== 29530 || dkd_raw.subarray(0, 4).toString('ascii') !== 'DK61') {
     throw new Error(`v0.6.1 model paketi geçersiz: ${dkd_raw.length} bayt`);
