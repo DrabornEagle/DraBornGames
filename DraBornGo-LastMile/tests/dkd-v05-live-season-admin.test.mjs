@@ -22,7 +22,7 @@ test('admin runtime keeps money and special-customer access unlimited', () => {
   assert.match(dkd_runtime, /dkd_tokens !== 99999999/);
   assert.match(dkd_runtime, /dkd_vipTrust !== 100/);
   assert.match(dkd_runtime, /dkd_adminAllCities/);
-  assert.match(dkd_runtime, /99\.999\.999 TL/g);
+  assert.match(dkd_runtime, /replace\(\/99\\\.999\\\.999 TL\/g, '∞ TL'\)/);
   assert.match(dkd_runtime, /∞ TL/);
 });
 
