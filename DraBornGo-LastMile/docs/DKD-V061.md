@@ -1,11 +1,22 @@
 # DraBornGo / Last Mile v0.6.1
 
+## Release status
+
+**COMPLETED — 10 September 2026**
+
+- Production source of truth: `main`.
+- Release code was fast-forward promoted from `work/DraBornGo-LastMile-v0.6.1` after the complete validation lane passed.
+- Main validation: **149/149 tests passed**, TypeScript typecheck passed, Expo SDK dependency check passed, deterministic generated files matched source, and Android JavaScript export completed successfully without producing an APK.
+- Public Last Mile legal pages are deployed by the DrabornEagle public web Pages workflow.
+- Supabase Last-Mile runtime and Edge Function are aligned to v0.6.1.
+- There are no unfinished v0.6.1 application tasks recorded in this release document.
+
 ## Release scope
 
 - Expo Go development release; APK is intentionally not produced.
 - Expo SDK 57 dependency family retained for current Expo Go testing.
 - App version `0.6.1`, Android `versionCode 601`.
-- Source of truth after promotion: `main`.
+- Source of truth: `main`.
 - Supabase changes are limited to the dedicated `Last-Mile` area and the private `dkd_lastmile_*` service facade.
 
 ## Starter motorcycle + rider
@@ -63,11 +74,11 @@ Verified runtime:
 - delete-data RPC executable only by `service_role`
 - `dkd-last-mile-api` production Edge Function v8 ACTIVE, JWT verification enabled
 
-## Validation gates
+## Validation gates — completed
 
-Before promotion to `main`, v0.6.1 must pass:
+The v0.6.1 release passed:
 1. deterministic game bundle generation,
-2. all Node tests,
+2. all 149 Node tests,
 3. TypeScript typecheck,
 4. Expo SDK dependency check,
 5. Android JavaScript export without APK generation,
