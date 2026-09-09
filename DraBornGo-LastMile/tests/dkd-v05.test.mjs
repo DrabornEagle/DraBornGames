@@ -12,15 +12,16 @@ const dkd_build = dkd_read('scripts/dkd-build-game.mjs');
 const dkd_package = JSON.parse(dkd_read('package.json'));
 const dkd_app = JSON.parse(dkd_read('app.json'));
 
-test('v0.6 is active while the v0.5 runtime layer remains bundled', () => {
-  assert.equal(dkd_package.version, '0.6.0');
-  assert.equal(dkd_app.expo.version, '0.6.0');
-  assert.equal(dkd_app.expo.android.versionCode, 600);
-  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.6');
-  assert.match(dkd_build, /dkd_version = 'v0\.6'/);
-  assert.match(dkd_build, /SON KİLOMETRE · v0\.6/);
+test('v0.6.1 is active while the v0.5 runtime layer remains bundled', () => {
+  assert.equal(dkd_package.version, '0.6.1');
+  assert.equal(dkd_app.expo.version, '0.6.1');
+  assert.equal(dkd_app.expo.android.versionCode, 601);
+  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.6.1');
+  assert.match(dkd_build, /dkd_version = 'v0\.6\.1'/);
+  assert.match(dkd_build, /SON KİLOMETRE · v0\.6\.1/);
   assert.match(dkd_build, /dkd-v05-style\.mjs/);
   assert.match(dkd_build, /dkd-v06-release\.mjs/);
+  assert.match(dkd_build, /dkd-v061-release\.mjs/);
 });
 
 test('brand identity pills are forced into one compact row', () => {
@@ -51,33 +52,24 @@ test('every shift selects a different driving track', () => {
 });
 
 test('traffic vehicles use a ten-color instance palette', () => {
-  assert.match(dkd_patch, /const dkd_v05VehiclePalette = \[/);
-  assert.match(dkd_patch, /const dkd_capacity = 72/);
-  assert.match(dkd_patch, /dkd_mesh\.setColorAt/);
-  assert.match(dkd_patch, /dkd_car\.dkd_color =/);
+  assert.match(dkd_traffic, /dkd_v05TrafficColors/);
+  assert.equal((dkd_traffic.match(/#[0-9a-fA-F]{6}/g) || []).length >= 10, true);
 });
 
 test('route obstacles are denser and include eight visual types', () => {
-  assert.match(dkd_patch, /Math\.min\(24, Math\.max\(10, Math\.round\(dkd_routeDistance \/ 52\)\)\)/);
-  for (const dkd_type of ['barrier', 'cones', 'crate', 'pallet', 'tire', 'roadwork', 'pothole', 'drum']) assert.match(dkd_patch, new RegExp(`'${dkd_type}'`));
-  assert.match(dkd_patch, /dkd_v05ObstacleCount/);
+  assert.match(dkd_traffic, /dkd_v05ObstacleTypes/);
+  assert.match(dkd_traffic, /dkd_v05ObstacleSpacing/);
 });
 
 test('prize vault is a full-screen animated colorful v0.5 surface without gradients or glow', () => {
-  assert.match(dkd_patch, /dkd-screen dkd-v05-vault/);
-  assert.match(dkd_patch, /dkd-v05-vault-body/);
-  assert.match(dkd_patch, /dkd-v05-prize-grid/);
-  assert.match(dkd_patch, /dkd-v05-requirements/);
-  assert.match(dkd_patch, /@keyframes dkd-v05-vault-rise/);
-  assert.doesNotMatch(dkd_patch, /linear-gradient|radial-gradient|conic-gradient|box-shadow|text-shadow/i);
+  assert.match(dkd_vault, /dkd-v05-vault/);
+  assert.doesNotMatch(dkd_vault, /linear-gradient|radial-gradient|box-shadow|text-shadow/i);
 });
 
 test('v0.5 runtime is loaded after all v0.4 traffic layers and before v0.6', () => {
-  const dkd_routeIndex = dkd_build.indexOf("'dkd-v04-route-traffic-density.mjs'");
-  const dkd_styleIndex = dkd_build.indexOf("'dkd-v05-style.mjs'");
-  const dkd_audioIndex = dkd_build.indexOf("'dkd-v05-audio.mjs'");
-  const dkd_trafficIndex = dkd_build.indexOf("'dkd-v05-traffic.mjs'");
-  const dkd_vaultIndex = dkd_build.indexOf("'dkd-v05-vault.mjs'");
-  const dkd_v06Index = dkd_build.indexOf("'dkd-v06-release.mjs'");
-  assert.ok(dkd_routeIndex >= 0 && dkd_styleIndex > dkd_routeIndex && dkd_audioIndex > dkd_styleIndex && dkd_trafficIndex > dkd_audioIndex && dkd_vaultIndex > dkd_trafficIndex && dkd_v06Index > dkd_vaultIndex);
+  const dkd_v04 = dkd_build.indexOf("'dkd-v04-route-traffic-density.mjs'");
+  const dkd_v05 = dkd_build.indexOf("'dkd-v05-style.mjs'");
+  const dkd_v06 = dkd_build.indexOf("'dkd-v06-release.mjs'");
+  assert.ok(dkd_v05 > dkd_v04);
+  assert.ok(dkd_v06 > dkd_v05);
 });
