@@ -1,14 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/bash
 set -euo pipefail
 
-dkd_project_ref="${DKD_SUPABASE_PROJECT_REF:-dpcwciapowxqocvswxce}"
+dkd_project_ref="${DKD_SUPABASE_PROJECT_REF:-guuwomvszlwhkmstewfl}"
 dkd_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 dkd_migration="${1:-$dkd_root/supabase/migrations/20260909212000_dkd_lastmile_v06_customer_content.sql}"
 dkd_endpoint="https://api.supabase.com/v1/projects/${dkd_project_ref}/database/query"
 
 if [[ -z "${SUPABASE_ACCESS_TOKEN:-}" ]]; then
   echo "HATA: SUPABASE_ACCESS_TOKEN tanımlı değil."
-  echo "Supabase hesabından database_write yetkili bir Personal Access Token oluşturup şu şekilde tanımla:"
+  echo "Bu betik yalnızca bakım/yeniden uygulama içindir; normal Last Mile kurulumu için gerekli değildir."
+  echo "Gerekirse Supabase hesabından database_write yetkili bir Personal Access Token oluşturup şu şekilde tanımla:"
   echo "  export SUPABASE_ACCESS_TOKEN='sbp_...'"
   exit 2
 fi
@@ -34,7 +35,7 @@ process.stdout.write(JSON.stringify({ query: dkd_query, read_only: false }));
 DKD_NODE
 
 echo
-echo "Migration tamamlandı. 47 müşteri ve görev havuzu doğrulanıyor..."
+echo "Migration tamamlandı. v0.6 müşteri ve görev havuzu doğrulanıyor..."
 node <<'DKD_NODE' | curl --fail-with-body --silent --show-error \
   --request POST "$dkd_endpoint" \
   --header "Authorization: Bearer ${SUPABASE_ACCESS_TOKEN}" \
