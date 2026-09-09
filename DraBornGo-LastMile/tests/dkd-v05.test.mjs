@@ -12,13 +12,15 @@ const dkd_build = dkd_read('scripts/dkd-build-game.mjs');
 const dkd_package = JSON.parse(dkd_read('package.json'));
 const dkd_app = JSON.parse(dkd_read('app.json'));
 
-test('v0.5 is the active app and generated game version', () => {
-  assert.equal(dkd_package.version, '0.5.0');
-  assert.equal(dkd_app.expo.version, '0.5.0');
-  assert.equal(dkd_app.expo.android.versionCode, 500);
-  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.5');
-  assert.match(dkd_build, /dkd_version = 'v0\.5'/);
-  assert.match(dkd_build, /SON KİLOMETRE · v0\.5/);
+test('v0.6 is active while the v0.5 runtime layer remains bundled', () => {
+  assert.equal(dkd_package.version, '0.6.0');
+  assert.equal(dkd_app.expo.version, '0.6.0');
+  assert.equal(dkd_app.expo.android.versionCode, 600);
+  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.6');
+  assert.match(dkd_build, /dkd_version = 'v0\.6'/);
+  assert.match(dkd_build, /SON KİLOMETRE · v0\.6/);
+  assert.match(dkd_build, /dkd-v05-style\.mjs/);
+  assert.match(dkd_build, /dkd-v06-release\.mjs/);
 });
 
 test('brand identity pills are forced into one compact row', () => {
@@ -70,11 +72,12 @@ test('prize vault is a full-screen animated colorful v0.5 surface without gradie
   assert.doesNotMatch(dkd_patch, /linear-gradient|radial-gradient|conic-gradient|box-shadow|text-shadow/i);
 });
 
-test('v0.5 runtime is loaded after all v0.4 traffic layers', () => {
+test('v0.5 runtime is loaded after all v0.4 traffic layers and before v0.6', () => {
   const dkd_routeIndex = dkd_build.indexOf("'dkd-v04-route-traffic-density.mjs'");
   const dkd_styleIndex = dkd_build.indexOf("'dkd-v05-style.mjs'");
   const dkd_audioIndex = dkd_build.indexOf("'dkd-v05-audio.mjs'");
   const dkd_trafficIndex = dkd_build.indexOf("'dkd-v05-traffic.mjs'");
   const dkd_vaultIndex = dkd_build.indexOf("'dkd-v05-vault.mjs'");
-  assert.ok(dkd_routeIndex >= 0 && dkd_styleIndex > dkd_routeIndex && dkd_audioIndex > dkd_styleIndex && dkd_trafficIndex > dkd_audioIndex && dkd_vaultIndex > dkd_trafficIndex);
+  const dkd_v06Index = dkd_build.indexOf("'dkd-v06-release.mjs'");
+  assert.ok(dkd_routeIndex >= 0 && dkd_styleIndex > dkd_routeIndex && dkd_audioIndex > dkd_styleIndex && dkd_trafficIndex > dkd_audioIndex && dkd_vaultIndex > dkd_trafficIndex && dkd_v06Index > dkd_vaultIndex);
 });
