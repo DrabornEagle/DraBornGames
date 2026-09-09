@@ -52,13 +52,19 @@ test('every shift selects a different driving track', () => {
 });
 
 test('traffic vehicles use a ten-color instance palette', () => {
-  assert.match(dkd_traffic, /dkd_v05TrafficColors/);
-  assert.equal((dkd_traffic.match(/#[0-9a-fA-F]{6}/g) || []).length >= 10, true);
+  assert.match(dkd_traffic, /const dkd_v05VehiclePalette = \[/);
+  assert.match(dkd_traffic, /dkd_v05TrafficBodyColors/);
+  assert.match(dkd_traffic, /dkd_v05TrafficCabinColors/);
+  assert.match(dkd_traffic, /setColorAt\(dkd_index, dkd_color\)/);
+  const dkd_paletteMatch = dkd_traffic.match(/const dkd_v05VehiclePalette = \[([^\]]+)\]/);
+  assert.ok(dkd_paletteMatch, 'traffic palette must be declared');
+  assert.equal((dkd_paletteMatch[1].match(/#[0-9a-fA-F]{6}/g) || []).length, 10);
 });
 
 test('route obstacles are denser and include eight visual types', () => {
-  assert.match(dkd_traffic, /dkd_v05ObstacleTypes/);
-  assert.match(dkd_traffic, /dkd_v05ObstacleSpacing/);
+  assert.match(dkd_traffic, /const dkd_targetCount = Math\.min\(24, Math\.max\(10, Math\.round\(dkd_routeDistance \/ 52\)\)\)/);
+  assert.match(dkd_traffic, /const dkd_types = \['barrier', 'cones', 'crate', 'pallet', 'tire', 'roadwork', 'pothole', 'drum'\]/);
+  assert.match(dkd_traffic, /dkd_run\.dkd_v05ObstacleCount = dkd_obstacles\.length/);
 });
 
 test('prize vault is a full-screen animated colorful v0.5 surface without gradients or glow', () => {
