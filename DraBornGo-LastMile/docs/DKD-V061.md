@@ -6,7 +6,7 @@
 
 - Production source of truth after promotion: `main`.
 - v0.6.1 was originally promoted from `work/DraBornGo-LastMile-v0.6.1`; the Android/Expo Go device hotfix was then validated on `work/DraBornGo-LastMile-v0.6.2` without changing public release metadata.
-- Final device-hotfix validation covers **154 Node tests**, TypeScript typecheck, Expo SDK dependency validation, deterministic generated files and Android JavaScript export without producing an APK.
+- Final device-hotfix validation passed **154 Node tests**, TypeScript typecheck, Expo SDK dependency validation, deterministic generated-file verification and Android JavaScript export without producing an APK.
 - Public Last Mile legal pages are deployed by the DrabornEagle public web Pages workflow.
 - Supabase Last-Mile runtime and Edge Function remain aligned to v0.6.1; the device hotfix changes no database contract.
 
@@ -79,7 +79,7 @@ Verified runtime:
 
 ## Validation gates — completed
 
-The final v0.6.1 Android/Expo Go source must pass and has been prepared to pass:
+The final v0.6.1 Android/Expo Go device-hotfix work tree passed:
 1. deterministic game bundle generation with canonical DK61 integrity validation,
 2. all 154 Node tests including device model and audio isolation regressions,
 3. TypeScript typecheck,
