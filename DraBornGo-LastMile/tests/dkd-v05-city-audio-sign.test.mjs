@@ -24,20 +24,20 @@ test('menu and driving MP3 players are mutually exclusive', () => {
 test('roadside city layer adds dense trees and urban furniture', () => {
   assert.match(dkd_patch, /dkd_trunks\.length >= 1100/);
   assert.match(dkd_patch, /18 \+ dkd_random\(\) \* 10/);
-  for (const dkd_token of ['dkd_benchSeats','dkd_bins','dkd_bollards','dkd_shelterRoofs','dkd_adBoards','dkd_extraLampPoles']) {
-    assert.match(dkd_patch, new RegExp(dkd_token));
-  }
+  for (const dkd_token of ['dkd_benchSeats','dkd_bins','dkd_bollards','dkd_shelterRoofs','dkd_adBoards','dkd_extraLampPoles']) assert.match(dkd_patch, new RegExp(dkd_token));
   assert.match(dkd_patch, /dkd_v05CityDetailCounts/);
 });
 
-test('city audio sign layer stays before road-edge safety and v0.6 final runtime', () => {
+test('city audio sign layer stays before road-edge safety and v0.6.1 final runtime', () => {
   const dkd_city = dkd_build.indexOf("'dkd-v05-city-audio-sign-hotfix.mjs'");
   const dkd_previous = dkd_build.indexOf("'dkd-v05-roadwork-audio-hotfix.mjs'");
   const dkd_final = dkd_build.indexOf("'dkd-v05-palm-roadedge-hotfix.mjs'");
   const dkd_v06 = dkd_build.indexOf("'dkd-v06-release.mjs'");
+  const dkd_v061 = dkd_build.indexOf("'dkd-v061-release.mjs'");
   assert.ok(dkd_city > dkd_previous);
   assert.ok(dkd_final > dkd_city);
   assert.ok(dkd_v06 > dkd_final);
-  assert.match(dkd_build, /MP3 ses ayrımı/);
+  assert.ok(dkd_v061 > dkd_v06);
+  assert.match(dkd_build, /sakin ana sayfa müziği/);
   assert.match(dkd_build, /Supabase native köprü/);
 });
