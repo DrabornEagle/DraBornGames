@@ -6,7 +6,7 @@ const dkd_release = await readFile(new URL('../game/dkd-v06-release.mjs', import
 const dkd_build = await readFile(new URL('../scripts/dkd-build-game.mjs', import.meta.url), 'utf8');
 const dkd_package = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
 const dkd_app = JSON.parse(await readFile(new URL('../app.json', import.meta.url), 'utf8'));
-const dkd_migration = await readFile(new URL('../supabase/migrations/20260909193000_dkd_lastmile_v06_plate_admin_level.sql', import.meta.url), 'utf8');
+const dkd_migration = await readFile(new URL('../supabase/migrations/20260909192011_dkd_lastmile_v06_plate_admin_level.sql', import.meta.url), 'utf8');
 const dkd_edge = await readFile(new URL('../supabase/functions/dkd-last-mile-api/index.ts', import.meta.url), 'utf8');
 
 const dkd_avatarFiles = [
