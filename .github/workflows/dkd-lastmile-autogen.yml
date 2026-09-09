@@ -1,5 +1,5 @@
 # v0.5 real-data/player-auth Expo Go bundle generation
-# Validates player accounts, rendered MP3 music, strict menu/drive audio isolation, dense city detail and v0.5 UI.
+# Validates player accounts, rendered MP3 music, strict menu/drive audio isolation, road-safe city detail and v0.5 UI.
 name: DKD Last Mile autogen
 
 on:
@@ -11,6 +11,7 @@ on:
       - work/DraBornGo-LastMile-v0.5-capacity-flow
       - work/DraBornGo-LastMile-v0.5-roadwork-audio
       - work/DraBornGo-LastMile-v0.5-city-audio-sign
+      - work/DraBornGo-LastMile-v0.5-palm-roadedge-fix
     paths:
       - 'DraBornGo-LastMile/game/**'
       - 'DraBornGo-LastMile/tests/**'
