@@ -88,7 +88,7 @@ const dkd_sources = [
   'models/v061/dkd-v061-model-4.mjs',
   'models/v061/dkd-v061-model-5.mjs',
   'models/v061/dkd-v061-model-manifest.mjs',
-  'dkd-v061-runtime.mjs'
+  'dkd-v061-release.mjs'
 ];
 
 const dkd_mediaFiles = [

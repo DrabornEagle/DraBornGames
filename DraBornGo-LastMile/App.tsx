@@ -1,5 +1,5 @@
 import { createElement as dkd_createElement, useEffect as dkd_useEffect, useMemo as dkd_useMemo, useRef as dkd_useRef, useState as dkd_useState } from 'react';
-import { ActivityIndicator as dkd_ActivityIndicator, AppState as dkd_AppState, BackHandler as dkd_BackHandler, Pressable as dkd_Pressable, Text as dkd_Text, View as dkd_View } from 'react-native';
+import { ActivityIndicator as dkd_ActivityIndicator, AppState as dkd_AppState, BackHandler as dkd_BackHandler, Linking as dkd_Linking, Pressable as dkd_Pressable, Text as dkd_Text, View as dkd_View } from 'react-native';
 import { WebView as dkd_WebView, type WebViewMessageEvent as dkd_WebViewMessageEvent } from 'react-native-webview';
 import { SafeAreaProvider as dkd_SafeAreaProvider, useSafeAreaInsets as dkd_useSafeAreaInsets } from 'react-native-safe-area-context';
 import dkd_AsyncStorage from '@react-native-async-storage/async-storage';
@@ -17,6 +17,7 @@ const dkd_maxMessage = 5 * 1024 * 1024;
 const dkd_supabaseUrl = 'https://guuwomvszlwhkmstewfl.supabase.co';
 const dkd_supabaseKey = 'sb_publishable_bf1URxrlLlvMQ8e1Z7oxkQ_jx9mvy5g';
 const dkd_edgeUrl = `${dkd_supabaseUrl}/functions/v1/dkd-last-mile-api`;
+const dkd_publicWebBase = 'https://www.draborneagle.com/draborngo/lastmile';
 
 type dkd_Payload = { dkd_type: string; dkd_data?: any };
 type dkd_Session = {
@@ -225,7 +226,8 @@ function dkd_Container() {
         const dkd_username = String(dkd_data?.dkd_username || '').trim().slice(0, 40);
         const dkd_companyName = String(dkd_data?.dkd_company_name || '').trim().slice(0, 80);
         const dkd_phone = String(dkd_data?.dkd_phone || '').replace(/[^+0-9]/g, '').slice(0, 30);
-        if (!dkd_email || dkd_password.length < 6 || dkd_fullName.length < 3 || !/^[A-Za-z0-9_]{3,22}$/.test(dkd_username) || dkd_companyName.length < 2 || !/^\+?\d{10,15}$/.test(dkd_phone)) {
+        const dkd_plateNo = String(dkd_data?.dkd_plate_no || '').trim().toLocaleUpperCase('tr-TR').replace(/\s+/g, ' ').slice(0, 15);
+        if (!dkd_email || dkd_password.length < 6 || dkd_fullName.length < 3 || !/^[A-Za-z0-9_]{3,22}$/.test(dkd_username) || dkd_companyName.length < 2 || !/^\+?\d{10,15}$/.test(dkd_phone) || !/^[0-9]{2} [A-ZÇĞİÖŞÜ]{1,3} [0-9]{2,4}$/u.test(dkd_plateNo)) {
           throw new Error('Kayıt bilgilerini kontrol et.');
         }
         const dkd_signedUp = await dkd_authFetch('/auth/v1/signup', {
@@ -236,6 +238,7 @@ function dkd_Container() {
             dkd_username,
             dkd_company_name: dkd_companyName,
             dkd_phone,
+            dkd_plate_no: dkd_plateNo,
           },
         });
         if (dkd_signedUp?.access_token && dkd_signedUp?.refresh_token) {
@@ -306,6 +309,20 @@ function dkd_Container() {
           dkd_cloudSavePending.current = dkd_data.dkd_game_state;
           void dkd_flushCloudSave();
         }
+      } else if (dkd_message.dkd_type === 'open-url') {
+        const dkd_url = String(dkd_data?.dkd_url || '').trim();
+        if (!dkd_url.startsWith(`${dkd_publicWebBase}/`) && dkd_url !== `${dkd_publicWebBase}/`) throw new Error('Bu bağlantının açılmasına izin verilmiyor.');
+        await dkd_Linking.openURL(dkd_url);
+      } else if (dkd_message.dkd_type === 'auth-delete-account') {
+        const dkd_result = await dkd_edge('delete_account');
+        if (dkd_result?.dkd_deleted !== true) throw new Error('Hesap silme işlemi doğrulanamadı.');
+        await dkd_storeSession(null);
+        dkd_cloudReady.current = false;
+        dkd_cloudSavePending.current = null;
+        await dkd_AsyncStorage.removeItem(dkd_saveKey);
+        dkd_latestSave.current = 'null';
+        dkd_setBootstrap('null');
+        dkd_receive({ dkd_type: 'auth-account-deleted', dkd_data: { dkd_deleted: true } });
       } else if (dkd_message.dkd_type === 'pick-photo') {
         const dkd_result = await dkd_ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: true, aspect: [1, 1], quality: .55, base64: true });
         if (!dkd_result.canceled && dkd_result.assets[0]?.base64) {
