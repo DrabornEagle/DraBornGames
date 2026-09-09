@@ -49,7 +49,8 @@ const dkd_sources = [
   'dkd-v05-style.mjs',
   'dkd-v05-audio.mjs',
   'dkd-v05-traffic.mjs',
-  'dkd-v05-vault.mjs'
+  'dkd-v05-vault.mjs',
+  'dkd-v05-garage-hotfix.mjs'
 ];
 
 const dkd_threeCode = await dkd_fs.readFile(dkd_path.join(dkd_root, 'node_modules/three/build/three.cjs'), 'utf8');
