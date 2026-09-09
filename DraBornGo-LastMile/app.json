@@ -2,13 +2,13 @@
   "expo": {
     "name": "DraBornGo / Son Kilometre",
     "slug": "dkd-draborngo-lastmile",
-    "version": "0.5.0",
+    "version": "0.6.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#080e15",
     "android": {
       "package": "com.draborneagle.lastmile",
-      "versionCode": 500,
+      "versionCode": 600,
       "permissions": [],
       "blockedPermissions": [
         "android.permission.ACCESS_FINE_LOCATION",
@@ -18,7 +18,7 @@
       ]
     },
     "extra": {
-      "dkd_versionLabel": "v0.5",
+      "dkd_versionLabel": "v0.6",
       "dkd_demo": false,
       "dkd_backendEnabled": true,
       "dkd_adminPreviewOnly": false,
