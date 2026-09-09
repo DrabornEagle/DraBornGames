@@ -21,8 +21,8 @@
       "dkd_versionLabel": "v0.5",
       "dkd_demo": false,
       "dkd_backendEnabled": true,
-      "dkd_adminPreviewOnly": true,
-      "dkd_realRewardsEnabled": false,
+      "dkd_adminPreviewOnly": false,
+      "dkd_realRewardsEnabled": true,
       "dkd_supabaseArea": "Last-Mile"
     },
     "plugins": [
