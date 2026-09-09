@@ -1,5 +1,46 @@
 // DraBornGo / Last Mile v0.6 customer portrait diversity patch.
-// Uses only portraits supplied by the user in Musteriler.zip. No generated artwork.
+// Uses portraits supplied for Last Mile and filters malformed embedded images before assignment.
+
+function dkd_v06CustomerPortraitIsValid(dkd_source) {
+  if (typeof dkd_source !== 'string' || dkd_source.length < 128) return false;
+  const dkd_match = dkd_source.match(/^data:image\/(jpeg|jpg|png|webp);base64,([A-Za-z0-9+/]+={0,2})$/i);
+  if (!dkd_match) return false;
+  try {
+    const dkd_bytes = atob(dkd_match[2]);
+    if (dkd_bytes.length < 128) return false;
+    const dkd_kind = dkd_match[1].toLowerCase();
+    if (dkd_kind === 'jpeg' || dkd_kind === 'jpg') {
+      return dkd_bytes.charCodeAt(0) === 0xff
+        && dkd_bytes.charCodeAt(1) === 0xd8
+        && dkd_bytes.charCodeAt(dkd_bytes.length - 2) === 0xff
+        && dkd_bytes.charCodeAt(dkd_bytes.length - 1) === 0xd9;
+    }
+    if (dkd_kind === 'png') {
+      return dkd_bytes.charCodeAt(0) === 0x89
+        && dkd_bytes.slice(1, 4) === 'PNG'
+        && dkd_bytes.lastIndexOf('IEND') >= dkd_bytes.length - 16;
+    }
+    if (dkd_kind === 'webp') {
+      return dkd_bytes.slice(0, 4) === 'RIFF' && dkd_bytes.slice(8, 12) === 'WEBP';
+    }
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+const dkd_v06CustomerPortraitFallbackCandidates = [
+  typeof dkd_v06AvatarSelin === 'string' ? dkd_v06AvatarSelin : '',
+  typeof dkd_v06AvatarEce === 'string' ? dkd_v06AvatarEce : '',
+  typeof dkd_v06AvatarMira === 'string' ? dkd_v06AvatarMira : '',
+  typeof dkd_v06AvatarDeniz === 'string' ? dkd_v06AvatarDeniz : '',
+  typeof dkd_v06AvatarLara === 'string' ? dkd_v06AvatarLara : '',
+  typeof dkd_v06AvatarAda === 'string' ? dkd_v06AvatarAda : '',
+  typeof dkd_v06AvatarAsya === 'string' ? dkd_v06AvatarAsya : '',
+  typeof dkd_v06AvatarIrem === 'string' ? dkd_v06AvatarIrem : '',
+  typeof dkd_v06AvatarDuru === 'string' ? dkd_v06AvatarDuru : '',
+  typeof dkd_v06AvatarEmre === 'string' ? dkd_v06AvatarEmre : '',
+].filter(dkd_v06CustomerPortraitIsValid);
 
 const dkd_v06CustomerPortraitPool = Array.from(new Set([
   ...dkd_v06CustomerPortraitPoolPart00,
@@ -11,7 +52,12 @@ const dkd_v06CustomerPortraitPool = Array.from(new Set([
   ...dkd_v06CustomerPortraitPoolPart06,
   ...dkd_v06CustomerPortraitPoolPart07,
   ...dkd_v06CustomerPortraitPoolPart08,
-].filter(Boolean)));
+  ...dkd_v06CustomerPortraitFallbackCandidates,
+].filter(dkd_v06CustomerPortraitIsValid)));
+
+const dkd_v06CustomerPortraitFallback = dkd_v06CustomerPortraitPool[0]
+  || dkd_v06CustomerPortraitFallbackCandidates[0]
+  || '';
 
 const dkd_v06CustomerPoolPrevious = {
   dkd_receive: dkd_Game.prototype.dkd_receive,
@@ -63,10 +109,29 @@ function dkd_v06AssignCustomerPortraits(dkd_game) {
 
 function dkd_v06CustomerOrderAvatar(dkd_order, dkd_large = false) {
   const dkd_index = Number(dkd_order?.dkd_customerPortraitIndex);
-  const dkd_source = Number.isInteger(dkd_index) ? dkd_v06CustomerPortraitPool[dkd_index] : '';
+  const dkd_source = Number.isInteger(dkd_index) && dkd_v06CustomerPortraitIsValid(dkd_v06CustomerPortraitPool[dkd_index])
+    ? dkd_v06CustomerPortraitPool[dkd_index]
+    : dkd_v06CustomerPortraitFallback;
   if (!dkd_source) return dkd_avatar(dkd_order?.dkd_customer, dkd_large);
   const dkd_name = dkd_escape(dkd_order?.dkd_cloudCustomerName || 'Müşteri');
   return `<img class="dkd-avatar${dkd_large ? ' dkd-large' : ''}" src="${dkd_source}" alt="${dkd_name} — müşteri profil fotoğrafı"/>`;
+}
+
+function dkd_v06CustomerPoolInstallImageFallback() {
+  if (window.dkd_v06CustomerPoolImageFallbackInstalled) return;
+  window.dkd_v06CustomerPoolImageFallbackInstalled = true;
+  document.addEventListener('error', dkd_event => {
+    const dkd_target = dkd_event.target;
+    if (!(dkd_target instanceof HTMLImageElement) || !dkd_target.classList.contains('dkd-avatar')) return;
+    if (!dkd_v06CustomerPortraitFallback || dkd_target.dataset.dkdFallbackApplied === '1') {
+      dkd_target.removeAttribute('alt');
+      dkd_target.style.visibility = 'hidden';
+      return;
+    }
+    dkd_target.dataset.dkdFallbackApplied = '1';
+    dkd_target.removeAttribute('alt');
+    dkd_target.src = dkd_v06CustomerPortraitFallback;
+  }, true);
 }
 
 function dkd_v06CustomerPoolInstallStyles() {
@@ -77,7 +142,7 @@ function dkd_v06CustomerPoolInstallStyles() {
     .dkd-v06-message-list{display:grid;gap:14px;margin-top:18px}
     .dkd-v06-message-card{border:1px solid #405675;border-radius:22px;background:#172740;padding:16px}
     .dkd-v06-message-head{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
-    .dkd-v06-message-head .dkd-avatar{width:62px;height:62px;border-radius:17px}
+    .dkd-v06-message-head .dkd-avatar{width:62px;height:62px;border-radius:17px;object-fit:cover;display:block;background:#203550}
     .dkd-v06-message-title b{display:block;font-size:17px;line-height:1.12}.dkd-v06-message-title small{display:block;margin-top:5px;color:#a9bad0}
     .dkd-v06-message-new{border:1px solid #4b607f;border-radius:12px;padding:8px 10px;color:#e4ff5e;font-size:10px;font-weight:950;letter-spacing:.55px;text-align:center;line-height:1.2}
     .dkd-v06-message-note{margin-top:13px;border-left:5px solid #e886b8;border-radius:0 15px 15px 0;background:#203550;padding:13px 14px;line-height:1.45}
@@ -88,6 +153,7 @@ function dkd_v06CustomerPoolInstallStyles() {
 }
 
 dkd_v06CustomerPoolInstallStyles();
+dkd_v06CustomerPoolInstallImageFallback();
 
 dkd_Game.prototype.dkd_receive = function dkd_v06CustomerPoolReceive(dkd_payload) {
   const dkd_result = dkd_v06CustomerPoolPrevious.dkd_receive.call(this, dkd_payload);
@@ -112,7 +178,7 @@ dkd_Game.prototype.dkd_view_dispatch = function dkd_v06CustomerPoolDispatch() {
     : '<span class="dkd-chip dkd-accent">GERÇEK VERİ</span>';
 
   const dkd_body = `<div class="dkd-between"><div><span class="dkd-kicker">LAST-MILE / ANKARA</span><h2 style="margin-top:8px">Sıradaki siparişler.</h2></div>${dkd_iconButton('refresh','orders-refresh','Siparişleri yenile')}</div>
-    <div class="dkd-space"></div><div class="dkd-between">${dkd_demoLabel}<small>Canlı sipariş ağı · ${dkd_v06CustomerPortraitPool.length} farklı profil</small></div>
+    <div class="dkd-space"></div><div class="dkd-between">${dkd_demoLabel}<small>Canlı sipariş ağı · ${dkd_v06CustomerPortraitPool.length} kullanılabilir profil</small></div>
     <div class="dkd-space"></div>${dkd_status}
     ${this.dkd_orders.map((dkd_order, dkd_index) => {
       const dkd_weather = dkd_weathers.find(dkd_item => dkd_item.dkd_id === dkd_order.dkd_weather) || dkd_weathers[0];
