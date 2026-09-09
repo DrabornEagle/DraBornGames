@@ -63,18 +63,9 @@ Deno.serve(async (dkd_request: Request) => {
       return dkd_json({ dkd_ok: Boolean(dkd_saved), dkd_synced_at: new Date().toISOString() });
     }
 
-    if (dkd_action === 'submit_reward_claim') {
-      const dkd_rewardId = String(dkd_body.dkd_reward_id ?? '').slice(0, 100);
-      const dkd_finalScore = Math.max(0, Math.min(100000, Math.floor(Number(dkd_body.dkd_final_score ?? 0) || 0)));
-      if (!/^dkd_[a-z0-9_]+$/i.test(dkd_rewardId) || dkd_finalScore <= 0) return dkd_json({ dkd_error: 'invalid_reward_claim' }, 400);
-      const { data: dkd_claim, error: dkd_error } = await dkd_admin.rpc('dkd_lastmile_submit_reward_claim', {
-        dkd_user_id: dkd_user.id,
-        dkd_reward_id: dkd_rewardId,
-        dkd_final_score: dkd_finalScore,
-      });
-      if (dkd_error) throw dkd_error;
-      return dkd_json({ dkd_ok: true, dkd_data: dkd_claim });
-    }
+    // Physical-reward claims are intentionally not accepted as direct client actions.
+    // A valid Final score enters pending_verification only through authenticated cloud-save,
+    // where the private Last-Mile RPC records the current season/reward and verification snapshot.
 
     if (dkd_action === 'toggle_demo') {
       if (dkd_role !== 'admin') return dkd_json({ dkd_error: 'admin_required' }, 403);
