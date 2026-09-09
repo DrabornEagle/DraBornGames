@@ -8,6 +8,7 @@ on:
       - main
       - work/DraBornGo-LastMile-v0.5
       - work/DraBornGo-LastMile-v0.5-garage-hotfix
+      - work/DraBornGo-LastMile-v0.5-capacity-flow
     paths:
       - 'DraBornGo-LastMile/game/**'
       - 'DraBornGo-LastMile/tests/**'
