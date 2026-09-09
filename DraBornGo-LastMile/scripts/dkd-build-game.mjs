@@ -79,6 +79,7 @@ const dkd_sources = [
   'avatars/pool/dkd_customer_pool_06.mjs',
   'avatars/pool/dkd_customer_pool_07.mjs',
   'avatars/pool/dkd_customer_pool_08.mjs',
+  'avatars/pool/dkd_customer_pool_finalize.mjs',
   'dkd-v06-customer-pool.mjs'
 ];
 
