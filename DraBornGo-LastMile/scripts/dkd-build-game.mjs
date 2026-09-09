@@ -4,6 +4,7 @@ import { fileURLToPath as dkd_fileURLToPath } from 'node:url';
 import { minify as dkd_minify } from 'terser';
 
 const dkd_root = dkd_path.resolve(dkd_path.dirname(dkd_fileURLToPath(import.meta.url)), '..');
+// v0.4 compatibility layers remain bundled beneath the authoritative v0.5 runtime.
 const dkd_sources = [
   'data/dkd-roads.mjs',
   'dkd-data.mjs',
