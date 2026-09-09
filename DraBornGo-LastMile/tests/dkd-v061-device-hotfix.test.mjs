@@ -16,7 +16,8 @@ for (const dkd_file of dkd_chunkFiles) {
   assert.ok(dkd_match, `${dkd_file} base64 parçası okunmalı`);
   dkd_parts.push(dkd_match[1]);
 }
-const dkd_rawModel = gunzipSync(Buffer.from(dkd_parts.join(''), 'base64'));
+const dkd_compressedModel = Buffer.concat(dkd_parts.map(dkd_part => Buffer.from(dkd_part, 'base64')));
+const dkd_rawModel = gunzipSync(dkd_compressedModel);
 
 test('starter Yamaha+rider DK61 package is intact before device injection', () => {
   assert.equal(dkd_rawModel.length, 29530);
@@ -24,8 +25,9 @@ test('starter Yamaha+rider DK61 package is intact before device injection', () =
   assert.equal(createHash('sha256').update(dkd_rawModel).digest('hex'), '8dc66ee133b1651571ebfcd8c74238b091c45a4a9405ea25a2bf57c62f51e2a1');
 });
 
-test('build injects already-inflated model bytes for Expo Go WebView', () => {
+test('build decodes every padded chunk before concatenation and injects raw bytes', () => {
   assert.match(dkd_build, /gunzipSync as dkd_gunzipSync/);
+  assert.match(dkd_build, /Buffer\.concat\(dkd_parts\.map\(dkd_part => Buffer\.from\(dkd_part, 'base64'\)\)\)/);
   assert.match(dkd_build, /dkd_prepareV061RawModel/);
   assert.match(dkd_build, /dkd_v061ModelRawBase64/);
   assert.match(dkd_build, /dkd-v061-device-hotfix\.mjs/);
