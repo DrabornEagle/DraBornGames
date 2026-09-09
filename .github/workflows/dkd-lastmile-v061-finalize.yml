@@ -11,7 +11,7 @@ permissions:
 
 concurrency:
   group: dkd-lastmile-v061-finalize
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   dkd-v061-finalize:
