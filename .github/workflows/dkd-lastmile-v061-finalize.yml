@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: dkd-lastmile-v061-finalize
+  group: dkd-lastmile-v061-finalize-20260910
   cancel-in-progress: true
 
 jobs:
