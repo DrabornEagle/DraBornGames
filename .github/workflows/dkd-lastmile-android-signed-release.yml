@@ -91,24 +91,6 @@ jobs:
           CI: '1'
         run: npx expo prebuild --platform android --clean
 
-      - name: Validate Google Play target API and permissions
-        if: env.DKD_OUTPUT_FORMAT == 'aab'
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
-          dkd_files = [Path('android/build.gradle'), Path('android/app/build.gradle'), Path('android/gradle.properties')]
-          dkd_text = '\n'.join(dkd_file.read_text(errors='ignore') for dkd_file in dkd_files if dkd_file.exists())
-          if not re.search(r'targetSdkVersion[^\n]{0,160}36|android\.targetSdkVersion\s*=\s*36', dkd_text):
-              raise SystemExit('Android targetSdkVersion 36 doğrulanamadı.')
-          dkd_manifest = Path('android/app/src/main/AndroidManifest.xml').read_text(errors='ignore')
-          for dkd_permission in ['ACCESS_FINE_LOCATION','ACCESS_COARSE_LOCATION','CAMERA','RECORD_AUDIO','READ_CONTACTS']:
-              if dkd_permission in dkd_manifest:
-                  raise SystemExit(f'Gereksiz hassas izin manifestte kaldı: {dkd_permission}')
-          print('Google Play preflight: target API 36 ve hassas izin temizliği doğrulandı.')
-          PY
-
       - name: Restore and verify permanent key
         env:
           DKD_LASTMILE_KEYSTORE_B64: ${{ secrets.DKD_LASTMILE_KEYSTORE_B64 }}
@@ -161,6 +143,22 @@ jobs:
           set -euo pipefail
           dkd_aab='dist-android/DraBornGo-LastMile-v0.7.0-release-vc1.aab'
           jarsigner -verify -strict -certs "$dkd_aab" >/dev/null
+
+          dkd_bundletool="$RUNNER_TEMP/bundletool-all-1.18.3.jar"
+          curl -fsSL --retry 3 --retry-delay 2 -o "$dkd_bundletool" 'https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar'
+          java -jar "$dkd_bundletool" dump manifest --bundle="$dkd_aab" > dist-android/PLAY-MANIFEST.xml
+          dkd_target="$(java -jar "$dkd_bundletool" dump manifest --bundle="$dkd_aab" --xpath='/manifest/uses-sdk/@android:targetSdkVersion' | tr -d '\r\n[:space:]')"
+          dkd_version_code="$(java -jar "$dkd_bundletool" dump manifest --bundle="$dkd_aab" --xpath='/manifest/@android:versionCode' | tr -d '\r\n[:space:]')"
+          [[ "$dkd_target" == '36' ]] || { echo "AAB targetSdkVersion beklenen 36 değil: $dkd_target"; exit 41; }
+          [[ "$dkd_version_code" == '1' ]] || { echo "AAB versionCode beklenen 1 değil: $dkd_version_code"; exit 42; }
+          grep -q 'package="com.draborneagle.lastmile"' dist-android/PLAY-MANIFEST.xml
+          for dkd_permission in ACCESS_FINE_LOCATION ACCESS_COARSE_LOCATION CAMERA RECORD_AUDIO READ_CONTACTS; do
+            if grep -q "android.permission.$dkd_permission" dist-android/PLAY-MANIFEST.xml; then
+              echo "Gereksiz hassas izin final AAB manifestinde kaldı: $dkd_permission"
+              exit 43
+            fi
+          done
+
           unzip -l "$dkd_aab" | grep -qE 'base/lib/arm64-v8a/.*\.so'
           mkdir -p "$RUNNER_TEMP/dkd-aab-native"
           unzip -q "$dkd_aab" 'base/lib/arm64-v8a/*.so' 'base/lib/x86_64/*.so' -d "$RUNNER_TEMP/dkd-aab-native" || true
@@ -188,6 +186,7 @@ jobs:
           Path('dist-android/PLAY-16KB-CHECK.txt').write_text(f'PASS\n64-bit ELF checked={dkd_checked}\nminimum required LOAD alignment=0x4000\n')
           print(f'16 KB page-size postflight başarılı: {dkd_checked} adet 64-bit ELF kontrol edildi.')
           PY
+          printf 'PASS\ntargetSdkVersion=36\nversionCode=1\npackage=com.draborneagle.lastmile\nforbiddenSensitivePermissions=none\n' > dist-android/PLAY-AAB-CHECK.txt
 
       - name: Record hashes and certificate identity
         env:
@@ -198,6 +197,7 @@ jobs:
           sha256sum dist-android/DraBornGo-LastMile-v0.7.0-release-vc1.* > dist-android/SHA256SUMS.txt
           keytool -list -v -keystore "$DKD_LASTMILE_KEYSTORE_PATH" -storepass "$DKD_LASTMILE_KEYSTORE_PASSWORD" -alias "$DKD_LASTMILE_KEY_ALIAS" | grep -E 'Alias name:|SHA256:' > dist-android/SIGNING-IDENTITY.txt
           if [[ "$DKD_OUTPUT_FORMAT" == 'aab' ]]; then
+            cp docs/dkd-google-play-v07.md dist-android/PLAY-CONSOLE-CHECKLIST.md
             printf 'versionName=0.7.0\nversionCode=1\npackage=com.draborneagle.lastmile\nformat=aab\ntargetSdkVersion=36\nplayRewardMode=virtual-only\nprivacy=https://www.draborneagle.com/draborngo/lastmile/gizlilik/\naccountDeletion=https://www.draborneagle.com/draborngo/lastmile/hesap-silme/\nsigning=DKD_LASTMILE permanent keystore\n' > dist-android/BUILD-INFO.txt
           else
             printf 'versionName=0.7.0\nversionCode=1\npackage=com.draborneagle.lastmile\nformat=apk\nsigning=DKD_LASTMILE permanent keystore\n' > dist-android/BUILD-INFO.txt
