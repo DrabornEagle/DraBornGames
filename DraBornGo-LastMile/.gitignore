@@ -10,3 +10,9 @@ test-results/
 android/
 ios/
 web-build/
+*.jks
+*.keystore
+credentials.json
+dkd-keystore.properties
+*.p12
+*.pem
