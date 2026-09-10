@@ -20,9 +20,10 @@ test('v0.7 release metadata and final device layer are aligned', () => {
 
 test('camera controls remain available and Takip is the migrated standard start view', () => {
   assert.match(dkd_release, /Kamera mesafesi/);
-  assert.match(dkd_polish, /camera-mode:near/);
-  assert.match(dkd_polish, /camera-mode:chase/);
-  assert.match(dkd_polish, /camera-mode:high/);
+  assert.match(dkd_polish, /\['near','Yakın','5 m takip'\]/);
+  assert.match(dkd_polish, /\['chase','Takip','Standart'\]/);
+  assert.match(dkd_polish, /\['high','Yüksek','Geniş görüş'\]/);
+  assert.match(dkd_polish, /data-dkd-action="camera-mode:\$\{dkd_item\[0\]\}"/);
   assert.match(dkd_polish, /dkd_game\.dkd_state\.dkd_settings\.dkd_camera = 'chase'/);
   assert.match(dkd_polish, /Takip[^\n]*Standart/);
   assert.doesNotMatch(JSON.stringify(dkd_app.expo.android.permissions || []), /CAMERA/);
