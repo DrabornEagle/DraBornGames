@@ -7,9 +7,10 @@
 - Paket kimliği: `com.draborneagle.lastmile`
 - Expo SDK: `57`
 - GitHub ana kaynak: `DrabornEagle/DraBornGames` / `main`
-- Developer APK: üretildi ve GitHub Actions artifact doğrulaması geçti.
-- Developer APK SHA-256: `a149d02fbaf55e604d8729332312439e878658f0f72eded7e1092c9c0772815f`
-- Developer APK workflow: `DKD Last Mile Developer APK` run `#2 / 34453332952` — `SUCCESS`.
+- Standalone Developer APK: üretildi; Metro gerektirmez.
+- Developer APK SHA-256: `435195b9cebc5f9cfc1bfbe4ff268874cc0d9ed181b852d19c006565427f4d19`
+- Developer APK workflow: `DKD Last Mile Developer APK` run `#3 / 34455258256` — `SUCCESS`.
+- APK içinde `assets/index.android.bundle` varlığı CI tarafından doğrulandı.
 - Production Android release keystore oluşturuldu ve yalnızca güvenli/offline teslim edilir; public GitHub deposuna hiçbir private key veya parola yazılmaz.
 - Supabase Last-Mile production migration: `20260910073427_dkd_lastmile_v07_server_authority`.
 - Edge Function: `dkd-last-mile-api` semantik `0.7`, authority version `1`, deployment generation `10`, JWT doğrulaması açık.
@@ -32,17 +33,17 @@
 14. Ödül stok koruması `dkd_server_verified=true` olmadan onay/teslime izin vermez.
 15. Pre-hardening dönemde tamamlanmış görevler güvenilir server progress'e geriye dönük yazılmaz; güven zinciri v0.7 authority katmanından başlar.
 16. Security-event tablosu ve server-authority regression testleri eklendi.
-17. Developer APK pipeline'ı temiz Android prebuild + Gradle `assembleDebug` ile APK üretir, SHA-256 dosyası oluşturur ve artifact olarak saklar. Dokümantasyon-only değişiklikler pahalı APK build'ini tetiklemez.
+17. İlk test APK'sındaki Metro hatasının nedeni `assembleDebug` çıktısının JS bundle'ı APK içine gömmemesiydi. Workflow `assembleRelease` tabanlı standalone test APK'sına çevrildi ve build sonrası `assets/index.android.bundle` kontrolü zorunlu hale getirildi.
 
 ## Doğrulama
 
-Server-authority hardening PR #10 tam CI kapısından geçtikten sonra `main`e squash-merge edildi. Son server-authority kontrolünde soundtrack render, mesh raporu, deterministic oyun bundle, regression testleri, TypeScript typecheck, Expo SDK kontrolü ve Android JS export başarıyla tamamlandı. Developer APK final pipeline'ında oyun bundle üretimi, **177/177 Node testi**, TypeScript typecheck, Expo config kontrolü, clean Android prebuild, Gradle debug APK build, SHA-256 üretimi ve artifact upload başarıyla tamamlandı.
+Server-authority hardening PR #10 tam CI kapısından geçtikten sonra `main`e alındı. Düzeltilmiş standalone Developer APK pipeline'ında oyun bundle üretimi, **177/177 Node testi**, TypeScript typecheck, Expo config kontrolü, clean Android prebuild, Gradle standalone APK build, APK içi JS bundle kontrolü, SHA-256 üretimi ve artifact upload başarıyla tamamlandı.
 
 Production Supabase üzerinde transaction + rollback entegrasyon testlerinde sahte local XP/cüzdan/teslimat yükseltme, istemci level 999 bypass, accept edilmemiş job completion, aşırı hızlı completion, fiziksel ödül şartlarını atlama ve sahte client final score senaryoları doğrulandı. Test verileri rollback edildi; production'a sahte claim/job bırakılmadı.
 
 ## Android imzalama politikası
 
-Kalıcı production release keystore v0.7 finalizasyonunda oluşturuldu. Bu anahtar public GitHub'a commit edilmez ve GitHub Actions artifact'ına eklenmez. Gelecekte production/release APK veya AAB üretildiğinde aynı kalıcı release anahtarı kullanılmalıdır. Developer APK ise Android debug imzası kullanan geliştirme/test çıktısıdır; production dağıtım anahtarıyla karıştırılmaz.
+Kalıcı production release keystore v0.7 finalizasyonunda oluşturuldu. Bu anahtar public GitHub'a commit edilmez ve GitHub Actions artifact'ına eklenmez. Gelecekte production/release APK veya AAB üretildiğinde aynı kalıcı release anahtarı kullanılmalıdır. Standalone Developer APK production anahtarıyla değil test signing config'iyle imzalanır.
 
 ## Termux — tek komut kurulum / güncelleme / Expo Go
 
@@ -64,4 +65,4 @@ cd "$HOME/projects/DraBornGames/DraBornGo-LastMile" && npm run sync:watch
 
 ## Kalan insan kabul testi
 
-Kod, backend, CI ve Developer APK build'i tamamlanmıştır. Gerçek telefon ekranı/sesi CI tarafından görülemediği için yalnız fiziksel kabul gözlemi kullanıcı cihazında yapılır: Kurye Merkezi/sürüş müzik geçişi, Yamaha+sürücü yönü, kamera ayarları, gerçek hesap görev akışı ve fiziksel ödül ekranının server verification'ı atlamaması.
+Kod, backend, CI ve standalone Developer APK build'i tamamlanmıştır. Gerçek telefon ekranı/sesi CI tarafından görülemediği için yalnız fiziksel kabul gözlemi kullanıcı cihazında yapılır: Kurye Merkezi/sürüş müzik geçişi, Yamaha+sürücü yönü, kamera ayarları, gerçek hesap görev akışı ve fiziksel ödül ekranının server verification'ı atlamaması.
