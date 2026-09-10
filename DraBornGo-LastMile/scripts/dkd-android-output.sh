@@ -1,9 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/bash
 set -euo pipefail
 
-dkd_mode="${1:-development}"
+dkd_mode="${1:-apk}"
 dkd_repo="DrabornEagle/DraBornGames"
 dkd_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+dkd_version="$(node -p "require(process.argv[1]).expo.version" "$dkd_root/app.json")"
 dkd_output_root="$dkd_root/dist-android-downloads"
 
 command -v gh >/dev/null 2>&1 || { echo 'GitHub CLI eksik. Önce pkg install gh çalıştır.' >&2; exit 2; }
@@ -12,11 +13,11 @@ gh auth status >/dev/null 2>&1 || { echo 'GitHub CLI oturumu gerekli: gh auth lo
 case "$dkd_mode" in
   development)
     dkd_workflow="dkd-lastmile-android-v07.yml"
-    dkd_artifact="dkd-lastmile-v0.7.0-development-vc1"
+    dkd_artifact="dkd-lastmile-v${dkd_version}-development-vc1"
     ;;
   apk|aab)
     dkd_workflow="dkd-lastmile-android-signed-release.yml"
-    dkd_artifact="dkd-lastmile-v0.7.0-signed-${dkd_mode}-vc1"
+    dkd_artifact="dkd-lastmile-v${dkd_version}-signed-${dkd_mode}-vc1"
     ;;
   *)
     echo 'Kullanım: bash scripts/dkd-android-output.sh [development|apk|aab]' >&2

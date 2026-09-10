@@ -1,162 +1,50 @@
-# DraBornGo / Son Kilometre
+# DraBornGo / Last Mile — v0.7.1
 
-**v0.7.0 · Android versionCode 1 · Expo SDK 57 · Expo Go + Development Client**
+Android versionCode **1** · Expo SDK **57** · Web + imzalı Release APK.
 
-DraBornGo / Last Mile; oyuncunun başlangıç scooter'ı ve küçük kurye şirketiyle başlayıp teslimatlar, hava koşulları, trafik, araç geliştirmeleri, şirket büyütme ve sezon hedefleri üzerinden ilerlediği dikey ekran 3D kurye oyunudur.
+- Oyun platformu: https://www.draborneagle.com/DraBornGames/
+- Web oyunu: https://www.draborneagle.com/DraBornGames/Last-Mile/
+- APK: https://github.com/DrabornEagle/DraBornGames/releases
 
-## v0.7
-
-- Android `versionName=0.7.0`, `versionCode=1` ve package `com.draborneagle.lastmile`.
-- Expo SDK 57 ailesi korunur.
-- Expo Go hızlı geliştirme/test hattı korunur.
-- `expo-dev-client` ile GitHub üzerinden gerçek Android Development APK hattı hazırdır.
-- Ayarlar ekranındaki Kamera bölümü geri getirildi ve genişletildi.
-- Yeni kariyer ve geçersiz/eski kamera ayarlarında varsayılan açı `Takip · Standart` (`chase`).
-- Kamera seçenekleri Yakın, Takip / Standart ve Yüksek görünüm olarak sunulur.
-- Ayarlar ekranı daha detaylı, renkli ve modern düz tasarıma taşındı.
-- Yeni v0.7 Ayarlar katmanında gradient, glow ve shadow kullanılmaz.
-- Eski çalışma-zamanı nota/melodi üretimi v0.7'de susturulur.
-- Menü ve sürüş müzikleri fiziksel MP3 dosyalarından oynatılır.
-- Menü ve sürüş müzik kaynakları birbirinden izole edilir.
-- v0.7 MP3 soundtrack GitHub Actions üzerinde deterministik olarak yeniden üretilebilir.
-- Menü parçası: `Kurye Merkezi / Gece`.
-- Sürüş parçaları: `Gece Ekspres`, `Asfalt Vardiyası`, `Yağmur Rotası`, `Şehir Baskısı`, `03:17 / Son Teslimat`.
-- v0.6.1 ve önceki oynanış katmanları geriye uyumluluk testleriyle korunur.
-
-## Android imzalama
-
-Kalıcı Android signing identity public Git deposuna eklenmez. `.jks`, credentials ve signing property dosyaları `.gitignore` ile engellenir.
-
-GitHub Actions repository secrets isimleri:
-
-```text
-DKD_LASTMILE_KEYSTORE_B64
-DKD_LASTMILE_KEYSTORE_PASSWORD
-DKD_LASTMILE_KEY_ALIAS
-DKD_LASTMILE_KEY_PASSWORD
-```
-
-Bu dört secret bir kez tanımlandıktan sonra yeni key üretilmez. Bundan sonraki Development APK, release APK ve AAB çıktıları aynı kalıcı imza zincirini kullanır.
-
-Development APK workflow:
-
-```text
-.github/workflows/dkd-lastmile-android-v07.yml
-```
-
-Release APK/AAB workflow:
-
-```text
-.github/workflows/dkd-lastmile-android-signed-release.yml
-```
-
-Android çıktısını Termux'tan başlatıp indirmek:
+## Termux / Expo Go 57.0.9
 
 ```bash
-cd "$HOME/projects/DraBornGames/DraBornGo-LastMile"
-bash scripts/dkd-android-output.sh development
-# veya
-bash scripts/dkd-android-output.sh apk
-bash scripts/dkd-android-output.sh aab
-```
-
-## Expo Go 57.x test hattı
-
-Expo Go için:
-
-```bash
-cd "$HOME/projects/DraBornGames/DraBornGo-LastMile"
+cd ~/projects/DraBornGames/DraBornGo-LastMile
 bash scripts/dkd-termux.sh
 ```
 
-Başlatıcı GitHub `main` dalını güvenli biçimde kontrol eder, bağımlılıkları gerekirse `npm ci` ile yeniler ve Expo Go Metro'yu başlatır. Açık oturum sırasında GitHub yaklaşık 30 saniyede bir kontrol edilir; yeni sürüm gelirse Metro güncel kaynakla yeniden başlatılır.
+İlk kurulum için GitHub'daki `scripts/dkd-termux-v071-bootstrap.sh` dosyasını
+indirip bash ile çalıştır. Başlatıcı gerekli paketleri kurar; GitHub main'i
+30 saniyede bir kontrol edip Metro'yu günceller. Açılış: `exp://127.0.0.1:8081`.
+Yerel değişiklikler eşitleme öncesinde git stash / koruma dalında saklanır.
+Telefon kapalıyken veya Termux durdurulduğunda izleme çalışmaz.
 
-Development APK, Expo Go uygulamasının içinde açılan bir paket değildir; kendi Expo Development Client uygulamasıdır. Development APK kurulduktan sonra Metro için gerekirse:
+## Tek kaynak, iki platform
 
-```bash
-cd "$HOME/projects/DraBornGames/DraBornGo-LastMile"
-npx expo start --dev-client --lan
-```
+Oyun içeriğini `game/` altında, ortak hesap/görev/kayıt davranışını `App.tsx`
+içinde değiştir. `npm run build:web` Android paketini ve web çıktısını aynı
+kaynaktan oluşturur. `web/dkd-browser-adapter.js` yalnız tarayıcı aygıt
+API'lerini uyarlar. Üretilmiş HTML/TS dosyalarını elle düzenleme.
 
-## Termux kurulumu ve GitHub eşitleme
+Android kaynak değişikliğinde GitHub Release APK otomatik derlenir.
+DrabornEagle_Web deposundaki web sync workflow'u 5 dakikada bir kaynak/Release
+kontrolü yapar; planlanan çalışma GitHub yoğunluğunda gecikebilir. Her build'in
+commit ve hash değerleri web `version.json` dosyasına yazılır.
 
-Hedef klasör:
+Google Play dağıtımı yok. APK aynı permanent keystore ile imzalanır; yeni
+anahtar üretilmez. İmza SHA256:
+`B3042B120C61C1DEEC8CC2619C5513C4F7B3378D81C6235E9285CCF6069609BC`.
+Anahtar/parolalar public depoya, web'e veya Supabase'e yüklenmez.
 
-```text
-$HOME/projects/DraBornGames/DraBornGo-LastMile
-```
-
-Gerekli paketler:
-
-```bash
-pkg update -y && pkg install -y git nodejs-lts util-linux gh unzip coreutils
-```
-
-Repo ilk kez kurulacaksa:
-
-```bash
-mkdir -p "$HOME/projects"
-git clone https://github.com/DrabornEagle/DraBornGames.git "$HOME/projects/DraBornGames"
-cd "$HOME/projects/DraBornGames/DraBornGo-LastMile"
-bash scripts/dkd-sync.sh once
-bash scripts/dkd-termux.sh
-```
-
-Repo zaten varsa tek seferlik güvenli eşitleme:
-
-```bash
-cd "$HOME/projects/DraBornGames/DraBornGo-LastMile" && bash scripts/dkd-sync.sh once
-```
-
-Sürekli eşitleme ve Expo Go başlatma zaten `dkd-termux.sh` / `dkd-termux-run.mjs` içinde birlikte yürütülür.
-
-`dkd-sync.sh`:
-
-- GitHub `main` dalını kaynak kabul eder.
-- Yerel farklı commitleri `dkd-preserved/*` dalında korur.
-- Değişmiş ve untracked dosyaları stash ile korur.
-- Devam eden merge/rebase varsa dosyalara dokunmadan durur.
-- `git clean` veya force-push kullanmaz.
-
-## Supabase Last-Mile
-
-Uygulama diğer alanlara dokunmadan özel `Last-Mile` şemasını kullanır. Runtime metadata v0.7 için `versionName=0.7.0`, `versionCode=1`, `camera=chase`, `audio=physical-mp3-only`, `expoSdk=57` değerleriyle eşitlenmiştir.
-
-Temel tablolar:
-
-```text
-Last-Mile.dkd_lastmile_profiles
-Last-Mile.dkd_lastmile_system_config
-Last-Mile.dkd_lastmile_city_zones
-Last-Mile.dkd_lastmile_content_packages
-Last-Mile.dkd_lastmile_content_customers
-Last-Mile.dkd_lastmile_mission_templates
-Last-Mile.dkd_lastmile_player_progress
-Last-Mile.dkd_lastmile_delivery_jobs
-Last-Mile.dkd_lastmile_admin_audit
-```
-
-Supabase service-role veya özel signing key mobil pakete gömülmez.
+Aynı hesap buluttaki kariyeri Android/web'de yükler. Cihaz değiştirirken
+kaydın gönderilmesini bekleyip diğer cihazda yeniden giriş yap. Eşzamanlı
+aktif oturumların kayıt birleştirmesi yoktur. APK güncellemeleri kullanıcı
+tarafından indirilip aynı uygulamanın üzerine kurulur.
 
 ## Doğrulama
 
-GitHub autogen ve check hatları aşağıdakileri doğrular:
+`npm run verify` · `npm run build:web`
 
-```bash
-npm ci --no-audit --no-fund
-npm run build:game
-npm test
-npm run typecheck
-EXPO_OFFLINE=1 npx expo install --check
-git diff --check
-```
-
-v0.7 geçişinde 173 test başarılı tamamlanmıştır. Native Android smoke workflow ayrıca `expo prebuild --platform android --clean` ve Gradle Development Client derlemesini kontrol eder.
-
-## Checkpoint
-
-Güncel v0.7 Android ilerleme/kalan işler kaydı:
-
-```text
-dkd-progress-v07.md
-```
+Son kontrol: 183 test, TypeScript, Expo SDK bağımlılık uyumu ve GitHub native
+Release derlemesi. Fiziksel Expo Go testi kullanıcının cihazında yapılır.
+Detaylı checkpoint: `docs/DKD-PROGRESS-v071.md`.
