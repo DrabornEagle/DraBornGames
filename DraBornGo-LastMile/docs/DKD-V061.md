@@ -6,8 +6,8 @@
 
 - Production source of truth after promotion: `main`.
 - Public release metadata remains `v0.6.1`, Android `versionCode 601`, Expo SDK 57.
-- Android/Expo Go device fixes were staged on `work/DraBornGo-LastMile-v0.6.2` without changing the public release number.
-- APK generation is intentionally disabled during this Expo Go validation stage.
+- Android/Expo Go device fixes were validated on `work/DraBornGo-LastMile-v0.6.2` without changing the public release number.
+- Final validation passes **168 Node tests**, TypeScript typecheck, Expo SDK dependency validation, generated-file/source equality and Android JavaScript export without producing an APK.
 - Public Last Mile legal pages are deployed by the DrabornEagle public web Pages workflow.
 
 ## Starter motorcycle + rider
@@ -74,7 +74,7 @@ Applied v0.6.1 migrations include:
 - `dkd_lastmile_v061_runtime_repair_audio54` (historical intermediate repair)
 - `dkd_lastmile_v061_final_device_audio48` (authoritative current home audio profile)
 
-Current expected config:
+Verified current config:
 - `dkd_runtime.version = 0.6.1`
 - `dkd_audio.home_profile = calm_night_48`
 - `dkd_audio.menu_profile = calm_night_48`
@@ -83,11 +83,10 @@ Current expected config:
 - delete-data RPC remains service-role-only
 - Edge Function API contract remains v0.6.1
 
-## Validation gates
+## Validation gates — completed
 
-The release is considered complete only after the promoted `main` commit passes:
 1. deterministic DK61 game build,
-2. all Node regression tests,
+2. 168/168 Node regression tests,
 3. TypeScript typecheck,
 4. Expo SDK dependency validation,
 5. Android JavaScript export without APK,
