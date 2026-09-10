@@ -19,6 +19,7 @@ on:
       - work/DraBornGo-LastMile-v0.6-customer-pool
       - work/DraBornGo-LastMile-v0.6.2
       - work/DraBornGo-LastMile-v0.7
+      - work/DraBornGo-LastMile-v0.7-device-polish
     paths:
       - 'DraBornGo-LastMile/game/**'
       - 'DraBornGo-LastMile/tests/**'
@@ -65,7 +66,7 @@ jobs:
           if (lock.packages && lock.packages['']) lock.packages[''].version = pkg.version;
           fs.writeFileSync('package-lock.json', JSON.stringify(lock, null, 2) + '\n');
           NODE
-      - name: Render v0.7 original game soundtrack
+      - name: Render v0.7 full-mix soundtrack
         run: |
           if ! command -v ffmpeg >/dev/null 2>&1; then
             sudo apt-get update -qq
