@@ -4,9 +4,10 @@
 
 - Android uygulama sürümü: `0.7.0`
 - Android `versionCode`: `1`
-- Test hedefi: Expo Go / Expo SDK 57
-- Bu aşamada APK veya AAB üretilmez.
 - Paket kimliği: `com.draborneagle.lastmile`
+- Test hedefi: Expo Go / Expo SDK 57
+- Kullanıcı cihazı test hedefi: Expo Go 57.0.9
+- Bu aşamada APK, AAB veya release keystore üretilmez.
 - GitHub ana kaynak: `DrabornEagle/DraBornGames` / `main`
 - Lokal hedef: `~/projects/DraBornGames/DraBornGo-LastMile`
 
@@ -19,12 +20,15 @@
    - Direksiyon yardımı
    - Titreşim
    - Arayüz animasyonu
-2. Başlangıç motosikletinin mevcut doğru yönü korunur. Sürücü/kurye meshleri motosikletten bağımsız olarak `PI` radyan (180°) çevrilir.
-3. Kurye Merkezi ve vardiya sürüşü için tek ses sahibi modeli kullanılır. Ana ekran parçası vardiya başlatılırken sıfırlanır ve durdurulur; sürüş parçası tek başına çalar.
-4. Eski ritim/prosedürel müzik katmanı v0.7'de gerçek, katmanlı ve özgün MP3 oyun müzikleri ile değiştirilir.
+   - Bunlar oyun içi 3D kamera ayarlarıdır; fiziksel Android `CAMERA` izni istenmez.
+2. Başlangıç Yamaha motosikletinin mevcut doğru yönü korunur. DK61 mesh raporunda Yamaha `0–21`, Quaternius sürücü `22–27` indeksleridir. Yalnızca sürücünün `22–27` meshleri `PI` radyan (180°) çevrilir; Yamaha meshlerine ilave yön dönüşü uygulanmaz.
+3. Kurye Merkezi ve vardiya sürüşü için tek ses sahibi modeli kullanılır. Ana ekran parçası vardiya başlatılırken durdurulur ve sıfırlanır; sürüş parçası tek başına çalar. Eski WebAudio/prosedürel merkez kaynakları da sürüş geçişinde kapatılır.
+4. Eski ritim/prosedürel etkin müzik yolu v0.7'de tam render edilmiş özgün MP3 oyun müzikleri ile değiştirilmiştir.
 5. Kurye Merkezi parçası: `Kurye Merkezi: Gece Ufku`.
 6. Beş ayrı vardiya müziği otomatik seçilebilir: `Ankara Gece Hattı`, `Son Kilometre`, `Fırtına Hattı`, `Asfalt Yıldızları`, `Final Kontrat`.
-7. Supabase `dkd-last-mile-api` sürümü `0.7` olarak yayımlandı ve çalışma/ses yapılandırması v0.7 ile eşitlendi.
+7. Supabase `dkd-last-mile-api` sürümü `0.7` olarak yayımlanmıştır. `Last-Mile.dkd_lastmile_system_config` içindeki runtime/audio ayarları `Expo SDK 57`, Android `versionCode 1` ve `single_owner=true` ile eşitlenmiştir.
+8. Last-Mile doğrudan istemci yüzeyi kilitlidir. `anon` ve `authenticated` rollerinin `Last-Mile` şema kullanım izni yoktur; Last-Mile tablolarında doğrudan istemci grant'i bulunmaz. Trigger yardımcı fonksiyonlarının varsayılan PUBLIC execute yetkisi de v0.7 final güvenlik migration'ı ile kaldırılmış, yalnızca `service_role` bırakılmıştır.
+9. GitHub CI generated-file yarışı giderilmiştir. `DKD Last Mile checks` deterministic üretimi doğrular, `DKD Last Mile autogen` generated dosyaları üretip güncel `main` üzerine rebase ederek push eder.
 
 ## İmzalama politikası
 
@@ -57,8 +61,10 @@ GitHub Actions v0.7 için şu kontrolleri çalıştırır:
 - v0.7 özgün müzik üretimi
 - DK61 model mesh raporu
 - oyun HTML bundle üretimi
-- Node testleri
+- deterministic ikinci bundle üretimi ve SHA-256 eşleşmesi
+- Node regression testleri
 - TypeScript typecheck
 - Expo SDK bağımlılık kontrolü
 - Android JavaScript export (APK üretmeden)
-- generated HTML/source tutarlılık kontrolü
+
+Fiziksel cihazdaki son görsel/ses kabul testi Expo Go 57.0.9 üzerinde yapılır; GitHub CI gerçek telefon ekranını göremez.
