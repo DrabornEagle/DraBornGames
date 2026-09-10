@@ -84,11 +84,23 @@ jobs:
           if (dkd_app.extra.dkd_realRewardsEnabled !== false) throw new Error('Google Play gerçek dünya ödül koruması aktif değil.');
           if (dkd_app.extra.dkd_googlePlayRewardsMode !== 'virtual-only') throw new Error('Google Play ödül modu virtual-only değil.');
           NODE
+
+          # expo-dev-client yalnız yerel Development Client/APK testleri içindir. Play AAB
+          # çalışma alanından kaldırılır; kaynak repo ve development profili değişmez.
+          npm uninstall expo-dev-client --no-audit --no-fund
+          node - <<'NODE'
+          const dkd_pkg = require('./package.json');
+          if (dkd_pkg.dependencies?.['expo-dev-client'] || dkd_pkg.devDependencies?.['expo-dev-client']) {
+            throw new Error('Google Play çalışma alanında expo-dev-client kaldı.');
+          }
+          NODE
           npm run typecheck
+          EXPO_OFFLINE=1 npx expo install --check
 
       - name: Generate Android project
         env:
           CI: '1'
+          NODE_ENV: production
         run: npx expo prebuild --platform android --clean
 
       - name: Restore and verify permanent key
@@ -125,6 +137,7 @@ jobs:
           DKD_LASTMILE_KEYSTORE_PASSWORD: ${{ secrets.DKD_LASTMILE_KEYSTORE_PASSWORD }}
           DKD_LASTMILE_KEY_ALIAS: ${{ secrets.DKD_LASTMILE_KEY_ALIAS }}
           DKD_LASTMILE_KEY_PASSWORD: ${{ secrets.DKD_LASTMILE_KEY_PASSWORD }}
+          NODE_ENV: production
         run: |
           set -euo pipefail
           mkdir -p dist-android
@@ -161,9 +174,9 @@ jobs:
           [[ "$dkd_target" == '36' ]] || { echo "AAB targetSdkVersion beklenen 36 değil: $dkd_target"; exit 41; }
           [[ "$dkd_version_code" == '1' ]] || { echo "AAB versionCode beklenen 1 değil: $dkd_version_code"; exit 42; }
           grep -q 'package="com.draborneagle.lastmile"' dist-android/PLAY-MANIFEST.xml
-          for dkd_permission in ACCESS_FINE_LOCATION ACCESS_COARSE_LOCATION CAMERA RECORD_AUDIO READ_CONTACTS READ_MEDIA_IMAGES READ_MEDIA_VIDEO READ_EXTERNAL_STORAGE WRITE_EXTERNAL_STORAGE MANAGE_EXTERNAL_STORAGE; do
+          for dkd_permission in ACCESS_FINE_LOCATION ACCESS_COARSE_LOCATION CAMERA RECORD_AUDIO READ_CONTACTS READ_MEDIA_IMAGES READ_MEDIA_VIDEO READ_EXTERNAL_STORAGE WRITE_EXTERNAL_STORAGE MANAGE_EXTERNAL_STORAGE SYSTEM_ALERT_WINDOW DUMP REQUEST_INSTALL_PACKAGES QUERY_ALL_PACKAGES PACKAGE_USAGE_STATS; do
             if grep -q "android.permission.$dkd_permission" dist-android/PLAY-MANIFEST.xml; then
-              echo "Gereksiz hassas izin final AAB manifestinde kaldı: $dkd_permission"
+              echo "Gereksiz/kısıtlı izin final AAB manifestinde kaldı: $dkd_permission"
               exit 43
             fi
           done
@@ -195,7 +208,7 @@ jobs:
           Path('dist-android/PLAY-16KB-CHECK.txt').write_text(f'PASS\n64-bit ELF checked={dkd_checked}\nminimum required LOAD alignment=0x4000\n')
           print(f'16 KB page-size postflight başarılı: {dkd_checked} adet 64-bit ELF kontrol edildi.')
           PY
-          printf 'PASS\ntargetSdkVersion=36\nversionCode=1\npackage=com.draborneagle.lastmile\nforbiddenSensitivePermissions=none\nsignerSHA256=%s\n' "$dkd_aab_fingerprint" > dist-android/PLAY-AAB-CHECK.txt
+          printf 'PASS\ntargetSdkVersion=36\nversionCode=1\npackage=com.draborneagle.lastmile\nforbiddenSensitiveOrRestrictedPermissions=none\nsignerSHA256=%s\n' "$dkd_aab_fingerprint" > dist-android/PLAY-AAB-CHECK.txt
 
       - name: Record hashes and certificate identity
         env:
@@ -207,7 +220,7 @@ jobs:
           keytool -list -v -keystore "$DKD_LASTMILE_KEYSTORE_PATH" -storepass "$DKD_LASTMILE_KEYSTORE_PASSWORD" -alias "$DKD_LASTMILE_KEY_ALIAS" | grep -E 'Alias name:|SHA256:' > dist-android/SIGNING-IDENTITY.txt
           if [[ "$DKD_OUTPUT_FORMAT" == 'aab' ]]; then
             cp docs/dkd-google-play-v07.md dist-android/PLAY-CONSOLE-CHECKLIST.md
-            printf 'versionName=0.7.0\nversionCode=1\npackage=com.draborneagle.lastmile\nformat=aab\ntargetSdkVersion=36\nplayRewardMode=virtual-only\nprivacy=https://www.draborneagle.com/draborngo/lastmile/gizlilik/\naccountDeletion=https://www.draborneagle.com/draborngo/lastmile/hesap-silme/\nsigning=DKD_LASTMILE permanent keystore\n' > dist-android/BUILD-INFO.txt
+            printf 'versionName=0.7.0\nversionCode=1\npackage=com.draborneagle.lastmile\nformat=aab\ntargetSdkVersion=36\nplayRewardMode=virtual-only\nproductionDevClient=removed\nprivacy=https://www.draborneagle.com/draborngo/lastmile/gizlilik/\naccountDeletion=https://www.draborneagle.com/draborngo/lastmile/hesap-silme/\nsigning=DKD_LASTMILE permanent keystore\n' > dist-android/BUILD-INFO.txt
           else
             printf 'versionName=0.7.0\nversionCode=1\npackage=com.draborneagle.lastmile\nformat=apk\nsigning=DKD_LASTMILE permanent keystore\n' > dist-android/BUILD-INFO.txt
           fi
