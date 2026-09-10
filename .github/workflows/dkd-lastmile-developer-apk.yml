@@ -70,18 +70,29 @@ jobs:
           CI: '1'
         run: npx expo prebuild --platform android --clean
 
-      - name: dkd_build_debug_apk
+      # assembleDebug intentionally does not embed the JS bundle and therefore
+      # requires Metro on the device. For a phone-installable developer build we
+      # build the release variant, which embeds index.android.bundle. Expo's
+      # generated Android project signs this test variant with its generated
+      # debug signing config; the private production keystore is not used here.
+      - name: dkd_build_standalone_developer_apk
         env:
           GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx4g -Dfile.encoding=UTF-8'
         run: |
           chmod +x android/gradlew
           cd android
-          ./gradlew assembleDebug --no-daemon --stacktrace
+          ./gradlew assembleRelease --no-daemon --stacktrace
+
+      - name: dkd_verify_embedded_js_bundle
+        run: |
+          test -f android/app/build/outputs/apk/release/app-release.apk
+          unzip -l android/app/build/outputs/apk/release/app-release.apk | grep -q 'assets/index.android.bundle'
+          echo 'Standalone APK contains assets/index.android.bundle; Metro is not required.'
 
       - name: dkd_prepare_artifact
         run: |
           mkdir -p dkd-artifacts
-          cp android/app/build/outputs/apk/debug/app-debug.apk dkd-artifacts/DraBornGo-LastMile-v0.7-developer.apk
+          cp android/app/build/outputs/apk/release/app-release.apk dkd-artifacts/DraBornGo-LastMile-v0.7-developer.apk
           sha256sum dkd-artifacts/DraBornGo-LastMile-v0.7-developer.apk | tee dkd-artifacts/DraBornGo-LastMile-v0.7-developer.sha256
 
       - name: dkd_upload_apk
