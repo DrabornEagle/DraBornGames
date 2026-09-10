@@ -1,48 +1,128 @@
 # DraBornGo / Son Kilometre
 
-**v0.5.0 — Expo Go SDK 57 + gerçek Last-Mile Supabase görev altyapısı.**
+**v0.7.0 · Android versionCode 1 · Expo SDK 57 · Expo Go + Development Client**
 
-DraBornGo / Last Mile; oyuncunun başlangıç scooter'ı ve küçük kurye şirketiyle başlayıp teslimatlar, hava koşulları, trafik, araç geliştirmeleri ve kariyer hedefleri üzerinden ilerlediği dikey ekran 3D kurye oyunudur.
+DraBornGo / Last Mile; oyuncunun başlangıç scooter'ı ve küçük kurye şirketiyle başlayıp teslimatlar, hava koşulları, trafik, araç geliştirmeleri, şirket büyütme ve sezon hedefleri üzerinden ilerlediği dikey ekran 3D kurye oyunudur.
 
-v0.5 geliştirme aşamasında APK/AAB üretilmez; Android testleri **Expo Go 57.x** üzerinden yapılır.
+## v0.7
 
-## v0.5
+- Android `versionName=0.7.0`, `versionCode=1` ve package `com.draborneagle.lastmile`.
+- Expo SDK 57 ailesi korunur.
+- Expo Go hızlı geliştirme/test hattı korunur.
+- `expo-dev-client` ile GitHub üzerinden gerçek Android Development APK hattı hazırdır.
+- Ayarlar ekranındaki Kamera bölümü geri getirildi ve genişletildi.
+- Yeni kariyer ve geçersiz/eski kamera ayarlarında varsayılan açı `Takip · Standart` (`chase`).
+- Kamera seçenekleri Yakın, Takip / Standart ve Yüksek görünüm olarak sunulur.
+- Ayarlar ekranı daha detaylı, renkli ve modern düz tasarıma taşındı.
+- Yeni v0.7 Ayarlar katmanında gradient, glow ve shadow kullanılmaz.
+- Eski çalışma-zamanı nota/melodi üretimi v0.7'de susturulur.
+- Menü ve sürüş müzikleri fiziksel MP3 dosyalarından oynatılır.
+- Menü ve sürüş müzik kaynakları birbirinden izole edilir.
+- v0.7 MP3 soundtrack GitHub Actions üzerinde deterministik olarak yeniden üretilebilir.
+- Menü parçası: `Kurye Merkezi / Gece`.
+- Sürüş parçaları: `Gece Ekspres`, `Asfalt Vardiyası`, `Yağmur Rotası`, `Şehir Baskısı`, `03:17 / Son Teslimat`.
+- v0.6.1 ve önceki oynanış katmanları geriye uyumluluk testleriyle korunur.
 
-- Şirket Kimliği ekranındaki `ANA RENK`, seçili amblem ve `KURYE STİLİ` rozetleri tek satırda gösterilir.
-- Ana ekranda oyuncunun Ad Soyad başlığı daha aşağı taşındı; Seviye ve Yıldız/Puan rozetleri doğrudan altında konumlandırıldı.
-- Son Garaj düzenlemesinde Ad Soyad + Seviye/Puan grubu ekran üzerinde bir kademe daha aşağı alındı.
-- Ana sayfa artık ayrı, daha enerjik `Kızılay Rush` prosedürel menü temasını kullanır; diğer menü ekranlarında oyuncunun seçtiği müzik geri yüklenir.
-- Müzik sistemi sekiz farklı prosedürel parçaya çıkarıldı: Neon Vardiya, Gece Rotası, Yağmur Hattı, Şehir Nabzı, Son Paket, Kızılay Rush, Asfalt 06 ve Sabaha Karşı.
-- Müzik ekranında bir parçaya dokunmak artık gerçek ses buffer'ını değiştirir; yalnızca kart seçimi değişmez.
-- Her yeni vardiyada önceki vardiyadan farklı bir sürüş parçası otomatik seçilir.
-- Başlangıç aracının kullanıcıya görünen adı `Şehir 50` yerine `Başlangıç Scooterı` olarak değiştirildi.
-- Garaj ekranı modern, renkli ve animasyonlu bir atölye/filo merkezine dönüştürüldü.
-- `YAKIT / ŞARJ` ve `ARAÇ DURUMU` kartları durum rengine göre değişen vurgu, hareketli doluluk çubuğu ve düşük seviyede uyarı animasyonu kullanır.
-- Yakıt %5'in veya araç durumu %10'un altındaysa vardiya, cloud sipariş kabul isteği gönderilmeden önce yerelde durdurulur.
-- Bu durumda ham `server_error` yerine yakıt ve bakım değerlerini gösteren renkli, animasyonlu servis penceresi açılır; kullanıcı doğrudan Garaj'a geçebilir.
-- Sunucudan yine `server_error` / bakım-yakıt ilişkili bir hata dönerse aynı servis penceresine dönüştürülür ve ham hata metni oyuncuya gösterilmez.
-- Trafik çizim kapasitesi 72 araca yükseltildi ve aktif trafik en az 56 araçla çalışır.
-- Trafik araçları on farklı gövde/kabin renk ailesi kullanır.
-- Rota trafiğinin bir bölümü aktif güzergâha odaklanmaya devam eder; yol boş görünmez.
-- Rota engellerinin yoğunluğu yaklaşık 10–24 aralığına yükseltildi.
-- Engel çeşitleri bariyer, koni, kasa, palet, lastik, yol çalışması, çukur ve yol variline çıkarıldı.
-- Engel ve trafik çarpışmaları kargo bütünlüğüne zarar verir; bütünlük %0 olduğunda gerçek cloud siparişi iptal edilir.
-- Ödül Kasası yarım panel yerine tam ekran, renkli ve animasyonlu sezon hedef merkezine dönüştürüldü.
-- v0.4 gerçek veri, hesap, cihaz saati, cloud-save ve admin/demo altyapısı korunur.
+## Android imzalama
 
-## v0.4 altyapısı
+Kalıcı Android signing identity public Git deposuna eklenmez. `.jks`, credentials ve signing property dosyaları `.gitignore` ile engellenir.
 
-- DraBornGo Supabase projesinde diğer alanlara dokunmadan özel `Last-Mile` şeması kullanılır.
-- Last-Mile tabloları `dkd_lastmile_*` standardındadır.
-- Normal vardiyalar gerçek `dkd_lastmile_delivery_jobs` kayıtları oluşturur.
-- Görev yaşam döngüsü: teklif, kabul, iptal ve tamamlama.
-- İlerleme cihaz yedeğinin yanında Supabase'e senkronize edilir.
-- Demo görevleri varsayılan kapalıdır; yalnızca admin ayarından açılır.
-- Eski sentetik sıralama rakipleri üretilen pakete eklenmez.
-- Telefon ekranında cihazın gerçek yerel saati kullanılır.
-- Supabase service-role/secret anahtarı mobil uygulamaya gömülmez.
+GitHub Actions repository secrets isimleri:
 
-## Supabase Last-Mile tabloları
+```text
+DKD_LASTMILE_KEYSTORE_B64
+DKD_LASTMILE_KEYSTORE_PASSWORD
+DKD_LASTMILE_KEY_ALIAS
+DKD_LASTMILE_KEY_PASSWORD
+```
+
+Bu dört secret bir kez tanımlandıktan sonra yeni key üretilmez. Bundan sonraki Development APK, release APK ve AAB çıktıları aynı kalıcı imza zincirini kullanır.
+
+Development APK workflow:
+
+```text
+.github/workflows/dkd-lastmile-android-v07.yml
+```
+
+Release APK/AAB workflow:
+
+```text
+.github/workflows/dkd-lastmile-android-signed-release.yml
+```
+
+Android çıktısını Termux'tan başlatıp indirmek:
+
+```bash
+cd "$HOME/projects/DraBornGames/DraBornGo-LastMile"
+bash scripts/dkd-android-output.sh development
+# veya
+bash scripts/dkd-android-output.sh apk
+bash scripts/dkd-android-output.sh aab
+```
+
+## Expo Go 57.x test hattı
+
+Expo Go için:
+
+```bash
+cd "$HOME/projects/DraBornGames/DraBornGo-LastMile"
+bash scripts/dkd-termux.sh
+```
+
+Başlatıcı GitHub `main` dalını güvenli biçimde kontrol eder, bağımlılıkları gerekirse `npm ci` ile yeniler ve Expo Go Metro'yu başlatır. Açık oturum sırasında GitHub yaklaşık 30 saniyede bir kontrol edilir; yeni sürüm gelirse Metro güncel kaynakla yeniden başlatılır.
+
+Development APK, Expo Go uygulamasının içinde açılan bir paket değildir; kendi Expo Development Client uygulamasıdır. Development APK kurulduktan sonra Metro için gerekirse:
+
+```bash
+cd "$HOME/projects/DraBornGames/DraBornGo-LastMile"
+npx expo start --dev-client --lan
+```
+
+## Termux kurulumu ve GitHub eşitleme
+
+Hedef klasör:
+
+```text
+$HOME/projects/DraBornGames/DraBornGo-LastMile
+```
+
+Gerekli paketler:
+
+```bash
+pkg update -y && pkg install -y git nodejs-lts util-linux gh unzip coreutils
+```
+
+Repo ilk kez kurulacaksa:
+
+```bash
+mkdir -p "$HOME/projects"
+git clone https://github.com/DrabornEagle/DraBornGames.git "$HOME/projects/DraBornGames"
+cd "$HOME/projects/DraBornGames/DraBornGo-LastMile"
+bash scripts/dkd-sync.sh once
+bash scripts/dkd-termux.sh
+```
+
+Repo zaten varsa tek seferlik güvenli eşitleme:
+
+```bash
+cd "$HOME/projects/DraBornGames/DraBornGo-LastMile" && bash scripts/dkd-sync.sh once
+```
+
+Sürekli eşitleme ve Expo Go başlatma zaten `dkd-termux.sh` / `dkd-termux-run.mjs` içinde birlikte yürütülür.
+
+`dkd-sync.sh`:
+
+- GitHub `main` dalını kaynak kabul eder.
+- Yerel farklı commitleri `dkd-preserved/*` dalında korur.
+- Değişmiş ve untracked dosyaları stash ile korur.
+- Devam eden merge/rebase varsa dosyalara dokunmadan durur.
+- `git clean` veya force-push kullanmaz.
+
+## Supabase Last-Mile
+
+Uygulama diğer alanlara dokunmadan özel `Last-Mile` şemasını kullanır. Runtime metadata v0.7 için `versionName=0.7.0`, `versionCode=1`, `camera=chase`, `audio=physical-mp3-only`, `expoSdk=57` değerleriyle eşitlenmiştir.
+
+Temel tablolar:
 
 ```text
 Last-Mile.dkd_lastmile_profiles
@@ -56,81 +136,27 @@ Last-Mile.dkd_lastmile_delivery_jobs
 Last-Mile.dkd_lastmile_admin_audit
 ```
 
-Ayrıntılar: `docs/SUPABASE-V04.md`
-
-## Geri dönüş noktaları
-
-v0.5 Garaj/servis hotfix öncesindeki doğrulanmış ana sürüm:
-
-```text
-backup/DraBornGo-LastMile-v0.5-pre-garage-hotfix
-aa6ad274dc981dcc70bf0d059c0a94422bf06243
-```
-
-v0.5 öncesindeki doğrulanmış v0.4 ana sürümü:
-
-```text
-backup/DraBornGo-LastMile-v0.4-pre-v0.5
-75f0b4571f00275747b0cd08d1d3b4483288ebd4
-```
-
-v0.4 öncesindeki v0.3 ana sürümü:
-
-```text
-backup/DraBornGo-LastMile-v0.3-pre-v0.4
-7935054a6bd649d3b7d5e6c9e4f4899faaadade1
-```
-
-Daha eski v0.101 yedeği de korunmaya devam eder.
-
-## Güncel Termux kurulumu
-
-Hedef klasör:
-
-```text
-$HOME/projects/DraBornGames/DraBornGo-LastMile
-```
-
-Tek komutla kurulum/güncelleme ve başlatma:
-
-```bash
-pkg update -y && pkg upgrade -y && pkg install -y git nodejs-lts util-linux curl && \
-bash -o pipefail -c 'curl -fsSL https://raw.githubusercontent.com/DrabornEagle/DraBornGames/main/DraBornGo-LastMile/scripts/dkd-install.sh | bash'
-```
-
-Mevcut kurulumda GitHub `main` ile güvenli tek seferlik eşitleme:
-
-```bash
-cd "$HOME/projects/DraBornGames/DraBornGo-LastMile" && bash scripts/dkd-sync.sh once
-```
-
-GitHub ile sürekli eşitleme:
-
-```bash
-cd "$HOME/projects/DraBornGames/DraBornGo-LastMile" && npm run sync:watch
-```
-
-Expo Go'yu LAN üzerinden başlatmak için:
-
-```bash
-cd "$HOME/projects/DraBornGames/DraBornGo-LastMile" && npm ci --no-audit --no-fund && npm run build:game && npm run start:lan
-```
-
-Metro önbelleğini temizleyerek başlatmak gerekirse:
-
-```bash
-cd "$HOME/projects/DraBornGames/DraBornGo-LastMile" && npx expo start --go --lan --clear
-```
+Supabase service-role veya özel signing key mobil pakete gömülmez.
 
 ## Doğrulama
 
+GitHub autogen ve check hatları aşağıdakileri doğrular:
+
 ```bash
-cd "$HOME/projects/DraBornGames/DraBornGo-LastMile"
 npm ci --no-audit --no-fund
 npm run build:game
 npm test
 npm run typecheck
-npx expo install --check
+EXPO_OFFLINE=1 npx expo install --check
+git diff --check
 ```
 
-APK/AAB çıktısı v0.5 için bilerek alınmaz.
+v0.7 geçişinde 173 test başarılı tamamlanmıştır. Native Android smoke workflow ayrıca `expo prebuild --platform android --clean` ve Gradle Development Client derlemesini kontrol eder.
+
+## Checkpoint
+
+Güncel v0.7 Android ilerleme/kalan işler kaydı:
+
+```text
+dkd-progress-v07.md
+```
