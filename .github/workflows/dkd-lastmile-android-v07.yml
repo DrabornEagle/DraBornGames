@@ -34,18 +34,6 @@ jobs:
         with:
           fetch-depth: 1
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: npm
-          cache-dependency-path: DraBornGo-LastMile/package-lock.json
-
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-          cache: gradle
-
       - name: Verify permanent signing secrets
         env:
           DKD_LASTMILE_KEYSTORE_B64: ${{ secrets.DKD_LASTMILE_KEYSTORE_B64 }}
@@ -55,6 +43,17 @@ jobs:
           test -n "${DKD_LASTMILE_KEYSTORE_PASSWORD:-}" || { echo 'DKD_LASTMILE_KEYSTORE_PASSWORD secret eksik.'; exit 21; }
           test -n "${DKD_LASTMILE_KEY_ALIAS:-}" || { echo 'DKD_LASTMILE_KEY_ALIAS secret eksik.'; exit 22; }
           test -n "${DKD_LASTMILE_KEY_PASSWORD:-}" || { echo 'DKD_LASTMILE_KEY_PASSWORD secret eksik.'; exit 23; }
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: DraBornGo-LastMile/package-lock.json
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
 
       - name: Install JavaScript dependencies
         run: npm ci --no-audit --no-fund
