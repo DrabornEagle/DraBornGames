@@ -35,8 +35,18 @@ for (const dkd_permission of [
   'android.permission.CAMERA',
   'android.permission.RECORD_AUDIO',
   'android.permission.READ_CONTACTS',
+  'android.permission.READ_MEDIA_IMAGES',
+  'android.permission.READ_MEDIA_VIDEO',
+  'android.permission.READ_EXTERNAL_STORAGE',
+  'android.permission.WRITE_EXTERNAL_STORAGE',
+  'android.permission.MANAGE_EXTERNAL_STORAGE',
+  'android.permission.SYSTEM_ALERT_WINDOW',
+  'android.permission.DUMP',
+  'android.permission.REQUEST_INSTALL_PACKAGES',
+  'android.permission.QUERY_ALL_PACKAGES',
+  'android.permission.PACKAGE_USAGE_STATS',
 ]) dkd_blocked.add(dkd_permission);
 dkd_app.expo.android = { ...(dkd_app.expo.android || {}), blockedPermissions: [...dkd_blocked] };
 await dkd_fs.writeFile(dkd_appPath, `${JSON.stringify(dkd_app, null, 2)}\n`);
 
-console.log('Google Play hazırlığı tamam: API 36 · gerçek dünya ödülü kapalı · gereksiz hassas izinler engelli.');
+console.log('Google Play hazırlığı tamam: API 36 · gerçek dünya ödülü kapalı · Dev Client Play çalışma alanından ayrık · gereksiz hassas/kısıtlı izinler engelli.');
