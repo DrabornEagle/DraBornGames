@@ -85,8 +85,8 @@ jobs:
           if (dkd_app.extra.dkd_googlePlayRewardsMode !== 'virtual-only') throw new Error('Google Play ödül modu virtual-only değil.');
           NODE
 
-          # expo-dev-client yalnız yerel Development Client/APK testleri içindir. Play AAB
-          # çalışma alanından kaldırılır; kaynak repo ve development profili değişmez.
+          # expo-dev-client yalnız Development Client/APK testleri içindir.
+          # Play çalışma alanından kaldırılır; kaynak repo değişmez.
           npm uninstall expo-dev-client --no-audit --no-fund
           node - <<'NODE'
           const dkd_pkg = require('./package.json');
@@ -174,12 +174,48 @@ jobs:
           [[ "$dkd_target" == '36' ]] || { echo "AAB targetSdkVersion beklenen 36 değil: $dkd_target"; exit 41; }
           [[ "$dkd_version_code" == '1' ]] || { echo "AAB versionCode beklenen 1 değil: $dkd_version_code"; exit 42; }
           grep -q 'package="com.draborneagle.lastmile"' dist-android/PLAY-MANIFEST.xml
-          for dkd_permission in ACCESS_FINE_LOCATION ACCESS_COARSE_LOCATION CAMERA RECORD_AUDIO READ_CONTACTS READ_MEDIA_IMAGES READ_MEDIA_VIDEO READ_EXTERNAL_STORAGE WRITE_EXTERNAL_STORAGE MANAGE_EXTERNAL_STORAGE SYSTEM_ALERT_WINDOW DUMP REQUEST_INSTALL_PACKAGES QUERY_ALL_PACKAGES PACKAGE_USAGE_STATS; do
-            if grep -q "android.permission.$dkd_permission" dist-android/PLAY-MANIFEST.xml; then
-              echo "Gereksiz/kısıtlı izin final AAB manifestinde kaldı: $dkd_permission"
-              exit 43
-            fi
-          done
+
+          # Yalnızca uygulamanın gerçekten talep ettiği <uses-permission*> düğümlerini
+          # denetle. Receiver/activity üzerindeki android:permission korumaları izin
+          # talebi değildir (örn. AndroidX ProfileInstaller -> DUMP).
+          python3 - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          dkd_manifest = Path('dist-android/PLAY-MANIFEST.xml')
+          dkd_root = ET.parse(dkd_manifest).getroot()
+          dkd_android = '{http://schemas.android.com/apk/res/android}'
+          dkd_requested = set()
+          for dkd_node in list(dkd_root):
+              dkd_tag = dkd_node.tag.rsplit('}', 1)[-1]
+              if dkd_tag.startswith('uses-permission'):
+                  dkd_name = dkd_node.attrib.get(dkd_android + 'name')
+                  if dkd_name:
+                      dkd_requested.add(dkd_name)
+          dkd_forbidden = {
+              'android.permission.ACCESS_FINE_LOCATION',
+              'android.permission.ACCESS_COARSE_LOCATION',
+              'android.permission.CAMERA',
+              'android.permission.RECORD_AUDIO',
+              'android.permission.READ_CONTACTS',
+              'android.permission.READ_MEDIA_IMAGES',
+              'android.permission.READ_MEDIA_VIDEO',
+              'android.permission.READ_EXTERNAL_STORAGE',
+              'android.permission.WRITE_EXTERNAL_STORAGE',
+              'android.permission.MANAGE_EXTERNAL_STORAGE',
+              'android.permission.SYSTEM_ALERT_WINDOW',
+              'android.permission.DUMP',
+              'android.permission.REQUEST_INSTALL_PACKAGES',
+              'android.permission.QUERY_ALL_PACKAGES',
+              'android.permission.PACKAGE_USAGE_STATS',
+          }
+          dkd_bad = sorted(dkd_requested & dkd_forbidden)
+          Path('dist-android/PLAY-REQUESTED-PERMISSIONS.txt').write_text(
+              '\n'.join(sorted(dkd_requested)) + '\n', encoding='utf-8'
+          )
+          if dkd_bad:
+              raise SystemExit('Gereksiz/kısıtlı uses-permission bulundu:\n' + '\n'.join(dkd_bad))
+          print('Play requested-permission kontrolü başarılı:', ', '.join(sorted(dkd_requested)))
+          PY
 
           unzip -l "$dkd_aab" | grep -qE 'base/lib/arm64-v8a/.*\.so'
           mkdir -p "$RUNNER_TEMP/dkd-aab-native"
@@ -208,7 +244,7 @@ jobs:
           Path('dist-android/PLAY-16KB-CHECK.txt').write_text(f'PASS\n64-bit ELF checked={dkd_checked}\nminimum required LOAD alignment=0x4000\n')
           print(f'16 KB page-size postflight başarılı: {dkd_checked} adet 64-bit ELF kontrol edildi.')
           PY
-          printf 'PASS\ntargetSdkVersion=36\nversionCode=1\npackage=com.draborneagle.lastmile\nforbiddenSensitiveOrRestrictedPermissions=none\nsignerSHA256=%s\n' "$dkd_aab_fingerprint" > dist-android/PLAY-AAB-CHECK.txt
+          printf 'PASS\ntargetSdkVersion=36\nversionCode=1\npackage=com.draborneagle.lastmile\nforbiddenSensitiveOrRestrictedRequestedPermissions=none\nsignerSHA256=%s\n' "$dkd_aab_fingerprint" > dist-android/PLAY-AAB-CHECK.txt
 
       - name: Record hashes and certificate identity
         env:
