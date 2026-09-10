@@ -23,7 +23,7 @@ test('camera controls remain available and Takip is the migrated standard start 
   assert.match(dkd_polish, /camera-mode:near/);
   assert.match(dkd_polish, /camera-mode:chase/);
   assert.match(dkd_polish, /camera-mode:high/);
-  assert.match(dkd_polish, /dkd_state\.dkd_settings\.dkd_camera = 'chase'/);
+  assert.match(dkd_polish, /dkd_game\.dkd_state\.dkd_settings\.dkd_camera = 'chase'/);
   assert.match(dkd_polish, /Takip[^\n]*Standart/);
   assert.doesNotMatch(JSON.stringify(dkd_app.expo.android.permissions || []), /CAMERA/);
 });
