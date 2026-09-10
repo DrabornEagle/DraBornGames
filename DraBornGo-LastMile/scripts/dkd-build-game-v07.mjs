@@ -21,6 +21,7 @@ dkd_source = dkd_source
   .replace("dkd_name: 'Yağmur Asfaltı', dkd_sub: 'Liquid Night', dkd_bpm: 116", "dkd_name: 'Yağmur Rotası', dkd_sub: 'Wet Asphalt', dkd_bpm: 118")
   .replace("dkd_name: 'Çankaya Pulse', dkd_sub: 'Breakbeat', dkd_bpm: 132", "dkd_name: 'Şehir Baskısı', dkd_sub: 'Break Drive', dkd_bpm: 136")
   .replace("dkd_name: 'Son Paket', dkd_sub: 'Cinematic Drive', dkd_bpm: 118", "dkd_name: '03:17 / Son Teslimat', dkd_sub: 'Final Contract', dkd_bpm: 112")
+  .replace('Yamaha+sürücü 180° cihaz yön düzeltmesi', 'sıfırdan premium bağımsız kurye · sele oturuşu')
   .replace('yeni 48 BPM Kurye Merkezi · sürüş/menü kesin ses izolasyonu · ardışık sürüş müzikleri', 'yeni fiziksel MP3 soundtrack · menü/sürüş kesin ses izolasyonu · v0.7 vardiya parçaları');
 
 await dkd_fs.writeFile(dkd_generatedFile, dkd_source);
