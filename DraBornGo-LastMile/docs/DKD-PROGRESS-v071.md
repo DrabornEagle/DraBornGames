@@ -19,4 +19,7 @@
 - Güncel APK aynı anahtarla mevcut kurulumun üzerine yüklenir; cihaz APK'yı kendiliğinden kurmaz.
 
 ## Son yayın kontrolü
-Web kaynak+APK kopyalama ve Pages yayını workflow'ları son çalışmada kontrol edilmelidir.
+Web senkron run 34535670649 ve Pages yayın run 34535711007 başarıyla tamamlandı.
+Canlı version.json ve APK release.json 0.7.1 / code 1 olarak doğrulandı.
+APK SHA256: 18b46d941d89cd85ec9dbdc7d98ca19dafcc22f85ee633c09d1fb0a2e04005d3.
+Doğrulama kapsamı: build, 183 test, TypeScript, gerçek Actions Android derlemesi, HTTP/hash ve CORS. Tarayıcı görsel/oturumlar arası gerçek hesap testi yapılmadı.
