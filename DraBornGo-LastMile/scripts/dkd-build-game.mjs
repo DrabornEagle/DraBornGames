@@ -6,7 +6,7 @@ import { createHash as dkd_createHash } from 'node:crypto';
 import { minify as dkd_minify } from 'terser';
 
 const dkd_root = dkd_path.resolve(dkd_path.dirname(dkd_fileURLToPath(import.meta.url)), '..');
-// Historical v0.4/v0.5/v0.6 compatibility layers remain bundled beneath the authoritative v0.6.1 runtime.
+// Historical v0.4/v0.5/v0.6/v0.6.1 compatibility layers remain bundled beneath the authoritative v0.7 runtime.
 const dkd_sources = [
   'data/dkd-roads.mjs',
   'dkd-data.mjs',
@@ -93,7 +93,8 @@ const dkd_sources = [
   'dkd-v061-release.mjs',
   'dkd-v061-device-hotfix.mjs',
   'dkd-v061-runtime-repair.mjs',
-  'dkd-v061-final-device-fix.mjs'
+  'dkd-v061-final-device-fix.mjs',
+  'dkd-v07-release.mjs'
 ];
 
 const dkd_v061ChunkFiles = [
@@ -129,12 +130,12 @@ async function dkd_prepareV061RawModel() {
 const dkd_v061ModelRawBase64 = await dkd_prepareV061RawModel();
 
 const dkd_mediaFiles = [
-  { dkd_file: 'audio/dkd-menu-ankara-gece.mp3', dkd_name: 'Ankara Gece Merkezi', dkd_sub: 'Nightwave', dkd_bpm: 96, dkd_mode: 'menu' },
-  { dkd_file: 'audio/dkd-drive-kizilay-hatti.mp3', dkd_name: 'Kızılay Hattı', dkd_sub: 'Urban Electro', dkd_bpm: 128, dkd_mode: 'drive' },
-  { dkd_file: 'audio/dkd-drive-gece-vardiyasi.mp3', dkd_name: 'Gece Vardiyası', dkd_sub: 'Deep Drive', dkd_bpm: 122, dkd_mode: 'drive' },
-  { dkd_file: 'audio/dkd-drive-yagmur-asfalti.mp3', dkd_name: 'Yağmur Asfaltı', dkd_sub: 'Liquid Night', dkd_bpm: 116, dkd_mode: 'drive' },
-  { dkd_file: 'audio/dkd-drive-cankaya-pulse.mp3', dkd_name: 'Çankaya Pulse', dkd_sub: 'Breakbeat', dkd_bpm: 132, dkd_mode: 'drive' },
-  { dkd_file: 'audio/dkd-drive-son-paket.mp3', dkd_name: 'Son Paket', dkd_sub: 'Cinematic Drive', dkd_bpm: 118, dkd_mode: 'drive' },
+  { dkd_file: 'audio/dkd-v07-home-kurye-merkezi.mp3', dkd_name: 'Kurye Merkezi: Gece Ufku', dkd_sub: 'Özgün Oyun Müziği', dkd_bpm: 82, dkd_mode: 'menu' },
+  { dkd_file: 'audio/dkd-v07-drive-ankara-gece.mp3', dkd_name: 'Ankara Gece Hattı', dkd_sub: 'Özgün Oyun Müziği', dkd_bpm: 118, dkd_mode: 'drive' },
+  { dkd_file: 'audio/dkd-v07-drive-son-kilometre.mp3', dkd_name: 'Son Kilometre', dkd_sub: 'Özgün Oyun Müziği', dkd_bpm: 124, dkd_mode: 'drive' },
+  { dkd_file: 'audio/dkd-v07-drive-firtina-hatti.mp3', dkd_name: 'Fırtına Hattı', dkd_sub: 'Özgün Oyun Müziği', dkd_bpm: 130, dkd_mode: 'drive' },
+  { dkd_file: 'audio/dkd-v07-drive-asfalt-yildizlari.mp3', dkd_name: 'Asfalt Yıldızları', dkd_sub: 'Özgün Oyun Müziği', dkd_bpm: 114, dkd_mode: 'drive' },
+  { dkd_file: 'audio/dkd-v07-drive-final-kontrat.mp3', dkd_name: 'Final Kontrat', dkd_sub: 'Özgün Oyun Müziği', dkd_bpm: 122, dkd_mode: 'drive' },
 ];
 
 const dkd_mediaAssets = await Promise.all(dkd_mediaFiles.map(async dkd_media => {
@@ -146,7 +147,7 @@ const dkd_threeCode = await dkd_fs.readFile(dkd_path.join(dkd_root, 'node_module
 const dkd_modules = await Promise.all(dkd_sources.map(async dkd_file => {
   let dkd_source = await dkd_fs.readFile(dkd_path.join(dkd_root, 'game', dkd_file), 'utf8');
   if (dkd_file === 'dkd-data.mjs') {
-    dkd_source = dkd_source.replace("export const dkd_version = 'v0.101';", "export const dkd_version = 'v0.6.1';");
+    dkd_source = dkd_source.replace("export const dkd_version = 'v0.101';", "export const dkd_version = 'v0.7';");
     dkd_source = dkd_source.replace(/export const dkd_demoRankings = \[[\s\S]*?\];/, 'export const dkd_demoRankings = [];');
   }
   // Only the player-facing privacy contact is changed. The owner's historical/admin
@@ -171,7 +172,7 @@ const dkd_bundle = await dkd_minify(dkd_code, {
 if (!dkd_bundle.code) throw new Error('Oyun paketi üretilemedi.');
 
 const dkd_css = await dkd_fs.readFile(dkd_path.join(dkd_root, 'game/dkd-style.css'), 'utf8');
-const dkd_html = `<!DOCTYPE html><html lang="tr"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"/><meta name="theme-color" content="#0c1224"/><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src 'self'; media-src data: blob:; connect-src 'none'; base-uri 'none'; form-action 'none'"/><title>DraBornGo / SON KİLOMETRE · v0.6.1</title><style>${dkd_css}</style></head><body><div id="dkd-shell"><canvas id="dkd-canvas" aria-label="3D kurye oyun sahnesi"></canvas><main id="dkd-ui"></main><div id="dkd-modal"></div><div id="dkd-toast" role="status" aria-live="polite"></div><div class="dkd-loading" id="dkd-loading"><div class="dkd-spinner"></div><b>SON KİLOMETRE</b><small>Şehrin hazırlanıyor…</small></div></div><script>/*DKD_BOOTSTRAP*/</script><script>${dkd_bundle.code.replace(/<\/script/gi, '<\\/script')}</script></body></html>`;
+const dkd_html = `<!DOCTYPE html><html lang="tr"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"/><meta name="theme-color" content="#0c1224"/><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src 'self'; media-src data: blob:; connect-src 'none'; base-uri 'none'; form-action 'none'"/><title>DraBornGo / SON KİLOMETRE · v0.7</title><style>${dkd_css}</style></head><body><div id="dkd-shell"><canvas id="dkd-canvas" aria-label="3D kurye oyun sahnesi"></canvas><main id="dkd-ui"></main><div id="dkd-modal"></div><div id="dkd-toast" role="status" aria-live="polite"></div><div class="dkd-loading" id="dkd-loading"><div class="dkd-spinner"></div><b>SON KİLOMETRE</b><small>Şehrin hazırlanıyor…</small></div></div><script>/*DKD_BOOTSTRAP*/</script><script>${dkd_bundle.code.replace(/<\/script/gi, '<\\/script')}</script></body></html>`;
 
 await dkd_fs.mkdir(dkd_path.join(dkd_root, 'src/generated'), { recursive: true });
 await dkd_fs.writeFile(
@@ -179,4 +180,4 @@ await dkd_fs.writeFile(
   `// Generated by scripts/dkd-build-game.mjs. Do not hand-edit.\nexport const dkd_gameHtml = ${JSON.stringify(dkd_html)};\n`
 );
 await dkd_fs.writeFile(dkd_path.join(dkd_root, 'assets/dkd-lastmile.html'), dkd_html);
-console.log(`DKD oyun paketi hazır: ${(Buffer.byteLength(dkd_html) / 1024 / 1024).toFixed(2)} MB. v0.6.1 · Yamaha+sürücü 180° cihaz yön düzeltmesi · yeni 48 BPM Kurye Merkezi · sürüş/menü kesin ses izolasyonu · ardışık sürüş müzikleri · güncel sürüm/iletişim görünümü · Supabase native köprü.`);
+console.log(`DKD oyun paketi hazır: ${(Buffer.byteLength(dkd_html) / 1024 / 1024).toFixed(2)} MB. v0.7 · Yamaha yönü korunur + sürücü ayrı 180° · özgün MP3 oyun müziği · Kurye Merkezi/sürüş tek ses sahibi · Kamera ayarları geri döndü · Expo Go SDK 57.`);
