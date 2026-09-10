@@ -28,18 +28,21 @@ test('roadside city layer adds dense trees and urban furniture', () => {
   assert.match(dkd_patch, /dkd_v05CityDetailCounts/);
 });
 
-test('city audio sign layer stays before road-edge safety and v0.6.1 final runtime', () => {
+test('city audio sign layer stays before road-edge safety and the final v0.6.1 device runtime', () => {
   const dkd_city = dkd_build.indexOf("'dkd-v05-city-audio-sign-hotfix.mjs'");
   const dkd_previous = dkd_build.indexOf("'dkd-v05-roadwork-audio-hotfix.mjs'");
   const dkd_final = dkd_build.indexOf("'dkd-v05-palm-roadedge-hotfix.mjs'");
   const dkd_v06 = dkd_build.indexOf("'dkd-v06-release.mjs'");
   const dkd_v061 = dkd_build.indexOf("'dkd-v061-release.mjs'");
   const dkd_device = dkd_build.indexOf("'dkd-v061-device-hotfix.mjs'");
+  const dkd_repair = dkd_build.indexOf("'dkd-v061-runtime-repair.mjs'");
   assert.ok(dkd_city > dkd_previous);
   assert.ok(dkd_final > dkd_city);
   assert.ok(dkd_v06 > dkd_final);
   assert.ok(dkd_v061 > dkd_v06);
   assert.ok(dkd_device > dkd_v061);
-  assert.match(dkd_build, /drive-only müzik izolasyonu/);
+  assert.ok(dkd_repair > dkd_device);
+  assert.match(dkd_build, /54 BPM Kurye Merkezi/);
+  assert.match(dkd_build, /ardışık sürüş müzikleri/);
   assert.match(dkd_build, /Supabase native köprü/);
 });
