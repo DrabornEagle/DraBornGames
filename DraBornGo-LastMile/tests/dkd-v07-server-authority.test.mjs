@@ -30,15 +30,15 @@ dkd_test('v0.7 istemci kaydı server-authoritative sayaçları ezemez', async ()
 
 dkd_test('v0.7 görev tamamlama accepted durumunu ve sunucu zamanını zorunlu kılar', async () => {
   const [, dkd_migration] = await dkd_readSources();
-  dkd_assert.match(dkd_migration, /dkd_job\.dkd_status<>'accepted'/);
-  dkd_assert.match(dkd_migration, /dkd_elapsed:=greatest\(0,floor\(extract\(epoch from \(now\(\)-dkd_job\.dkd_started_at\)\)\)::integer\)/);
-  dkd_assert.match(dkd_migration, /dkd_elapsed>=30/);
+  dkd_assert.match(dkd_migration, /dkd_job\.dkd_status\s*<>\s*'accepted'/);
+  dkd_assert.match(dkd_migration, /dkd_elapsed\s*:=\s*greatest\(0,\s*floor\(extract\(epoch from \(now\(\)-dkd_job\.dkd_started_at\)\)\)::integer\)/);
+  dkd_assert.match(dkd_migration, /dkd_elapsed\s*>=\s*30/);
   dkd_assert.match(dkd_migration, /dkd_implausible_completion/);
 });
 
 dkd_test('v0.7 fiziksel ödül sadece doğrulanmış sezon koşullarıyla açılır', async () => {
   const [dkd_edge, dkd_migration] = await dkd_readSources();
-  dkd_assert.match(dkd_migration, /dkd_verified_count<100 or dkd_storm_count<10/);
+  dkd_assert.match(dkd_migration, /dkd_verified_count\s*<\s*100\s+or\s+dkd_storm_count\s*<\s*10/);
   dkd_assert.match(dkd_migration, /server_final_requirements_not_met/);
   dkd_assert.match(dkd_migration, /manual_review_required/);
   dkd_assert.match(dkd_migration, /dkd_server_score/);
