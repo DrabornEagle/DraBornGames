@@ -8,4 +8,5 @@ final AAB manifest validation via bundletool
 final signer fingerprint verification
 production dev client removed
 restricted permissions blocked in Play workspace
-2026-09-10T23:20:00+03:00
+requested-permission XML validation (no false positives)
+2026-09-10T23:22:00+03:00
