@@ -174,7 +174,7 @@ test('build loads UI audio polish after real-career cleanup and scrubs legacy de
   assert.ok(dkd_realCareerIndex > dkd_runtimeIndex);
   assert.ok(dkd_polishIndex > dkd_realCareerIndex);
   assert.match(dkd_build, /dkd_demoRankings = \[\]/);
-  assert.match(dkd_build, /v0\.4/);
+  assert.match(dkd_build, /v0\.7/);
 });
 
 test('edge function only calls the dkd_lastmile RPC namespace', () => {
