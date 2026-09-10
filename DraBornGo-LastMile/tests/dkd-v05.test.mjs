@@ -12,16 +12,15 @@ const dkd_build = dkd_read('scripts/dkd-build-game.mjs');
 const dkd_package = JSON.parse(dkd_read('package.json'));
 const dkd_app = JSON.parse(dkd_read('app.json'));
 
-test('v0.6.1 is active while the v0.5 runtime layer remains bundled', () => {
-  assert.equal(dkd_package.version, '0.6.1');
-  assert.equal(dkd_app.expo.version, '0.6.1');
-  assert.equal(dkd_app.expo.android.versionCode, 601);
-  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.6.1');
-  assert.match(dkd_build, /dkd_version = 'v0\.6\.1'/);
-  assert.match(dkd_build, /SON KİLOMETRE · v0\.6\.1/);
+test('v0.7 is active while the v0.5 runtime layer remains bundled', () => {
+  assert.equal(dkd_package.version, '0.7.0');
+  assert.equal(dkd_app.expo.version, '0.7.0');
+  assert.equal(dkd_app.expo.android.versionCode, 1);
+  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.7');
   assert.match(dkd_build, /dkd-v05-style\.mjs/);
   assert.match(dkd_build, /dkd-v06-release\.mjs/);
   assert.match(dkd_build, /dkd-v061-release\.mjs/);
+  assert.match(dkd_build, /dkd-v07-release\.mjs/);
 });
 
 test('brand identity pills are forced into one compact row', () => {
@@ -44,11 +43,12 @@ test('music page has eight distinct selectable tracks and track clicks switch bu
   assert.match(dkd_patch, /Sabaha Karşı/);
 });
 
-test('every shift selects a different driving track', () => {
+test('historical shift music selection logic remains available beneath v0.7 audio ownership', () => {
   assert.match(dkd_patch, /dkd_Game\.prototype\.dkd_startRun = function dkd_v05StartRun/);
   assert.match(dkd_patch, /if \(dkd_nextTrack === dkd_previousTrack\)/);
   assert.match(dkd_patch, /dkd_v05LastShiftTrack = dkd_nextTrack/);
   assert.match(dkd_patch, /dkd_v05SwitchTrack\(this\.dkd_audio, dkd_nextTrack, 'drive'\)/);
+  assert.match(dkd_build, /dkd-v07-release\.mjs/);
 });
 
 test('traffic vehicles use a ten-color instance palette', () => {
@@ -72,10 +72,12 @@ test('prize vault is a full-screen animated colorful v0.5 surface without gradie
   assert.doesNotMatch(dkd_vault, /linear-gradient|radial-gradient|box-shadow|text-shadow/i);
 });
 
-test('v0.5 runtime is loaded after all v0.4 traffic layers and before v0.6', () => {
+test('v0.5 runtime is loaded after all v0.4 traffic layers and before current v0.7', () => {
   const dkd_v04 = dkd_build.indexOf("'dkd-v04-route-traffic-density.mjs'");
   const dkd_v05 = dkd_build.indexOf("'dkd-v05-style.mjs'");
   const dkd_v06 = dkd_build.indexOf("'dkd-v06-release.mjs'");
+  const dkd_v07 = dkd_build.indexOf("'dkd-v07-release.mjs'");
   assert.ok(dkd_v05 > dkd_v04);
   assert.ok(dkd_v06 > dkd_v05);
+  assert.ok(dkd_v07 > dkd_v06);
 });
