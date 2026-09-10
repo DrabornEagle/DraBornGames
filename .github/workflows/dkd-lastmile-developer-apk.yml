@@ -1,0 +1,86 @@
+name: DKD Last Mile Developer APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'DraBornGo-LastMile/**'
+      - '.github/workflows/dkd-lastmile-developer-apk.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dkd_lastmile_developer_apk_${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dkd_build_developer_apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 26
+    defaults:
+      run:
+        working-directory: DraBornGo-LastMile
+
+    steps:
+      - name: dkd_checkout
+        uses: actions/checkout@v4
+
+      - name: dkd_setup_node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: DraBornGo-LastMile/package-lock.json
+
+      - name: dkd_setup_java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: dkd_install_dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: dkd_render_game_bundle
+        run: npm run build:game
+
+      - name: dkd_run_tests
+        run: npm test
+
+      - name: dkd_typecheck
+        run: npm run typecheck
+
+      - name: dkd_expo_dependency_check
+        run: npx expo install --check
+
+      - name: dkd_prebuild_android
+        env:
+          CI: '1'
+        run: npx expo prebuild --platform android --clean
+
+      - name: dkd_build_debug_apk
+        env:
+          GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx4g -Dfile.encoding=UTF-8'
+        run: |
+          chmod +x android/gradlew
+          cd android
+          ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: dkd_prepare_artifact
+        run: |
+          mkdir -p dkd-artifacts
+          cp android/app/build/outputs/apk/debug/app-debug.apk dkd-artifacts/DraBornGo-LastMile-v0.7-developer.apk
+          sha256sum dkd-artifacts/DraBornGo-LastMile-v0.7-developer.apk | tee dkd-artifacts/DraBornGo-LastMile-v0.7-developer.sha256
+
+      - name: dkd_upload_apk
+        uses: actions/upload-artifact@v4
+        with:
+          name: dkd_lastmile_v07_developer_apk
+          path: |
+            DraBornGo-LastMile/dkd-artifacts/DraBornGo-LastMile-v0.7-developer.apk
+            DraBornGo-LastMile/dkd-artifacts/DraBornGo-LastMile-v0.7-developer.sha256
+          if-no-files-found: error
+          retention-days: 30
