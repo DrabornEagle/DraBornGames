@@ -26,9 +26,31 @@
 4. Eski ritim/prosedürel etkin müzik yolu v0.7'de tam render edilmiş özgün MP3 oyun müzikleri ile değiştirilmiştir.
 5. Kurye Merkezi parçası: `Kurye Merkezi: Gece Ufku`.
 6. Beş ayrı vardiya müziği otomatik seçilebilir: `Ankara Gece Hattı`, `Son Kilometre`, `Fırtına Hattı`, `Asfalt Yıldızları`, `Final Kontrat`.
-7. Supabase `dkd-last-mile-api` sürümü `0.7` olarak yayımlanmıştır. `Last-Mile.dkd_lastmile_system_config` içindeki runtime/audio ayarları `Expo SDK 57`, Android `versionCode 1` ve `single_owner=true` ile eşitlenmiştir.
-8. Last-Mile doğrudan istemci yüzeyi kilitlidir. `anon` ve `authenticated` rollerinin `Last-Mile` şema kullanım izni yoktur; Last-Mile tablolarında doğrudan istemci grant'i bulunmaz. Trigger yardımcı fonksiyonlarının varsayılan PUBLIC execute yetkisi de v0.7 final güvenlik migration'ı ile kaldırılmış, yalnızca `service_role` bırakılmıştır.
+7. Supabase `dkd-last-mile-api` semantik sürümü `0.7` olarak yayımlanmıştır. `Last-Mile.dkd_lastmile_system_config` içindeki runtime/audio ayarları `Expo SDK 57`, Android `versionCode 1` ve `single_owner=true` ile eşitlenmiştir.
+8. Last-Mile doğrudan istemci yüzeyi kilitlidir. `anon` ve `authenticated` rollerinin `Last-Mile` şema kullanım izni yoktur; Last-Mile tablolarında doğrudan istemci grant'i bulunmaz. Trigger yardımcı fonksiyonlarının varsayılan PUBLIC execute yetkisi de kaldırılmış, yalnızca `service_role` bırakılmıştır.
 9. GitHub CI generated-file yarışı giderilmiştir. `DKD Last Mile checks` deterministic üretimi doğrular, `DKD Last Mile autogen` generated dosyaları üretip güncel `main` üzerine rebase ederek push eder.
+10. Fiziksel ödül ve ilerleme tarafı `server authority v1` ile güçlendirilmiştir. İstemci artık kendi XP, seviye, cüzdan veya teslimat sayısını yükselterek ödül uygunluğu oluşturamaz.
+11. Sunucu görev havuzu istemcinin gönderdiği seviyeyi yetki kaynağı olarak kullanmaz; görevler `dkd_server_level` üzerinden açılır. Normal oyuncu ilerlemesi yalnızca sunucu tarafından doğrulanmış tamamlamalarla artar; admin hesabının seviye 50 / sınırsız test avantajları ayrı tutulur.
+12. Görev tamamlama için sunucuda `accepted` durum ve sunucu zaman damgası zorunludur. Çok hızlı veya aşırı geç tamamlama fiziksel ödül ilerlemesine sayılmaz, güvenlik olayına kaydedilir ve sunucu XP/cüzdan/teslimat sayaçlarını değiştirmez.
+13. Aktif sezon fiziksel ödül başvurusu için en az `100` server-verified teslimat ve bunların içinde en az `10` server-verified fırtına teslimatı gerekir. İstemcinin yolladığı final puanı yalnızca denetim verisi olarak saklanır; yarışma puanı son 100 doğrulanmış görevden sunucuda hesaplanır.
+14. Fiziksel ödül hiçbir zaman otomatik olarak teslim edilmiş sayılmaz. Sunucu uygunluğu geçen başvuru `pending_verification` olur; admin `dkd_lastmile_reward_queue` üzerinden görür ve not zorunlu `approved / rejected / fulfilled` inceleme akışı kullanır. Onay/teslim durumunda stok koruması ayrıca `dkd_server_verified=true` şartı uygular.
+15. Server authority üretim migration'ı `20260910073427_dkd_lastmile_v07_server_authority` olarak uygulanmıştır. `dkd-last-mile-api` bu katmanla birlikte production deployment generation `10`, `verify_jwt=true` olarak yayımlanmıştır.
+16. Server-authority davranışı hem production veritabanında rollback'li entegrasyon testleriyle hem de `tests/dkd-v07-server-authority.test.mjs` regression testiyle kilitlenmiştir. Eski, hardening öncesi tamamlanmış görevler bilinçli olarak güvenilir server-progress sayacına geri doldurulmamıştır.
+
+## Server Authority v1 güvenlik sınırı
+
+Oyuncunun cihazındaki kariyer kaydı; arayüz, yerel ilerleme ve senkronizasyon için saklanmaya devam eder. Fiziksel ödül uygunluğu açısından güvenilir kaynak ise yalnızca sunucu alanlarıdır:
+
+- `dkd_server_xp`
+- `dkd_server_level`
+- `dkd_server_wallet`
+- `dkd_server_deliveries`
+- `dkd_server_storm_deliveries`
+- `dkd_server_verified`
+- `dkd_server_elapsed_sec`
+- `dkd_server_score`
+
+Client metrics denetim amacıyla saklanabilir ancak bu değerler server-authoritative sayaçları veya fiziksel ödül sonucunu doğrudan belirlemez.
 
 ## İmzalama politikası
 
@@ -62,9 +84,11 @@ GitHub Actions v0.7 için şu kontrolleri çalıştırır:
 - DK61 model mesh raporu
 - oyun HTML bundle üretimi
 - deterministic ikinci bundle üretimi ve SHA-256 eşleşmesi
-- Node regression testleri
+- Node regression testleri, server-authority statik invariants dahil
 - TypeScript typecheck
 - Expo SDK bağımlılık kontrolü
 - Android JavaScript export (APK üretmeden)
+
+Production Supabase üzerinde transaction + rollback testleri şu kötüye kullanım yollarını ayrıca doğrular: sahte local XP/cüzdan/teslimat yükseltme, istemci seviye bypass'ı, accept edilmemiş job complete, aşırı hızlı complete, doğrulanmamış fiziksel ödül başvurusu ve server-score yerine sahte client-score kullanma. Test kayıtları rollback edildiği için production'da sahte claim/job bırakılmaz.
 
 Fiziksel cihazdaki son görsel/ses kabul testi Expo Go 57.0.9 üzerinde yapılır; GitHub CI gerçek telefon ekranını göremez.
