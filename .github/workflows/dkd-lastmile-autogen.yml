@@ -1,6 +1,6 @@
-# v0.6 real-data/player-auth Expo Go bundle generation
-# Validates player accounts, generated customer portraits, level-50 admin guard, plate registration,
-# rendered MP3 music, strict menu/drive audio isolation, road-safe city detail and v0.6 UI.
+# DraBornGo / Last Mile v0.7 Expo Go bundle generation
+# Renders the deterministic v0.7 soundtrack, rebuilds the WebView game bundle,
+# validates SDK 57 compatibility and commits generated artifacts back to the branch.
 name: DKD Last Mile autogen
 
 on:
@@ -18,11 +18,13 @@ on:
       - work/DraBornGo-LastMile-v0.6
       - work/DraBornGo-LastMile-v0.6-customer-pool
       - work/DraBornGo-LastMile-v0.6.2
+      - work/DraBornGo-LastMile-v0.7
     paths:
       - 'DraBornGo-LastMile/game/**'
       - 'DraBornGo-LastMile/tests/**'
       - 'DraBornGo-LastMile/scripts/dkd-build-game.mjs'
       - 'DraBornGo-LastMile/scripts/dkd-render-music.py'
+      - 'DraBornGo-LastMile/scripts/dkd-render-music-v07.py'
       - 'DraBornGo-LastMile/package.json'
       - 'DraBornGo-LastMile/app.json'
       - '.github/workflows/dkd-lastmile-autogen.yml'
@@ -62,13 +64,13 @@ jobs:
           if (lock.packages && lock.packages['']) lock.packages[''].version = pkg.version;
           fs.writeFileSync('package-lock.json', JSON.stringify(lock, null, 2) + '\n');
           NODE
-      - name: Render original MP3 soundtrack when missing
+      - name: Render v0.7 original game soundtrack
         run: |
           if ! command -v ffmpeg >/dev/null 2>&1; then
             sudo apt-get update -qq
             sudo apt-get install -y ffmpeg
           fi
-          python3 scripts/dkd-render-music.py
+          python3 scripts/dkd-render-music-v07.py --force
       - run: npm ci --no-audit --no-fund
       - run: npm run build:game
       - run: npm test
@@ -86,5 +88,5 @@ jobs:
             echo 'Generated files already current.'
             exit 0
           fi
-          git commit -m 'build(lastmile): regenerate v0.6 Expo Go bundle'
+          git commit -m 'build(lastmile): regenerate v0.7 Expo Go bundle'
           git push origin HEAD:${{ github.ref_name }}
