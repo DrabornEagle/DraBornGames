@@ -4,4 +4,5 @@ versionCode 1
 package com.draborneagle.lastmile
 permanent signing
 Play reward mode virtual-only
-2026-09-10T22:00:00+03:00
+final AAB manifest validation via bundletool
+2026-09-10T22:12:00+03:00
