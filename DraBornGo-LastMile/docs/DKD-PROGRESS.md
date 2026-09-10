@@ -1,102 +1,73 @@
 # DraBornGo / Son Kilometre — İlerleme Kaydı
 
-## v0.7 · Expo Go Android Finalizasyonu — 10 Eylül 2026
+## v0.7 final checkpoint — 10 Eylül 2026
 
-Durum: **Kod, generated oyun paketi ve Supabase Last-Mile production tarafı tamamlandı. Server-authority hardening production'a uygulandı ve rollback entegrasyon testleri geçti. APK/AAB bilerek üretilmedi; fiziksel son kabul testi Expo Go 57.0.9 üzerinde yapılacak.**
+Durum: **v0.7 kodu, Last-Mile production backend'i, server-authority güvenliği, regression testleri ve Developer APK build'i tamamlandı. Kalıcı production release keystore oluşturuldu ve public repoya konulmadan offline teslim edilir. Gerçek cihazdaki son görsel/ses kabul gözlemi kullanıcı tarafından yapılır.**
 
-### Sürüm
+### Sürüm ve build
 
 - Uygulama: `0.7.0`
 - Android `versionCode`: `1`
 - Paket: `com.draborneagle.lastmile`
 - Expo SDK: `57`
-- Test hedefi: Expo Go 57.x; kullanıcı cihazındaki hedef sürüm `57.0.9`
-- Dağıtım: bu checkpoint'te APK/AAB yok, release keystore yok.
+- GitHub: `DrabornEagle/DraBornGames` / `main`
+- Developer APK workflow: `DKD Last Mile Developer APK` run `#2 / 34453332952` — **SUCCESS**.
+- Developer APK SHA-256: `a149d02fbaf55e604d8729332312439e878658f0f72eded7e1092c9c0772815f`.
+- Developer APK Android debug imzası kullanır; production release keystore ayrıdır.
 
-### v0.7 tamamlananlar
+### v0.7 ürün tarafı
 
-- Ayarlar ekranına oyun içi kamera ayarları geri getirildi: `Yakın`, `Takip`, `Yüksek`.
-- Direksiyon yardımı, titreşim ve arayüz animasyonu aynı ayar bölümünde çalışır; controller action'ları kayıt durumuna yazıp ayarı saklar.
-- Fiziksel cihaz kamerası kullanılmaz ve Android `CAMERA` izni istenmez.
-- Başlangıç Yamaha modelinin yönü değiştirilmez. DK61 sınırı kesinleştirildi: Yamaha meshleri `0–21`, Quaternius sürücü meshleri `22–27`. Yalnızca `22–27` sürücü meshleri ayrıca `Math.PI` / 180° döndürülür.
-- Rider-only sınırı regression testine kilitlendi; `20` ve `21` numaralı Yamaha parçalarının yanlışlıkla döndürülmesi engellendi.
-- Kurye Merkezi ve aktif vardiya/sürüş için tek müzik sahibi sistemi etkin. Vardiya başlarken merkez, eski menu ve prosedürel kaynaklar durdurulur; yalnızca sürüş parçası çalışır.
-- Etkin v0.7 müzik yolu tam render edilmiş özgün MP3 oyun müziklerini kullanır. Soundtrack harmoni, bas, melodi, arpej, atmosfer ve kontrollü perküsyon katmanlarından üretilir; üçüncü taraf şarkı/sample kullanılmaz.
-- Ana merkez müziği: `Kurye Merkezi: Gece Ufku`.
-- Sürüş müzikleri: `Ankara Gece Hattı`, `Son Kilometre`, `Fırtına Hattı`, `Asfalt Yıldızları`, `Final Kontrat`.
-- Ankara gerçek yol paketi, gerçek görev sunucusu, müşteri portre havuzu, bulut kayıt, Garaj, sezonlar, özel müşteri hikâyeleri, ödül/final doğrulama ve admin araçları korunuyor.
+- Kamera mesafeleri `Yakın / Takip / Yüksek`, direksiyon yardımı, titreşim ve arayüz animasyonu geri getirildi.
+- Yamaha başlangıç motosikletinin doğru yönü korunuyor; yalnız Quaternius sürücü meshleri `22–27` 180° çevriliyor.
+- Kurye Merkezi ve vardiya sürüşünde tek ses sahibi var; müzikler üst üste binmiyor.
+- Özgün MP3 oyun müzikleri: `Kurye Merkezi: Gece Ufku`, `Ankara Gece Hattı`, `Son Kilometre`, `Fırtına Hattı`, `Asfalt Yıldızları`, `Final Kontrat`.
+- Ankara gerçek yol paketi, gerçek görev akışı, 47 müşteri portresi, bulut kayıt, Garaj, sezonlar, özel müşteri hikâyeleri, admin araçları ve fiziksel ödül/final sistemi korunuyor.
 
-### Server Authority v1 — tamamlandı
+### Server Authority v1
 
-- İstemci XP, seviye, cüzdan ve teslimat değerleri fiziksel ödül uygunluğunun güvenilir kaynağı olmaktan çıkarıldı.
-- Ayrı server-authoritative alanlar eklendi: `dkd_server_xp`, `dkd_server_level`, `dkd_server_wallet`, `dkd_server_deliveries`, `dkd_server_storm_deliveries`.
-- Görev açma, istemcinin gönderdiği seviyeyi görmezden gelir ve `dkd_server_level` kullanır.
-- Görev tamamlamak için job'ın önce sunucuda `accepted` olması gerekir. Sunucu kendi başlangıç/bitiş zamanından elapsed hesaplar.
-- 30 saniyeden hızlı veya makul üst sınırı aşan completion `dkd_server_verified=false` olur; server XP/cüzdan/teslimat ilerlemesi vermez ve `dkd_lastmile_security_events` kaydı üretir.
-- Server-verified completion; ödül, XP, toplam teslimat ve fırtına sayacını sunucuda günceller.
-- Fiziksel ödül başvurusu aktif sezonda en az `100` server-verified teslimat ve en az `10` server-verified fırtına teslimatı gerektirir.
-- İstemcinin final skoru ödül otoritesi değildir. Yarışma puanı en son 100 server-verified görevden sunucuda hesaplanır; istemci puanı yalnızca denetim verisidir.
-- Uygun başvuru doğrudan kazandırmaz: durum `pending_verification` olur. Admin kuyruğu ve not zorunlu `approved / rejected / fulfilled` inceleme RPC'leri eklendi.
-- Reward stock trigger artık `approved/fulfilled` için `dkd_server_verified=true` zorunluluğu da uygular.
-- Pre-hardening tamamlanmış görevler güvenilir server ilerlemesine geriye dönük eklenmedi; yeni güven zinciri sıfırdan başlar.
-- Production migration: `20260910073427_dkd_lastmile_v07_server_authority`.
-- Production Edge Function: `dkd-last-mile-api`, semantik `0.7`, deployment generation `10`, JWT doğrulaması açık, authority version `1`.
-- GitHub regression testi: `tests/dkd-v07-server-authority.test.mjs`.
+- İstemci XP, seviye, cüzdan ve teslimat değerleri fiziksel ödül otoritesi değil.
+- Güvenilir sayaçlar sunucuda: `dkd_server_xp`, `dkd_server_level`, `dkd_server_wallet`, `dkd_server_deliveries`, `dkd_server_storm_deliveries`.
+- `claim_job` istemci seviyesini yetki kaynağı olarak kullanmıyor.
+- `complete_job` için sunucuda `accepted` durum ve server timestamp zorunlu.
+- Sunucu elapsed süresini hesaplıyor; şüpheli tamamlamalar `dkd_server_verified=false` oluyor ve güvenilir ilerleme kazandırmıyor.
+- Fiziksel ödül için aktif sezonda en az `100` server-verified teslimat ve en az `10` server-verified fırtına teslimatı gerekiyor.
+- Final puanı sunucuda son 100 doğrulanmış görevden hesaplanıyor; client score yalnız denetim verisi.
+- Başvurular `pending_verification` ile admin kuyruğuna giriyor; `approved / rejected / fulfilled` akışı manuel admin incelemesi ve notuyla ilerliyor.
+- Ödül stok koruması server verification şartını zorunlu tutuyor.
+- Güvenlik olayları `dkd_lastmile_security_events` tablosunda kayıt altına alınabiliyor.
+- Hardening öncesi tamamlanmış görevler güvenilir server progress'e geriye dönük eklenmedi.
 
-### Server Authority production testleri
+### Supabase production
 
-Aşağıdaki senaryolar production Supabase üzerinde transaction içinde çalıştırıldı ve sonunda `ROLLBACK` edildi:
-
-- Sahte local `XP / seviye / cüzdan / teslimat` ile cloud-save yapılması server sayaçlarını değiştirmiyor.
-- `claim_job` çağrısında seviye `999` gönderilmesi server level sınırını aşamıyor.
-- `accepted` olmayan job tamamlanamıyor.
-- Accept'ten hemen sonra aşırı hızlı completion server-verified sayılmıyor ve ilerleme vermiyor.
-- Makul sürede tamamlanan job server-verified oluyor ve server XP/cüzdan/teslimat ilerlemesini artırıyor.
-- 100/10 server koşulu olmadan fiziksel ödül claim'i kabul edilmiyor.
-- Rollback testinde 100 verified job + 10 storm senaryosu kurularak server-score üretimi, admin kuyruğu, approve ve fulfill akışı doğrulandı.
-- Client tarafından gönderilen sahte final skoru server-score yerine kullanılamıyor.
-- Test sonrasında production'da sahte reward claim veya security event bırakılmadığı ayrıca kontrol edildi.
+- Proje: `guuwomvszlwhkmstewfl`.
+- Migration: `20260910073427_dkd_lastmile_v07_server_authority` — production'da uygulandı.
+- Edge Function: `dkd-last-mile-api` — semantik `0.7`, deployment generation `10`, authority version `1`, JWT doğrulaması açık.
+- `anon` ve `authenticated` rollerinin Last-Mile doğrudan tablo/şema erişimi yok.
+- Hassas Last-Mile RPC yüzeyi yalnız `service_role` üzerinden Edge Function köprüsüyle kullanılıyor.
+- Production transaction + rollback testlerinde sahte XP/cüzdan/teslimat, client level bypass, accept edilmemiş completion, aşırı hızlı completion, reward şartlarını bypass ve sahte final score senaryoları doğrulandı; test verisi bırakılmadı.
 
 ### GitHub / CI
 
-- `DKD Last Mile autogen` v0.7 müziklerini, DK61 mesh raporunu ve deterministic WebView oyun paketini üretir.
-- Autogen generated commit push yarışına karşı `fetch + rebase + push` kullanır.
-- `DKD Last Mile checks` generated dosyanın ikinci üretimde aynı SHA-256 sonucunu verdiğini doğrular; generated dosyanın commit sahipliği autogen workflow'undadır.
-- Dokümantasyon-only commit'ler pahalı kaynak testini gereksiz yere tetiklemez; kaynak, oyun, Supabase, test ve workflow değişiklikleri tam kontrolü tetikler.
-- v0.7 görsel/ses finalizasyon kontrolü: GitHub Actions `DKD Last Mile checks` run **#153 / 34447097506** — **SUCCESS**.
-- Bu kontrolde soundtrack render, mesh raporu, `npm ci`, oyun build'i, deterministic bundle kontrolü, Node testleri, TypeScript typecheck, Expo SDK dependency kontrolü ve Android JavaScript export başarıyla geçti.
-- Server-authority değişikliği PR #10 üzerinde aynı tam CI kapısından geçirilir; merge yalnızca başarılı sonuçtan sonra yapılır.
-- Son deterministic generated bundle commit'i: `2441be7d2f5b2c16fbf718b595d2186087cb1a9b`.
+- Server-authority hardening PR #10 tam CI kontrolünden sonra `main`e alındı.
+- Developer APK final pipeline PR #11 ile düzeltildi ve `main`e alındı.
+- Son Developer APK pipeline'ında oyun bundle üretimi, **177/177 test**, TypeScript typecheck, Expo config kontrolü, clean Android prebuild, Gradle `assembleDebug`, SHA-256 üretimi ve artifact upload başarılı.
+- Developer APK build süresi 26 dakikalık job sınırı içinde tamamlandı.
+- APK workflow artık dokümantasyon-only değişikliklerde gereksiz Android build'i başlatmıyor.
+- Backup branch'leri korunuyor; silinmedi.
 
-### Supabase Last-Mile üretim durumu
+### Release signing
 
-- Proje: DraBornGo / `guuwomvszlwhkmstewfl`.
-- `dkd-last-mile-api` ACTIVE; JWT doğrulaması açık.
-- `Last-Mile.dkd_lastmile_system_config` runtime/audio değerleri v0.7 ile eşit: Expo SDK 57, Android versionCode 1, `single_owner=true`.
-- v0.7 runtime/audio migration production'da: `20260910015452_dkd_lastmile_v07_expo_go_audio`.
-- v0.7 function lockdown production'da: `20260910064829_dkd_lastmile_v07_function_lockdown`.
-- v0.7 server authority production'da: `20260910073427_dkd_lastmile_v07_server_authority`.
-- `anon` ve `authenticated` rollerinin `Last-Mile` şema kullanım izni yok.
-- Last-Mile tablolarında doğrudan `anon/authenticated` tablo grant'i yok; tablo erişimi service-role/Edge katmanında tutuluyor.
-- Last-Mile RPC ve yardımcı fonksiyonların istemci execute yetkileri kapalı; Edge Function yalnızca doğrulanmış kullanıcı JWT'sinden sonra service-role RPC köprüsünü kullanır.
-- Security advisor'ın Last-Mile `RLS enabled, no policy` INFO kayıtları doğrudan client erişiminin bilinçli olarak kapalı olmasından kaynaklanır; public policy eklenmez.
-- Diğer `public` ve `draborngate` şemalarındaki advisor uyarıları bu Last-Mile çalışmasında değiştirilmez.
+Kalıcı DraBornGo Last Mile Android release keystore oluşturuldu. JKS/parola/private key public GitHub'a commit edilmedi ve edilmeyecek. Gelecekte production APK/AAB imzalamalarında aynı release keystore kullanılmalı. Developer APK ise test/geliştirme amacıyla debug-signed çıktıdır.
 
-### Termux / GitHub eşitleme
+### Termux
 
-Ana kaynak `main`, lokal hedef:
-
-```text
-$HOME/projects/DraBornGames/DraBornGo-LastMile
-```
-
-Kurulum/güncelleme/Expo Go tek komutu:
+Kurulum / güncelleme / Expo Go tek komutu:
 
 ```bash
 pkg update -y && pkg install -y git nodejs-lts util-linux curl && mkdir -p "$HOME/projects" && curl -fsSL https://raw.githubusercontent.com/DrabornEagle/DraBornGames/main/DraBornGo-LastMile/scripts/dkd-install.sh | bash
 ```
 
-Tek sefer güvenli sync:
+Tek sefer sync:
 
 ```bash
 cd "$HOME/projects/DraBornGames/DraBornGo-LastMile" && npm run sync
@@ -108,32 +79,14 @@ Sürekli sync:
 cd "$HOME/projects/DraBornGames/DraBornGo-LastMile" && npm run sync:watch
 ```
 
-Sync katmanı yerel değişiklik/ayrışma görürse kullanıcı çalışmasını silmeden branch/stash ile korur; temiz durumda `main` ile `origin/main` eşitlenir. Termux cihazına bu sohbetten doğrudan komut çalıştırılamadığı için fiziksel telefonun son eşitlemesi yukarıdaki komutla yapılır.
+### Kalan iş
 
-### Dağıtım anahtarı kararı
-
-Bu v0.7 checkpoint'inde APK/AAB/keystore **oluşturulmadı**. APK/AAB aşamasına geçildiğinde tek kalıcı production release keystore oluşturulacak; bütün sonraki Android çıktıları aynı anahtarla imzalanacak. `.jks`, `.keystore`, private key ve credential dosyaları public GitHub deposuna alınmayacak.
-
-### Fiziksel kabul kontrolü
-
-Kaynak/Supabase doğrulamasından sonra Expo Go 57.0.9 cihaz testinde yalnızca fiziksel kabul gözlemi kalır:
-
-1. Ana sayfada Kurye Merkezi müziği tek başına çalmalı.
-2. Vardiya başlayınca merkez müziği tamamen susmalı ve tek sürüş müziği duyulmalı.
-3. Yamaha doğru yönde kalmalı; sürücü motosikletle aynı sürüş yönüne bakacak şekilde düzelmiş görünmeli.
-4. Ayarlar > Sürüş ve kamera bölümünde Yakın/Takip/Yüksek ile direksiyon yardımı, titreşim ve animasyon ayarları çalışmalı.
-5. Uygulama içinde `v0.7`, Android metadata'da versionCode `1` korunmalı.
-6. Gerçek hesapla görev alınırken istemcideki local seviye değiştirilse bile sunucu yalnız kendi trusted level'ına uygun görev vermeli.
-7. Fiziksel ödül ekranı server verification sürecini atlayarak doğrudan onay/teslim durumuna geçmemeli.
-
-Fiziksel cihaz ekranı GitHub CI tarafından görülemediği için bu maddeler kullanıcı cihazında gözle doğrulanır; kod ve backend tarafındaki karşılıkları regression, migration ve rollback testleriyle kilitlidir.
+v0.7 kapsamında açık production kod, Supabase migration veya Android build işi bırakılmadı. GitHub CI gerçek telefon ekranını ve hoparlörünü göremediği için yalnız kullanıcı cihazındaki fiziksel kabul gözlemi kalır: müzik geçişi, Yamaha+sürücü yönü, kamera ayarları, görev akışı ve reward verification ekran davranışı.
 
 ---
 
 ## Önceki checkpoint özeti
 
-- v0.6: 47 müşterilik gerçek portre havuzu, gerçek görev içerikleri, admin seviye/plaka akışı ve Expo SDK 57 korunumu.
-- v0.5: Gerçek sezon, ödül doğrulama kuyruğu, özel müşteri akışı, sürüş/çarpışma hotfixleri ve Last-Mile özel Supabase güvenlik modeli.
-- v0.4: Gerçek hesap/bulut kayıt ve Last-Mile Edge/RPC temeli.
-
-Sonraki ürün geliştirme havuzu v0.8 ve sonrası için ayrıca ele alınır; v0.7 kapsamında fiziksel cihaz gözlemi dışında açık production kod/Supabase işi bırakılmayacaktır.
+- v0.6: 47 müşteri portresi, gerçek görev içerikleri, admin seviye/plaka akışı ve Expo SDK 57 korunumu.
+- v0.5: gerçek sezon, ödül doğrulama kuyruğu, özel müşteri akışı ve sürüş/çarpışma hotfixleri.
+- v0.4: gerçek hesap/bulut kayıt ve Last-Mile Edge/RPC temeli.
