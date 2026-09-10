@@ -11,7 +11,9 @@ const dkd_v07Previous = {
 };
 
 const dkd_v07Version = 'v0.7';
-const dkd_v07RiderMeshIndexes = new Set([20, 21, 22, 23, 24, 25, 26, 27]);
+// DK61 mesh report: 0–21 belong to Yamaha; 22–27 are the Quaternius rider.
+// Keep the motorcycle heading untouched and rotate only the rider by 180°.
+const dkd_v07RiderMeshIndexes = new Set([22, 23, 24, 25, 26, 27]);
 let dkd_v07Game = null;
 
 function dkd_v07InstallStyles() {
@@ -157,7 +159,7 @@ function dkd_v07EnforceDrive(dkd_game, dkd_restart = false) {
 
 // v0.6.1 registered pointer/touch listeners that call this global identifier.
 // Reassigning it guarantees those old listeners now start the v0.7 MP3 score instead
-// of recreating the legacy 48 BPM procedural Courier Center loop.
+// of recreating the legacy procedural Courier Center loop.
 try { dkd_v061FinalStartHome = dkd_v07StartHome; } catch {}
 
 function dkd_v07NormalizeVersion(dkd_root) {
@@ -173,21 +175,8 @@ function dkd_v07NormalizeVersion(dkd_root) {
   }
 }
 
-function dkd_v07RiderCandidate(dkd_mesh, dkd_index, dkd_modelBounds) {
-  if (dkd_v07RiderMeshIndexes.has(dkd_index)) return true;
-  if (!dkd_mesh?.isMesh || !dkd_mesh.geometry) return false;
-  dkd_mesh.geometry.computeBoundingBox?.();
-  const dkd_box = dkd_mesh.geometry.boundingBox;
-  if (!dkd_box || !dkd_modelBounds) return false;
-  const dkd_height = Math.max(0.001, dkd_modelBounds.max.y - dkd_modelBounds.min.y);
-  const dkd_centerY = (dkd_box.min.y + dkd_box.max.y) * 0.5;
-  const dkd_relativeY = (dkd_centerY - dkd_modelBounds.min.y) / dkd_height;
-  const dkd_color = Array.isArray(dkd_mesh.material) ? dkd_mesh.material[0]?.color : dkd_mesh.material?.color;
-  const dkd_red = Number(dkd_color?.r) || 0;
-  const dkd_green = Number(dkd_color?.g) || 0;
-  const dkd_blue = Number(dkd_color?.b) || 0;
-  const dkd_yellowOrSkin = (dkd_red > 0.42 && dkd_green > 0.20 && dkd_blue < 0.30) || (dkd_red > 0.52 && dkd_green > 0.45 && dkd_blue < 0.22);
-  return dkd_relativeY > 0.53 && dkd_yellowOrSkin;
+function dkd_v07RiderCandidate(dkd_mesh, dkd_index) {
+  return Boolean(dkd_mesh?.isMesh && dkd_v07RiderMeshIndexes.has(dkd_index));
 }
 
 function dkd_v07CorrectRiderOnly(dkd_bike) {
@@ -196,14 +185,12 @@ function dkd_v07CorrectRiderOnly(dkd_bike) {
   const dkd_model = dkd_bike.children.find(dkd_child => dkd_child?.name === 'dkd_v061_yamaha_soulgt125_quaternius_rider') || dkd_bike.children.find(dkd_child => dkd_child?.isGroup);
   if (!dkd_model) return dkd_bike;
 
-  const dkd_modelBounds = new dkd_three.Box3().setFromObject(dkd_model);
   let dkd_riderMeshes = 0;
   dkd_model.children.forEach((dkd_mesh, dkd_index) => {
-    if (!dkd_v07RiderCandidate(dkd_mesh, dkd_index, dkd_modelBounds)) return;
+    if (!dkd_v07RiderCandidate(dkd_mesh, dkd_index)) return;
     if (dkd_mesh.userData?.dkd_v07RiderHeading) return;
-    // Mesh positions in DK61 are authored in common model coordinates with local position 0,
-    // therefore this rotates the selected rider geometry around the same model origin without
-    // moving or reorienting any motorcycle mesh.
+    // DK61 rider meshes share the model origin with the Yamaha. Rotating only indexes
+    // 22–27 reverses the rider without touching any motorcycle geometry.
     dkd_mesh.rotation.y += Math.PI;
     dkd_mesh.userData.dkd_v07RiderHeading = true;
     dkd_riderMeshes += 1;
@@ -215,9 +202,8 @@ function dkd_v07CorrectRiderOnly(dkd_bike) {
 
 dkd_Scene.prototype.dkd_buildBike = function dkd_v07BuildBike(dkd_kind = 'scooter') {
   const dkd_bike = dkd_v07Previous.dkd_buildBike.call(this, dkd_kind);
-  // The v0.6.1 starter swaps its optimized model asynchronously on some devices.
-  // Correct immediately and once more on the next frames so the rider-only transform
-  // also catches the asynchronously replaced Yamaha/Worker assembly.
+  // The v0.6.1 device layer injects DK61 synchronously. Keep a short recheck loop only
+  // as a compatibility guard for older cached Expo Go runtimes.
   dkd_v07CorrectRiderOnly(dkd_bike);
   const dkd_scene = this;
   let dkd_attempts = 0;
@@ -326,6 +312,7 @@ window.dkd_lastMileRuntimeV07 = {
   dkd_audioSingleOwner: true,
   dkd_homeTrack: 'Kurye Merkezi: Gece Ufku',
   dkd_driveTrackCount: 5,
+  dkd_riderMeshIndexes: [22, 23, 24, 25, 26, 27],
   dkd_riderAdditionalHeadingRadians: Math.PI,
   dkd_motorcycleAdditionalHeadingRadians: 0,
 };
