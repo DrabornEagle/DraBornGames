@@ -30,9 +30,10 @@ test('drive mode forcibly kills every Courier Center and menu source', () => {
 });
 
 test('all visible stale release labels and the old public Gmail support address are normalized', () => {
-  assert.match(dkd_fix, /v0\\\.\\\(\?:4\|5\|6\)/);
+  assert.ok(dkd_fix.includes(".replace(/\\bv0\\.(?:4|5|6)(?!\\.\\d)/g, 'v0.6.1')"));
   assert.match(dkd_fix, /support@draborneagle\.com/);
-  assert.match(dkd_build, /replace\(\/draborneagle@gmail\\\.com\/gi, 'support@draborneagle\.com'\)/);
+  assert.match(dkd_fix, /draborneagle@gmail\\\.com/);
+  assert.match(dkd_build, /support@draborneagle\.com/);
 });
 
 test('final device layer is bundled last', () => {
