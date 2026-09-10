@@ -1,0 +1,931 @@
+{
+  "dkd_format": "DK61",
+  "dkd_bytes": 29530,
+  "dkd_mesh_count": 28,
+  "dkd_meshes": [
+    {
+      "dkd_index": 0,
+      "dkd_vertices": 636,
+      "dkd_faces": 1246,
+      "dkd_color_rgba": [
+        5,
+        5,
+        5,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.808,
+      "dkd_min": [
+        -0.8577,
+        0.1504,
+        -0.2604
+      ],
+      "dkd_max": [
+        0.8563,
+        1.2125,
+        0.2681
+      ],
+      "dkd_center": [
+        -0.0007,
+        0.6814,
+        0.0038
+      ],
+      "dkd_size": [
+        1.714,
+        1.0621,
+        0.5285
+      ]
+    },
+    {
+      "dkd_index": 1,
+      "dkd_vertices": 446,
+      "dkd_faces": 900,
+      "dkd_color_rgba": [
+        250,
+        203,
+        255,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.647,
+      "dkd_min": [
+        -0.9968,
+        0.0129,
+        -0.2914
+      ],
+      "dkd_max": [
+        0.9992,
+        1.1321,
+        0.2481
+      ],
+      "dkd_center": [
+        0.0012,
+        0.5725,
+        -0.0216
+      ],
+      "dkd_size": [
+        1.9961,
+        1.1192,
+        0.5395
+      ]
+    },
+    {
+      "dkd_index": 2,
+      "dkd_vertices": 76,
+      "dkd_faces": 156,
+      "dkd_color_rgba": [
+        18,
+        7,
+        3,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.451,
+      "dkd_min": [
+        -1.063,
+        0.1225,
+        -0.1031
+      ],
+      "dkd_max": [
+        0.8515,
+        1.0261,
+        0.1034
+      ],
+      "dkd_center": [
+        -0.1058,
+        0.5743,
+        0.0002
+      ],
+      "dkd_size": [
+        1.9146,
+        0.9037,
+        0.2066
+      ]
+    },
+    {
+      "dkd_index": 3,
+      "dkd_vertices": 106,
+      "dkd_faces": 203,
+      "dkd_color_rgba": [
+        1,
+        1,
+        1,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.604,
+      "dkd_min": [
+        -0.7275,
+        0.0462,
+        -0.3447
+      ],
+      "dkd_max": [
+        1.0605,
+        1.1322,
+        0.3517
+      ],
+      "dkd_center": [
+        0.1665,
+        0.5892,
+        0.0035
+      ],
+      "dkd_size": [
+        1.788,
+        1.086,
+        0.6964
+      ]
+    },
+    {
+      "dkd_index": 4,
+      "dkd_vertices": 122,
+      "dkd_faces": 185,
+      "dkd_color_rgba": [
+        204,
+        204,
+        204,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.627,
+      "dkd_min": [
+        -0.7244,
+        0.5344,
+        -0.1369
+      ],
+      "dkd_max": [
+        0.7382,
+        0.9918,
+        0.1159
+      ],
+      "dkd_center": [
+        0.0069,
+        0.7631,
+        -0.0105
+      ],
+      "dkd_size": [
+        1.4626,
+        0.4574,
+        0.2529
+      ]
+    },
+    {
+      "dkd_index": 5,
+      "dkd_vertices": 298,
+      "dkd_faces": 423,
+      "dkd_color_rgba": [
+        102,
+        102,
+        102,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.631,
+      "dkd_min": [
+        -0.8088,
+        0.3016,
+        -0.2554
+      ],
+      "dkd_max": [
+        0.9733,
+        1.2348,
+        0.2545
+      ],
+      "dkd_center": [
+        0.0822,
+        0.7682,
+        -0.0005
+      ],
+      "dkd_size": [
+        1.7821,
+        0.9331,
+        0.5099
+      ]
+    },
+    {
+      "dkd_index": 6,
+      "dkd_vertices": 62,
+      "dkd_faces": 90,
+      "dkd_color_rgba": [
+        14,
+        14,
+        14,
+        255
+      ],
+      "dkd_metalness": 0.816,
+      "dkd_roughness": 0.384,
+      "dkd_min": [
+        -0.4868,
+        0.2619,
+        -0.0634
+      ],
+      "dkd_max": [
+        0.4901,
+        1.2055,
+        0.2204
+      ],
+      "dkd_center": [
+        0.0016,
+        0.7337,
+        0.0785
+      ],
+      "dkd_size": [
+        0.9769,
+        0.9436,
+        0.2838
+      ]
+    },
+    {
+      "dkd_index": 7,
+      "dkd_vertices": 119,
+      "dkd_faces": 246,
+      "dkd_color_rgba": [
+        131,
+        131,
+        131,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.275,
+      "dkd_min": [
+        -0.8513,
+        0.2486,
+        -0.2976
+      ],
+      "dkd_max": [
+        0.6346,
+        1.0752,
+        0.3092
+      ],
+      "dkd_center": [
+        -0.1083,
+        0.6619,
+        0.0058
+      ],
+      "dkd_size": [
+        1.4859,
+        0.8266,
+        0.6068
+      ]
+    },
+    {
+      "dkd_index": 8,
+      "dkd_vertices": 84,
+      "dkd_faces": 83,
+      "dkd_color_rgba": [
+        4,
+        0,
+        204,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.498,
+      "dkd_min": [
+        0.6777,
+        0.744,
+        -0.1586
+      ],
+      "dkd_max": [
+        0.7504,
+        0.8127,
+        0.1645
+      ],
+      "dkd_center": [
+        0.714,
+        0.7784,
+        0.0029
+      ],
+      "dkd_size": [
+        0.0727,
+        0.0686,
+        0.3231
+      ]
+    },
+    {
+      "dkd_index": 9,
+      "dkd_vertices": 89,
+      "dkd_faces": 81,
+      "dkd_color_rgba": [
+        0,
+        7,
+        0,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.498,
+      "dkd_min": [
+        0.6675,
+        0.7631,
+        -0.1602
+      ],
+      "dkd_max": [
+        0.7572,
+        0.8327,
+        0.1637
+      ],
+      "dkd_center": [
+        0.7124,
+        0.7979,
+        0.0018
+      ],
+      "dkd_size": [
+        0.0897,
+        0.0696,
+        0.3239
+      ]
+    },
+    {
+      "dkd_index": 10,
+      "dkd_vertices": 56,
+      "dkd_faces": 80,
+      "dkd_color_rgba": [
+        204,
+        0,
+        0,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.573,
+      "dkd_min": [
+        0.5865,
+        0.8758,
+        -0.1675
+      ],
+      "dkd_max": [
+        0.6906,
+        0.9211,
+        -0.0487
+      ],
+      "dkd_center": [
+        0.6385,
+        0.8984,
+        -0.1081
+      ],
+      "dkd_size": [
+        0.104,
+        0.0453,
+        0.1188
+      ]
+    },
+    {
+      "dkd_index": 11,
+      "dkd_vertices": 41,
+      "dkd_faces": 78,
+      "dkd_color_rgba": [
+        4,
+        204,
+        0,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.498,
+      "dkd_min": [
+        0.5962,
+        0.8567,
+        0.0383
+      ],
+      "dkd_max": [
+        0.6051,
+        0.8645,
+        0.1061
+      ],
+      "dkd_center": [
+        0.6006,
+        0.8606,
+        0.0722
+      ],
+      "dkd_size": [
+        0.009,
+        0.0078,
+        0.0678
+      ]
+    },
+    {
+      "dkd_index": 12,
+      "dkd_vertices": 41,
+      "dkd_faces": 78,
+      "dkd_color_rgba": [
+        1,
+        46,
+        38,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.498,
+      "dkd_min": [
+        0.5944,
+        0.86,
+        0.0389
+      ],
+      "dkd_max": [
+        0.6034,
+        0.8679,
+        0.1067
+      ],
+      "dkd_center": [
+        0.5989,
+        0.8639,
+        0.0728
+      ],
+      "dkd_size": [
+        0.009,
+        0.0078,
+        0.0678
+      ]
+    },
+    {
+      "dkd_index": 13,
+      "dkd_vertices": 41,
+      "dkd_faces": 78,
+      "dkd_color_rgba": [
+        1,
+        0,
+        204,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.498,
+      "dkd_min": [
+        0.5922,
+        0.8645,
+        0.0389
+      ],
+      "dkd_max": [
+        0.6012,
+        0.8723,
+        0.1067
+      ],
+      "dkd_center": [
+        0.5967,
+        0.8684,
+        0.0728
+      ],
+      "dkd_size": [
+        0.009,
+        0.0078,
+        0.0678
+      ]
+    },
+    {
+      "dkd_index": 14,
+      "dkd_vertices": 131,
+      "dkd_faces": 221,
+      "dkd_color_rgba": [
+        120,
+        120,
+        120,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.647,
+      "dkd_min": [
+        -0.8542,
+        0.3125,
+        -0.2705
+      ],
+      "dkd_max": [
+        -0.0179,
+        0.7588,
+        0.1481
+      ],
+      "dkd_center": [
+        -0.436,
+        0.5356,
+        -0.0612
+      ],
+      "dkd_size": [
+        0.8362,
+        0.4463,
+        0.4186
+      ]
+    },
+    {
+      "dkd_index": 15,
+      "dkd_vertices": 135,
+      "dkd_faces": 255,
+      "dkd_color_rgba": [
+        16,
+        16,
+        16,
+        255
+      ],
+      "dkd_metalness": 0.698,
+      "dkd_roughness": 0.561,
+      "dkd_min": [
+        -0.6688,
+        0.2919,
+        -0.2137
+      ],
+      "dkd_max": [
+        0.8124,
+        0.9144,
+        0.2089
+      ],
+      "dkd_center": [
+        0.0718,
+        0.6032,
+        -0.0024
+      ],
+      "dkd_size": [
+        1.4812,
+        0.6225,
+        0.4226
+      ]
+    },
+    {
+      "dkd_index": 16,
+      "dkd_vertices": 21,
+      "dkd_faces": 39,
+      "dkd_color_rgba": [
+        104,
+        104,
+        104,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.498,
+      "dkd_min": [
+        0.4556,
+        0.8271,
+        0.0629
+      ],
+      "dkd_max": [
+        0.5449,
+        0.9209,
+        0.1351
+      ],
+      "dkd_center": [
+        0.5003,
+        0.874,
+        0.099
+      ],
+      "dkd_size": [
+        0.0893,
+        0.0938,
+        0.0722
+      ]
+    },
+    {
+      "dkd_index": 17,
+      "dkd_vertices": 46,
+      "dkd_faces": 93,
+      "dkd_color_rgba": [
+        90,
+        85,
+        204,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.647,
+      "dkd_min": [
+        -0.9107,
+        0.329,
+        -0.0946
+      ],
+      "dkd_max": [
+        -0.0518,
+        0.7879,
+        0.2371
+      ],
+      "dkd_center": [
+        -0.4813,
+        0.5585,
+        0.0713
+      ],
+      "dkd_size": [
+        0.8589,
+        0.4589,
+        0.3317
+      ]
+    },
+    {
+      "dkd_index": 18,
+      "dkd_vertices": 61,
+      "dkd_faces": 80,
+      "dkd_color_rgba": [
+        255,
+        217,
+        233,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.647,
+      "dkd_min": [
+        -0.8998,
+        0.8966,
+        -0.1505
+      ],
+      "dkd_max": [
+        -0.7234,
+        1.0365,
+        0.1451
+      ],
+      "dkd_center": [
+        -0.8116,
+        0.9665,
+        -0.0027
+      ],
+      "dkd_size": [
+        0.1764,
+        0.14,
+        0.2956
+      ]
+    },
+    {
+      "dkd_index": 19,
+      "dkd_vertices": 61,
+      "dkd_faces": 107,
+      "dkd_color_rgba": [
+        175,
+        182,
+        204,
+        255
+      ],
+      "dkd_metalness": 0.729,
+      "dkd_roughness": 0.647,
+      "dkd_min": [
+        0.624,
+        0.5697,
+        -0.2256
+      ],
+      "dkd_max": [
+        0.844,
+        0.8367,
+        0.2325
+      ],
+      "dkd_center": [
+        0.734,
+        0.7032,
+        0.0035
+      ],
+      "dkd_size": [
+        0.22,
+        0.267,
+        0.4581
+      ]
+    },
+    {
+      "dkd_index": 20,
+      "dkd_vertices": 68,
+      "dkd_faces": 109,
+      "dkd_color_rgba": [
+        204,
+        55,
+        26,
+        255
+      ],
+      "dkd_metalness": 0.992,
+      "dkd_roughness": 0.647,
+      "dkd_min": [
+        -0.615,
+        0.2074,
+        -0.0159
+      ],
+      "dkd_max": [
+        -0.0973,
+        0.398,
+        0.2089
+      ],
+      "dkd_center": [
+        -0.3562,
+        0.3027,
+        0.0965
+      ],
+      "dkd_size": [
+        0.5177,
+        0.1905,
+        0.2248
+      ]
+    },
+    {
+      "dkd_index": 21,
+      "dkd_vertices": 22,
+      "dkd_faces": 40,
+      "dkd_color_rgba": [
+        204,
+        63,
+        0,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.012,
+      "dkd_min": [
+        -0.7731,
+        0.6896,
+        -0.1551
+      ],
+      "dkd_max": [
+        -0.6705,
+        0.791,
+        -0.097
+      ],
+      "dkd_center": [
+        -0.7218,
+        0.7403,
+        -0.1261
+      ],
+      "dkd_size": [
+        0.1025,
+        0.1014,
+        0.0581
+      ]
+    },
+    {
+      "dkd_index": 22,
+      "dkd_vertices": 201,
+      "dkd_faces": 374,
+      "dkd_color_rgba": [
+        20,
+        20,
+        20,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.718,
+      "dkd_min": [
+        0.1326,
+        0.4485,
+        -0.2455
+      ],
+      "dkd_max": [
+        0.9682,
+        1.8009,
+        0.3797
+      ],
+      "dkd_center": [
+        0.5504,
+        1.1247,
+        0.0671
+      ],
+      "dkd_size": [
+        0.8356,
+        1.3524,
+        0.6251
+      ]
+    },
+    {
+      "dkd_index": 23,
+      "dkd_vertices": 122,
+      "dkd_faces": 145,
+      "dkd_color_rgba": [
+        102,
+        114,
+        103,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.718,
+      "dkd_min": [
+        0.4674,
+        0.6732,
+        -0.2424
+      ],
+      "dkd_max": [
+        0.7276,
+        1.2622,
+        0.2413
+      ],
+      "dkd_center": [
+        0.5975,
+        0.9677,
+        -0.0005
+      ],
+      "dkd_size": [
+        0.2603,
+        0.589,
+        0.4838
+      ]
+    },
+    {
+      "dkd_index": 24,
+      "dkd_vertices": 57,
+      "dkd_faces": 75,
+      "dkd_color_rgba": [
+        48,
+        22,
+        10,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.718,
+      "dkd_min": [
+        0.4763,
+        0.8063,
+        -0.1715
+      ],
+      "dkd_max": [
+        0.7224,
+        1.2719,
+        0.1714
+      ],
+      "dkd_center": [
+        0.5994,
+        1.0391,
+        0
+      ],
+      "dkd_size": [
+        0.2461,
+        0.4657,
+        0.3429
+      ]
+    },
+    {
+      "dkd_index": 25,
+      "dkd_vertices": 75,
+      "dkd_faces": 122,
+      "dkd_color_rgba": [
+        12,
+        25,
+        41,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.718,
+      "dkd_min": [
+        0.3543,
+        0.6161,
+        -0.2055
+      ],
+      "dkd_max": [
+        0.7209,
+        0.8439,
+        0.2139
+      ],
+      "dkd_center": [
+        0.5376,
+        0.73,
+        0.0042
+      ],
+      "dkd_size": [
+        0.3666,
+        0.2278,
+        0.4194
+      ]
+    },
+    {
+      "dkd_index": 26,
+      "dkd_vertices": 83,
+      "dkd_faces": 144,
+      "dkd_color_rgba": [
+        93,
+        81,
+        12,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.718,
+      "dkd_min": [
+        0.3663,
+        1.5618,
+        -0.2828
+      ],
+      "dkd_max": [
+        0.9985,
+        1.8831,
+        0.2897
+      ],
+      "dkd_center": [
+        0.6824,
+        1.7225,
+        0.0035
+      ],
+      "dkd_size": [
+        0.6321,
+        0.3214,
+        0.5724
+      ]
+    },
+    {
+      "dkd_index": 27,
+      "dkd_vertices": 97,
+      "dkd_faces": 178,
+      "dkd_color_rgba": [
+        255,
+        255,
+        239,
+        255
+      ],
+      "dkd_metalness": 0.047,
+      "dkd_roughness": 0.718,
+      "dkd_min": [
+        0.4618,
+        1.5166,
+        -0.1771
+      ],
+      "dkd_max": [
+        0.5316,
+        1.654,
+        0.1844
+      ],
+      "dkd_center": [
+        0.4967,
+        1.5853,
+        0.0036
+      ],
+      "dkd_size": [
+        0.0699,
+        0.1374,
+        0.3615
+      ]
+    }
+  ]
+}
