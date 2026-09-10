@@ -24,8 +24,11 @@ test('camera controls are restored without requesting physical camera permission
   assert.doesNotMatch(JSON.stringify(dkd_app.expo.android.permissions || []), /CAMERA/);
 });
 
-test('rider rotates independently while motorcycle keeps its current heading', () => {
+test('rider rotates independently while every Yamaha mesh keeps its current heading', () => {
+  assert.match(dkd_release, /new Set\(\[22, 23, 24, 25, 26, 27\]\)/);
+  assert.doesNotMatch(dkd_release, /new Set\(\[20, 21, 22/);
   assert.match(dkd_release, /dkd_mesh\.rotation\.y \+= Math\.PI/);
+  assert.match(dkd_release, /dkd_riderMeshIndexes: \[22, 23, 24, 25, 26, 27\]/);
   assert.match(dkd_release, /dkd_motorcycleAdditionalHeadingRadians: 0/);
   assert.match(dkd_release, /dkd_riderAdditionalHeadingRadians: Math\.PI/);
 });
