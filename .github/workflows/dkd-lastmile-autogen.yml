@@ -20,6 +20,7 @@ on:
       - work/DraBornGo-LastMile-v0.6.2
       - work/DraBornGo-LastMile-v0.7
       - work/DraBornGo-LastMile-v0.7-device-polish
+      - fix/DraBornGo-LastMile-v0.7-seat-wheel-camera
     paths:
       - 'DraBornGo-LastMile/game/**'
       - 'DraBornGo-LastMile/tests/**'
