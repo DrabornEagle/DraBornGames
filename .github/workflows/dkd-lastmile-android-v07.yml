@@ -25,13 +25,14 @@ jobs:
         working-directory: DraBornGo-LastMile
     env:
       DKD_LASTMILE_KEYSTORE_PATH: ${{ github.workspace }}/DraBornGo-LastMile/android/app/dkd-lastmile-release.jks
+      NODE_ENV: development
 
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 1
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: npm
@@ -134,7 +135,7 @@ jobs:
         if: steps.dkd-signing.outputs.available != 'true'
         run: |
           cd android
-          ./gradlew :app:assembleDebug --no-daemon --stacktrace
+          ./gradlew :app:assembleDebug -PreactNativeArchitectures=arm64-v8a --no-daemon --stacktrace
 
       - name: Verify signed APK and package metadata
         if: steps.dkd-signing.outputs.available == 'true'
@@ -156,17 +157,20 @@ jobs:
           dkd_zipalign="$(find "$ANDROID_HOME/build-tools" -type f -name zipalign | sort -V | tail -n 1)"
           dkd_apksigner="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
           dkd_apksigner_jar="$(find "$ANDROID_HOME/build-tools" -type f -path '*/lib/apksigner.jar' | sort -V | tail -n 1)"
+          dkd_unsigned_source="$(find android/app/build/outputs/apk/debug -type f -name '*.apk' | sort | head -n 1)"
           test -n "$dkd_zipalign"
           test -n "$dkd_apksigner"
           test -n "$dkd_apksigner_jar"
-          "$dkd_zipalign" -f -p 4 android/app/build/outputs/apk/debug/app-debug.apk dist-android/DraBornGo-LastMile-v0.7.0-development-vc1-unsigned.apk
+          test -f "$dkd_unsigned_source"
+          echo "Unsigned APK source: $(basename "$dkd_unsigned_source")"
+          "$dkd_zipalign" -f -p 4 "$dkd_unsigned_source" dist-android/DraBornGo-LastMile-v0.7.0-development-vc1-unsigned.apk
           if "$dkd_apksigner" verify dist-android/DraBornGo-LastMile-v0.7.0-development-vc1-unsigned.apk >/dev/null 2>&1; then
             echo 'Unsigned handoff unexpectedly contains a signature.' >&2
             exit 24
           fi
           cp "$dkd_apksigner_jar" dist-android/apksigner.jar
           sha256sum dist-android/DraBornGo-LastMile-v0.7.0-development-vc1-unsigned.apk > dist-android/DraBornGo-LastMile-v0.7.0-development-vc1-unsigned.apk.sha256
-          printf 'DraBornGo / Last Mile\nversionName=0.7.0\nversionCode=1\npackage=com.draborneagle.lastmile\nbuild=Expo SDK 57 development client\nsigning=pending local permanent JKS handoff\n' > dist-android/BUILD-INFO.txt
+          printf 'DraBornGo / Last Mile\nversionName=0.7.0\nversionCode=1\npackage=com.draborneagle.lastmile\nbuild=Expo SDK 57 development client\nabi=arm64-v8a\nsigning=pending local permanent JKS handoff\n' > dist-android/BUILD-INFO.txt
 
       - name: Upload signed development APK
         if: steps.dkd-signing.outputs.available == 'true'
