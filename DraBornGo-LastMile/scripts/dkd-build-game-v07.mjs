@@ -8,7 +8,7 @@ const dkd_generatedFile = dkd_path.join(dkd_scriptsDir, '.dkd-build-game-v07.gen
 
 let dkd_source = await dkd_fs.readFile(dkd_baseFile, 'utf8');
 const dkd_sourceNeedle = "  'dkd-v061-final-device-fix.mjs'\n];";
-const dkd_sourceReplacement = "  'dkd-v061-final-device-fix.mjs',\n  'dkd-v07-release.mjs'\n];";
+const dkd_sourceReplacement = "  'dkd-v061-final-device-fix.mjs',\n  'dkd-v07-release.mjs',\n  'dkd-v07-premium-rider.mjs'\n];";
 if (!dkd_source.includes(dkd_sourceNeedle)) throw new Error('v0.7 kaynak ekleme noktası bulunamadı.');
 dkd_source = dkd_source.replace(dkd_sourceNeedle, dkd_sourceReplacement);
 
