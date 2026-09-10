@@ -139,10 +139,19 @@ jobs:
 
       - name: Google Play AAB postflight
         if: env.DKD_OUTPUT_FORMAT == 'aab'
+        env:
+          DKD_LASTMILE_KEYSTORE_PASSWORD: ${{ secrets.DKD_LASTMILE_KEYSTORE_PASSWORD }}
+          DKD_LASTMILE_KEY_ALIAS: ${{ secrets.DKD_LASTMILE_KEY_ALIAS }}
         run: |
           set -euo pipefail
           dkd_aab='dist-android/DraBornGo-LastMile-v0.7.0-release-vc1.aab'
-          jarsigner -verify -strict -certs "$dkd_aab" >/dev/null
+          jarsigner -verify -certs "$dkd_aab" >/dev/null
+
+          dkd_expected_fingerprint='B3:04:2B:12:0C:61:C1:DE:EC:8C:C2:61:9C:55:13:C4:F7:B3:37:8D:81:C6:23:5E:92:85:CC:F6:06:96:09:BC'
+          dkd_keystore_fingerprint="$(keytool -list -v -keystore "$DKD_LASTMILE_KEYSTORE_PATH" -storepass "$DKD_LASTMILE_KEYSTORE_PASSWORD" -alias "$DKD_LASTMILE_KEY_ALIAS" | sed -n 's/^[[:space:]]*SHA256: //p' | head -n 1 | tr '[:lower:]' '[:upper:]')"
+          dkd_aab_fingerprint="$(keytool -printcert -jarfile "$dkd_aab" | sed -n 's/^[[:space:]]*SHA256: //p' | head -n 1 | tr '[:lower:]' '[:upper:]')"
+          [[ "$dkd_keystore_fingerprint" == "$dkd_expected_fingerprint" ]] || { echo 'Kalıcı JKS sertifika parmak izi beklenen kimlikle eşleşmiyor.'; exit 44; }
+          [[ "$dkd_aab_fingerprint" == "$dkd_expected_fingerprint" ]] || { echo 'AAB kalıcı Last Mile sertifikasıyla imzalanmamış.'; exit 45; }
 
           dkd_bundletool="$RUNNER_TEMP/bundletool-all-1.18.3.jar"
           curl -fsSL --retry 3 --retry-delay 2 -o "$dkd_bundletool" 'https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar'
@@ -152,7 +161,7 @@ jobs:
           [[ "$dkd_target" == '36' ]] || { echo "AAB targetSdkVersion beklenen 36 değil: $dkd_target"; exit 41; }
           [[ "$dkd_version_code" == '1' ]] || { echo "AAB versionCode beklenen 1 değil: $dkd_version_code"; exit 42; }
           grep -q 'package="com.draborneagle.lastmile"' dist-android/PLAY-MANIFEST.xml
-          for dkd_permission in ACCESS_FINE_LOCATION ACCESS_COARSE_LOCATION CAMERA RECORD_AUDIO READ_CONTACTS; do
+          for dkd_permission in ACCESS_FINE_LOCATION ACCESS_COARSE_LOCATION CAMERA RECORD_AUDIO READ_CONTACTS READ_MEDIA_IMAGES READ_MEDIA_VIDEO READ_EXTERNAL_STORAGE WRITE_EXTERNAL_STORAGE MANAGE_EXTERNAL_STORAGE; do
             if grep -q "android.permission.$dkd_permission" dist-android/PLAY-MANIFEST.xml; then
               echo "Gereksiz hassas izin final AAB manifestinde kaldı: $dkd_permission"
               exit 43
@@ -186,7 +195,7 @@ jobs:
           Path('dist-android/PLAY-16KB-CHECK.txt').write_text(f'PASS\n64-bit ELF checked={dkd_checked}\nminimum required LOAD alignment=0x4000\n')
           print(f'16 KB page-size postflight başarılı: {dkd_checked} adet 64-bit ELF kontrol edildi.')
           PY
-          printf 'PASS\ntargetSdkVersion=36\nversionCode=1\npackage=com.draborneagle.lastmile\nforbiddenSensitivePermissions=none\n' > dist-android/PLAY-AAB-CHECK.txt
+          printf 'PASS\ntargetSdkVersion=36\nversionCode=1\npackage=com.draborneagle.lastmile\nforbiddenSensitivePermissions=none\nsignerSHA256=%s\n' "$dkd_aab_fingerprint" > dist-android/PLAY-AAB-CHECK.txt
 
       - name: Record hashes and certificate identity
         env:
