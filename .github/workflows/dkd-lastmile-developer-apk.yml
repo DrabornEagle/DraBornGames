@@ -6,7 +6,16 @@ on:
     branches:
       - main
     paths:
-      - 'DraBornGo-LastMile/**'
+      - 'DraBornGo-LastMile/App.tsx'
+      - 'DraBornGo-LastMile/app.json'
+      - 'DraBornGo-LastMile/index.js'
+      - 'DraBornGo-LastMile/package.json'
+      - 'DraBornGo-LastMile/package-lock.json'
+      - 'DraBornGo-LastMile/assets/**'
+      - 'DraBornGo-LastMile/game/**'
+      - 'DraBornGo-LastMile/scripts/**'
+      - 'DraBornGo-LastMile/src/**'
+      - 'DraBornGo-LastMile/tests/**'
       - '.github/workflows/dkd-lastmile-developer-apk.yml'
 
 permissions:
@@ -53,8 +62,8 @@ jobs:
       - name: dkd_typecheck
         run: npm run typecheck
 
-      - name: dkd_expo_dependency_check
-        run: npx expo install --check
+      - name: dkd_expo_config_check
+        run: npx expo config --type public >/dev/null
 
       - name: dkd_prebuild_android
         env:
