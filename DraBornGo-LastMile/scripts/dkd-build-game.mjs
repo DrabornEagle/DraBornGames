@@ -149,8 +149,11 @@ const dkd_modules = await Promise.all(dkd_sources.map(async dkd_file => {
     dkd_source = dkd_source.replace("export const dkd_version = 'v0.101';", "export const dkd_version = 'v0.6.1';");
     dkd_source = dkd_source.replace(/export const dkd_demoRankings = \[[\s\S]*?\];/, 'export const dkd_demoRankings = [];');
   }
-  // The public player-facing support address is authoritative in generated Android/Expo output.
-  dkd_source = dkd_source.replace(/draborneagle@gmail\.com/gi, 'support@draborneagle.com');
+  // Only the player-facing privacy contact is changed. The owner's historical/admin
+  // authentication identity must never be rewritten by the bundle generator.
+  if (dkd_file === 'dkd-v061-release.mjs') {
+    dkd_source = dkd_source.replace(/Gizlilik iletişimi:\s*draborneagle@gmail\.com/gi, 'Gizlilik iletişimi: support@draborneagle.com');
+  }
   return dkd_source
     .replace(/^import .*?;\s*$/gm, '')
     .replace(/^export (?=(const|class|function)\s)/gm, '');
