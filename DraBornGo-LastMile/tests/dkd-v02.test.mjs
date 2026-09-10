@@ -7,12 +7,12 @@ const dkd_build = fs.readFileSync(new URL('../scripts/dkd-build-game.mjs', impor
 const dkd_app = JSON.parse(fs.readFileSync(new URL('../app.json', import.meta.url), 'utf8'));
 const dkd_package = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 
-test('v0.2 compatibility layer remains bundled in the current v0.6.1 Expo Go build', () => {
-  assert.equal(dkd_package.version, '0.6.1');
-  assert.equal(dkd_app.expo.version, '0.6.1');
-  assert.equal(dkd_app.expo.android.versionCode, 601);
-  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.6.1');
-  assert.match(dkd_build, /v0\.6\.1/);
+test('v0.2 compatibility layer remains bundled in the current v0.7 Expo Go build', () => {
+  assert.equal(dkd_package.version, '0.7.0');
+  assert.equal(dkd_app.expo.version, '0.7.0');
+  assert.equal(dkd_app.expo.android.versionCode, 1);
+  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.7');
+  assert.match(dkd_build, /dkd-v07-release\.mjs/);
 });
 
 test('v0.2 bundle includes starter scooter data and patch after base modules', () => {
