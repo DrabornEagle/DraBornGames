@@ -1,22 +1,9 @@
 name: DKD Last Mile Developer APK
 
+# Developer APK is intentionally manual-only. Device-polish iterations are tested
+# through Expo Go / JavaScript CI and must not produce an APK unless explicitly requested.
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - 'DraBornGo-LastMile/App.tsx'
-      - 'DraBornGo-LastMile/app.json'
-      - 'DraBornGo-LastMile/index.js'
-      - 'DraBornGo-LastMile/package.json'
-      - 'DraBornGo-LastMile/package-lock.json'
-      - 'DraBornGo-LastMile/assets/**'
-      - 'DraBornGo-LastMile/game/**'
-      - 'DraBornGo-LastMile/scripts/**'
-      - 'DraBornGo-LastMile/src/**'
-      - 'DraBornGo-LastMile/tests/**'
-      - '.github/workflows/dkd-lastmile-developer-apk.yml'
 
 permissions:
   contents: read
@@ -70,11 +57,6 @@ jobs:
           CI: '1'
         run: npx expo prebuild --platform android --clean
 
-      # assembleDebug intentionally does not embed the JS bundle and therefore
-      # requires Metro on the device. For a phone-installable developer build we
-      # build the release variant, which embeds index.android.bundle. Expo's
-      # generated Android project signs this test variant with its generated
-      # debug signing config; the private production keystore is not used here.
       - name: dkd_build_standalone_developer_apk
         env:
           GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx4g -Dfile.encoding=UTF-8'
