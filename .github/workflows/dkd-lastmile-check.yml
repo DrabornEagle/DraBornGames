@@ -2,9 +2,35 @@ name: DKD Last Mile checks
 on:
   push:
     branches: [main]
-    paths: ['DraBornGo-LastMile/**', '.github/workflows/dkd-lastmile-check.yml']
+    paths:
+      - 'DraBornGo-LastMile/App.tsx'
+      - 'DraBornGo-LastMile/app.json'
+      - 'DraBornGo-LastMile/package.json'
+      - 'DraBornGo-LastMile/package-lock.json'
+      - 'DraBornGo-LastMile/tsconfig.json'
+      - 'DraBornGo-LastMile/game/**'
+      - 'DraBornGo-LastMile/scripts/**'
+      - 'DraBornGo-LastMile/src/**'
+      - 'DraBornGo-LastMile/assets/**'
+      - 'DraBornGo-LastMile/supabase/**'
+      - 'DraBornGo-LastMile/tests/**'
+      - '.github/workflows/dkd-lastmile-check.yml'
+      - '.github/workflows/dkd-lastmile-autogen.yml'
   pull_request:
-    paths: ['DraBornGo-LastMile/**', '.github/workflows/dkd-lastmile-check.yml']
+    paths:
+      - 'DraBornGo-LastMile/App.tsx'
+      - 'DraBornGo-LastMile/app.json'
+      - 'DraBornGo-LastMile/package.json'
+      - 'DraBornGo-LastMile/package-lock.json'
+      - 'DraBornGo-LastMile/tsconfig.json'
+      - 'DraBornGo-LastMile/game/**'
+      - 'DraBornGo-LastMile/scripts/**'
+      - 'DraBornGo-LastMile/src/**'
+      - 'DraBornGo-LastMile/assets/**'
+      - 'DraBornGo-LastMile/supabase/**'
+      - 'DraBornGo-LastMile/tests/**'
+      - '.github/workflows/dkd-lastmile-check.yml'
+      - '.github/workflows/dkd-lastmile-autogen.yml'
   workflow_dispatch:
 permissions:
   contents: read
