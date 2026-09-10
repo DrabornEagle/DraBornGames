@@ -18,8 +18,8 @@ test('v0.7 starter bypasses legacy combined rider and creates an independent sea
   assert.match(dkd_rider, /dkd_kind === 'scooter'.*dkd_city50/s);
   assert.match(dkd_rider, /return dkd_v07PremiumStarter\(this\)/);
   assert.match(dkd_rider, /dkd_rider_pelvis/);
-  assert.match(dkd_rider, /dkd_rider_left_thigh/);
-  assert.match(dkd_rider, /dkd_rider_right_boot/);
+  assert.match(dkd_rider, /`dkd_rider_\$\{dkd_sideName\}_thigh`/);
+  assert.match(dkd_rider, /`dkd_rider_\$\{dkd_sideName\}_boot`/);
   assert.match(dkd_rider, /dkd_rider_fullface_helmet/);
   assert.match(dkd_rider, /dkd_v07_saddle/);
   assert.match(dkd_rider, /legacy combined scooter\+rider loader/i);
