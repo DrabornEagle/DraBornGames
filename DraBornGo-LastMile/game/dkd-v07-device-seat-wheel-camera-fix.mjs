@@ -1,7 +1,7 @@
 // DraBornGo / Last Mile v0.7 physical-device correction.
 // Device screenshots on 2026-09-10 showed three remaining issues after the first polish:
 // the rider centroid stayed too far toward the scooter nose, the symmetric wheel overlay
-// strobed at road-speed values, and existing saves had already consumed the first chase-camera migration.
+// made rear-wheel motion hard to read, and existing saves had already consumed the first chase-camera migration.
 
 const dkd_v07DeviceFixPrevious = {
   dkd_buildBike: dkd_Scene.prototype.dkd_buildBike,
@@ -60,9 +60,9 @@ function dkd_v07DeviceInstallRearWheelMarker(dkd_scene) {
   const dkd_treadMaterial = new dkd_three.MeshBasicMaterial({ color: '#111923' });
   const dkd_markerMaterial = new dkd_three.MeshBasicMaterial({ color: '#dfff55' });
 
-  // Real tyre rotation is easiest to read from an asymmetric tread marker. Eight dark tread
-  // blocks add tyre depth, while one lime marker breaks rotational symmetry so motion remains
-  // visible from the rear camera and does not look frozen at common phone frame rates.
+  // Eight dark tread blocks add tyre depth, while one asymmetric lime marker breaks
+  // rotational symmetry. The marker rides the existing wheel rig, whose angular speed
+  // already uses the simulation's metres-per-second value.
   for (let dkd_treadIndex = 0; dkd_treadIndex < 8; dkd_treadIndex += 1) {
     const dkd_angle = dkd_treadIndex * Math.PI / 4;
     const dkd_tread = new dkd_three.Mesh(
@@ -123,19 +123,6 @@ dkd_Scene.prototype.dkd_buildBike = function dkd_v07DeviceFixBuildBike(dkd_kind 
 dkd_Scene.prototype.dkd_update = function dkd_v07DeviceFixSceneUpdate(dkd_dt, dkd_run = null) {
   const dkd_result = dkd_v07DeviceFixPrevious.dkd_sceneUpdate.call(this, dkd_dt, dkd_run);
   dkd_v07DeviceApplyVisualFixes(this);
-
-  if (dkd_run && Array.isArray(this.dkd_v07PolishWheelRigs)) {
-    const dkd_speedKmh = Math.max(0, Number(dkd_run.dkd_speed) || 0);
-    const dkd_dtSafe = Math.max(0, Number(dkd_dt) || 0);
-    for (const dkd_wheel of this.dkd_v07PolishWheelRigs) {
-      const dkd_radius = Math.max(0.12, Number(dkd_wheel?.dkd_radius) || 0.215);
-      // The previous polish treated km/h as m/s. Undo that frame rotation, then apply
-      // physically scaled km/h -> m/s angular motion. This removes high-speed strobing.
-      const dkd_previousDelta = dkd_speedKmh * dkd_dtSafe / dkd_radius;
-      const dkd_correctDelta = (dkd_speedKmh / 3.6) * dkd_dtSafe / dkd_radius;
-      dkd_wheel.dkd_group.rotation.z += dkd_previousDelta - dkd_correctDelta;
-    }
-  }
   return dkd_result;
 };
 
@@ -151,10 +138,10 @@ dkd_Game.prototype.dkd_render = function dkd_v07DeviceFixRender(...dkd_args) {
 
 if (typeof window !== 'undefined') {
   window.dkd_lastMileRuntimeV07DeviceFix = {
-    dkd_version: 'v0.7-device-seat-wheel-camera-2',
+    dkd_version: 'v0.7-device-seat-wheel-camera-3',
     dkd_riderSeatTargetX: dkd_v07DeviceSeatTargetX,
     dkd_rearWheelVisibleMotion: true,
-    dkd_wheelSpeedUnit: 'kmh-to-ms',
+    dkd_wheelSpeedUnit: 'simulation-ms',
     dkd_defaultCamera: 'chase',
     dkd_cameraMigration: 'v2',
   };
