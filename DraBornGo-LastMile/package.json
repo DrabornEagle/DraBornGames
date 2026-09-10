@@ -7,12 +7,16 @@
     "start": "expo start --go --localhost",
     "start:lan": "expo start --go --lan",
     "start:clear": "expo start --go --localhost --clear",
+    "start:dev-client": "expo start --dev-client --lan",
     "build:game": "node scripts/dkd-build-game-v07.mjs",
     "test": "node --test tests/*.test.mjs",
     "typecheck": "tsc --noEmit",
     "preview": "node scripts/dkd-preview.mjs",
     "sync": "bash scripts/dkd-sync.sh",
     "sync:watch": "bash scripts/dkd-sync.sh watch",
+    "android:development": "bash scripts/dkd-android-output.sh development",
+    "android:apk": "bash scripts/dkd-android-output.sh apk",
+    "android:aab": "bash scripts/dkd-android-output.sh aab",
     "verify": "npm run build:game && npm test && npm run typecheck && expo install --check"
   },
   "dependencies": {
