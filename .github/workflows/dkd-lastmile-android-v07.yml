@@ -1,0 +1,123 @@
+name: DKD Last Mile Android v0.7
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dkd-lastmile-android-v07
+  cancel-in-progress: true
+
+jobs:
+  dkd-development-apk:
+    name: Signed Expo development APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: DraBornGo-LastMile
+    env:
+      DKD_LASTMILE_KEYSTORE_PASSWORD: ${{ secrets.DKD_LASTMILE_KEYSTORE_PASSWORD }}
+      DKD_LASTMILE_KEY_ALIAS: ${{ secrets.DKD_LASTMILE_KEY_ALIAS }}
+      DKD_LASTMILE_KEY_PASSWORD: ${{ secrets.DKD_LASTMILE_KEY_PASSWORD }}
+      DKD_LASTMILE_KEYSTORE_PATH: ${{ github.workspace }}/DraBornGo-LastMile/android/app/dkd-lastmile-release.jks
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: DraBornGo-LastMile/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - name: Verify permanent signing secrets
+        env:
+          DKD_LASTMILE_KEYSTORE_B64: ${{ secrets.DKD_LASTMILE_KEYSTORE_B64 }}
+        run: |
+          set -euo pipefail
+          test -n "${DKD_LASTMILE_KEYSTORE_B64:-}" || { echo 'DKD_LASTMILE_KEYSTORE_B64 secret eksik.'; exit 20; }
+          test -n "${DKD_LASTMILE_KEYSTORE_PASSWORD:-}" || { echo 'DKD_LASTMILE_KEYSTORE_PASSWORD secret eksik.'; exit 21; }
+          test -n "${DKD_LASTMILE_KEY_ALIAS:-}" || { echo 'DKD_LASTMILE_KEY_ALIAS secret eksik.'; exit 22; }
+          test -n "${DKD_LASTMILE_KEY_PASSWORD:-}" || { echo 'DKD_LASTMILE_KEY_PASSWORD secret eksik.'; exit 23; }
+
+      - name: Install JavaScript dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Verify game bundle before native build
+        run: |
+          npm run build:game
+          npm test
+          npm run typecheck
+          EXPO_OFFLINE=1 npx expo install --check
+
+      - name: Generate Expo Android development project
+        env:
+          CI: '1'
+        run: npx expo prebuild --platform android --clean
+
+      - name: Restore permanent signing keystore
+        env:
+          DKD_LASTMILE_KEYSTORE_B64: ${{ secrets.DKD_LASTMILE_KEYSTORE_B64 }}
+        run: |
+          printf '%s' "$DKD_LASTMILE_KEYSTORE_B64" | base64 --decode > "$DKD_LASTMILE_KEYSTORE_PATH"
+          chmod 600 "$DKD_LASTMILE_KEYSTORE_PATH"
+          keytool -list -keystore "$DKD_LASTMILE_KEYSTORE_PATH" -storepass "$DKD_LASTMILE_KEYSTORE_PASSWORD" -alias "$DKD_LASTMILE_KEY_ALIAS" >/dev/null
+
+      - name: Apply permanent key to debug and future release signing config
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          dkd_file = Path('android/app/build.gradle')
+          dkd_source = dkd_file.read_text()
+          dkd_replacements = {
+              "storeFile file('debug.keystore')": 'storeFile file(System.getenv("DKD_LASTMILE_KEYSTORE_PATH"))',
+              "storePassword 'android'": 'storePassword System.getenv("DKD_LASTMILE_KEYSTORE_PASSWORD")',
+              "keyAlias 'androiddebugkey'": 'keyAlias System.getenv("DKD_LASTMILE_KEY_ALIAS")',
+              "keyPassword 'android'": 'keyPassword System.getenv("DKD_LASTMILE_KEY_PASSWORD")',
+          }
+          for dkd_old, dkd_new in dkd_replacements.items():
+              if dkd_old not in dkd_source:
+                  raise SystemExit(f'Android signing satırı bulunamadı: {dkd_old}')
+              dkd_source = dkd_source.replace(dkd_old, dkd_new, 1)
+          dkd_file.write_text(dkd_source)
+          PY
+
+      - name: Build Expo development client APK
+        run: |
+          cd android
+          ./gradlew :app:assembleDebug --no-daemon --stacktrace
+
+      - name: Verify APK signature and package metadata
+        run: |
+          set -euo pipefail
+          mkdir -p dist-android
+          cp android/app/build/outputs/apk/debug/app-debug.apk dist-android/DraBornGo-LastMile-v0.7.0-development-vc1.apk
+          sha256sum dist-android/DraBornGo-LastMile-v0.7.0-development-vc1.apk > dist-android/DraBornGo-LastMile-v0.7.0-development-vc1.apk.sha256
+          dkd_apksigner="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
+          test -n "$dkd_apksigner"
+          "$dkd_apksigner" verify --verbose --print-certs dist-android/DraBornGo-LastMile-v0.7.0-development-vc1.apk > dist-android/SIGNATURE.txt
+          grep -q 'Verified' dist-android/SIGNATURE.txt || true
+          printf 'DraBornGo / Last Mile\nversionName=0.7.0\nversionCode=1\npackage=com.draborneagle.lastmile\nbuild=Expo SDK 57 development client\nsigning=DKD_LASTMILE permanent keystore\n' > dist-android/BUILD-INFO.txt
+
+      - name: Upload signed development APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: dkd-lastmile-v0.7.0-development-vc1
+          path: |
+            DraBornGo-LastMile/dist-android/DraBornGo-LastMile-v0.7.0-development-vc1.apk
+            DraBornGo-LastMile/dist-android/DraBornGo-LastMile-v0.7.0-development-vc1.apk.sha256
+            DraBornGo-LastMile/dist-android/SIGNATURE.txt
+            DraBornGo-LastMile/dist-android/BUILD-INFO.txt
+          if-no-files-found: error
+          retention-days: 30
