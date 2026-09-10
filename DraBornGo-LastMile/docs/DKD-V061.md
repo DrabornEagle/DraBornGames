@@ -7,7 +7,7 @@
 - Production source of truth after promotion: `main`.
 - Public release metadata remains `v0.6.1`, Android `versionCode 601`, Expo SDK 57.
 - Android/Expo Go device fixes were validated on `work/DraBornGo-LastMile-v0.6.2` without changing the public release number.
-- Final validation passes **168 Node tests**, TypeScript typecheck, Expo SDK dependency validation, generated-file/source equality and Android JavaScript export without producing an APK.
+- Final branch validation passes **168 Node tests**, TypeScript typecheck, Expo SDK dependency validation, generated-file/source equality and Android JavaScript export without producing an APK.
 - Public Last Mile legal pages are deployed by the DrabornEagle public web Pages workflow.
 
 ## Starter motorcycle + rider
