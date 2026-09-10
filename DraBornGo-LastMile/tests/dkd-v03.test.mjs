@@ -33,10 +33,10 @@ test('v0.3 özellikleri güncel v0.7 build içinde korunur', () => {
   const dkd_package = JSON.parse(dkd_read('package.json'));
   const dkd_app = JSON.parse(dkd_read('app.json'));
 
-  assert.equal(dkd_package.version, '0.7.0');
-  assert.equal(dkd_app.expo.version, '0.7.0');
+  assert.equal(dkd_package.version, '0.7.1');
+  assert.equal(dkd_app.expo.version, '0.7.1');
   assert.equal(dkd_app.expo.android.versionCode, 1);
-  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.7.0');
+  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.7.1');
 
   assert.match(dkd_build, /dkd-v03-patch\.mjs/);
   assert.match(dkd_build, /dkd-v03-runtime-fix\.mjs/);

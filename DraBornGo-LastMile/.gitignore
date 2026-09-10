@@ -16,3 +16,6 @@ credentials.json
 dkd-keystore.properties
 *.p12
 *.pem
+
+dist-web/
+dist-android/

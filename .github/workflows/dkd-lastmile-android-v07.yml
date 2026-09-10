@@ -142,12 +142,12 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p dist-android
-          cp android/app/build/outputs/apk/debug/app-debug.apk dist-android/DraBornGo-LastMile-v0.7.0-development-vc1.apk
-          sha256sum dist-android/DraBornGo-LastMile-v0.7.0-development-vc1.apk > dist-android/DraBornGo-LastMile-v0.7.0-development-vc1.apk.sha256
+          cp android/app/build/outputs/apk/debug/app-debug.apk dist-android/DraBornGo-LastMile-v0.7.1-development-vc1.apk
+          sha256sum dist-android/DraBornGo-LastMile-v0.7.1-development-vc1.apk > dist-android/DraBornGo-LastMile-v0.7.1-development-vc1.apk.sha256
           dkd_apksigner="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
           test -n "$dkd_apksigner"
-          "$dkd_apksigner" verify --verbose --print-certs dist-android/DraBornGo-LastMile-v0.7.0-development-vc1.apk > dist-android/SIGNATURE.txt
-          printf 'DraBornGo / Last Mile\nversionName=0.7.0\nversionCode=1\npackage=com.draborneagle.lastmile\nbuild=Expo SDK 57 development client\nsigning=DKD_LASTMILE permanent keystore\n' > dist-android/BUILD-INFO.txt
+          "$dkd_apksigner" verify --verbose --print-certs dist-android/DraBornGo-LastMile-v0.7.1-development-vc1.apk > dist-android/SIGNATURE.txt
+          printf 'DraBornGo / Last Mile\nversionName=0.7.1\nversionCode=1\npackage=com.draborneagle.lastmile\nbuild=Expo SDK 57 development client\nsigning=DKD_LASTMILE permanent keystore\n' > dist-android/BUILD-INFO.txt
 
       - name: Prepare secure unsigned APK handoff
         if: steps.dkd-signing.outputs.available != 'true'
@@ -163,23 +163,23 @@ jobs:
           test -n "$dkd_apksigner_jar"
           test -f "$dkd_unsigned_source"
           echo "Unsigned APK source: $(basename "$dkd_unsigned_source")"
-          "$dkd_zipalign" -f -p 4 "$dkd_unsigned_source" dist-android/DraBornGo-LastMile-v0.7.0-development-vc1-unsigned.apk
-          if "$dkd_apksigner" verify dist-android/DraBornGo-LastMile-v0.7.0-development-vc1-unsigned.apk >/dev/null 2>&1; then
+          "$dkd_zipalign" -f -p 4 "$dkd_unsigned_source" dist-android/DraBornGo-LastMile-v0.7.1-development-vc1-unsigned.apk
+          if "$dkd_apksigner" verify dist-android/DraBornGo-LastMile-v0.7.1-development-vc1-unsigned.apk >/dev/null 2>&1; then
             echo 'Unsigned handoff unexpectedly contains a signature.' >&2
             exit 24
           fi
           cp "$dkd_apksigner_jar" dist-android/apksigner.jar
-          sha256sum dist-android/DraBornGo-LastMile-v0.7.0-development-vc1-unsigned.apk > dist-android/DraBornGo-LastMile-v0.7.0-development-vc1-unsigned.apk.sha256
-          printf 'DraBornGo / Last Mile\nversionName=0.7.0\nversionCode=1\npackage=com.draborneagle.lastmile\nbuild=Expo SDK 57 development client\nabi=arm64-v8a\nsigning=pending local permanent JKS handoff\n' > dist-android/BUILD-INFO.txt
+          sha256sum dist-android/DraBornGo-LastMile-v0.7.1-development-vc1-unsigned.apk > dist-android/DraBornGo-LastMile-v0.7.1-development-vc1-unsigned.apk.sha256
+          printf 'DraBornGo / Last Mile\nversionName=0.7.1\nversionCode=1\npackage=com.draborneagle.lastmile\nbuild=Expo SDK 57 development client\nabi=arm64-v8a\nsigning=pending local permanent JKS handoff\n' > dist-android/BUILD-INFO.txt
 
       - name: Upload signed development APK
         if: steps.dkd-signing.outputs.available == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: dkd-lastmile-v0.7.0-development-vc1
+          name: dkd-lastmile-v0.7.1-development-vc1
           path: |
-            DraBornGo-LastMile/dist-android/DraBornGo-LastMile-v0.7.0-development-vc1.apk
-            DraBornGo-LastMile/dist-android/DraBornGo-LastMile-v0.7.0-development-vc1.apk.sha256
+            DraBornGo-LastMile/dist-android/DraBornGo-LastMile-v0.7.1-development-vc1.apk
+            DraBornGo-LastMile/dist-android/DraBornGo-LastMile-v0.7.1-development-vc1.apk.sha256
             DraBornGo-LastMile/dist-android/SIGNATURE.txt
             DraBornGo-LastMile/dist-android/BUILD-INFO.txt
           if-no-files-found: error
@@ -189,10 +189,10 @@ jobs:
         if: steps.dkd-signing.outputs.available != 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: dkd-lastmile-v0.7.0-development-vc1-unsigned-handoff
+          name: dkd-lastmile-v0.7.1-development-vc1-unsigned-handoff
           path: |
-            DraBornGo-LastMile/dist-android/DraBornGo-LastMile-v0.7.0-development-vc1-unsigned.apk
-            DraBornGo-LastMile/dist-android/DraBornGo-LastMile-v0.7.0-development-vc1-unsigned.apk.sha256
+            DraBornGo-LastMile/dist-android/DraBornGo-LastMile-v0.7.1-development-vc1-unsigned.apk
+            DraBornGo-LastMile/dist-android/DraBornGo-LastMile-v0.7.1-development-vc1-unsigned.apk.sha256
             DraBornGo-LastMile/dist-android/apksigner.jar
             DraBornGo-LastMile/dist-android/BUILD-INFO.txt
           if-no-files-found: error

@@ -1,6 +1,6 @@
 {
   "name": "dkd-draborngo-lastmile",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "private": true,
   "main": "index.js",
   "scripts": {
@@ -17,7 +17,8 @@
     "android:development": "bash scripts/dkd-android-output.sh development",
     "android:apk": "bash scripts/dkd-android-output.sh apk",
     "android:aab": "bash scripts/dkd-android-output.sh aab",
-    "verify": "npm run build:game && npm test && npm run typecheck && expo install --check"
+    "verify": "npm run build:game && npm test && npm run typecheck && expo install --check",
+    "build:web": "npm run build:game && node scripts/dkd-build-web.mjs"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",

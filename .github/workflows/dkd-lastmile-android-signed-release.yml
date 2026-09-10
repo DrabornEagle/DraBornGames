@@ -5,39 +5,48 @@ on:
     branches:
       - main
     paths:
-      - 'DraBornGo-LastMile/.dkd-build-play-aab-v07'
+      - 'DraBornGo-LastMile/game/**'
+      - 'DraBornGo-LastMile/App.tsx'
+      - 'DraBornGo-LastMile/web/**'
+      - 'DraBornGo-LastMile/scripts/dkd-build*.mjs'
+      - 'DraBornGo-LastMile/package*.json'
+      - 'DraBornGo-LastMile/app.json'
+      - '.github/workflows/dkd-lastmile-android-signed-release.yml'
   workflow_dispatch:
     inputs:
       dkd_format:
         description: 'Çıktı biçimi'
         required: true
-        default: 'aab'
+        default: 'apk'
         type: choice
         options:
           - apk
           - aab
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: dkd-lastmile-signed-${{ github.event_name == 'workflow_dispatch' && inputs.dkd_format || 'aab' }}
+  group: dkd-lastmile-signed-${{ github.event_name == 'workflow_dispatch' && inputs.dkd_format || 'apk' }}
   cancel-in-progress: false
 
 jobs:
   dkd-signed-output:
-    name: Permanent-key ${{ github.event_name == 'workflow_dispatch' && inputs.dkd_format || 'aab' }}
+    name: Permanent-key ${{ github.event_name == 'workflow_dispatch' && inputs.dkd_format || 'apk' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     defaults:
       run:
         working-directory: DraBornGo-LastMile
     env:
-      DKD_OUTPUT_FORMAT: ${{ github.event_name == 'workflow_dispatch' && inputs.dkd_format || 'aab' }}
+      DKD_OUTPUT_FORMAT: ${{ github.event_name == 'workflow_dispatch' && inputs.dkd_format || 'apk' }}
       DKD_LASTMILE_KEYSTORE_PATH: ${{ github.workspace }}/DraBornGo-LastMile/android/app/dkd-lastmile-release.jks
 
     steps:
       - uses: actions/checkout@v5
+
+      - name: Read shared version
+        run: echo "DKD_VERSION=$(node -p "require('./app.json').expo.version")" >> "$GITHUB_ENV"
 
       - name: Require permanent signing identity
         env:
@@ -70,32 +79,8 @@ jobs:
           npm run typecheck
           EXPO_OFFLINE=1 npx expo install --check
 
-      - name: Prepare Google Play policy variant
-        if: env.DKD_OUTPUT_FORMAT == 'aab'
-        run: |
-          set -euo pipefail
-          node scripts/dkd-prepare-google-play.mjs
-          grep -q 'window.dkd_googlePlayBuild=true;' assets/dkd-lastmile.html
-          grep -q 'window.dkd_googlePlayBuild=true;' src/generated/dkd-game-html.ts
-          node - <<'NODE'
-          const dkd_app = require('./app.json').expo;
-          if (dkd_app.android.package !== 'com.draborneagle.lastmile') throw new Error('Google Play paket adı değişti.');
-          if (dkd_app.android.versionCode !== 1 || dkd_app.version !== '0.7.0') throw new Error('Google Play sürüm kimliği beklenmiyor.');
-          if (dkd_app.extra.dkd_realRewardsEnabled !== false) throw new Error('Google Play gerçek dünya ödül koruması aktif değil.');
-          if (dkd_app.extra.dkd_googlePlayRewardsMode !== 'virtual-only') throw new Error('Google Play ödül modu virtual-only değil.');
-          NODE
-
-          # expo-dev-client yalnız Development Client/APK testleri içindir.
-          # Play çalışma alanından kaldırılır; kaynak repo değişmez.
-          npm uninstall expo-dev-client --no-audit --no-fund
-          node - <<'NODE'
-          const dkd_pkg = require('./package.json');
-          if (dkd_pkg.dependencies?.['expo-dev-client'] || dkd_pkg.devDependencies?.['expo-dev-client']) {
-            throw new Error('Google Play çalışma alanında expo-dev-client kaldı.');
-          }
-          NODE
-          npm run typecheck
-          EXPO_OFFLINE=1 npx expo install --check
+      - name: Remove development client from standalone release
+        run: npm uninstall expo-dev-client --no-audit --no-fund
 
       - name: Generate Android project
         env:
@@ -143,108 +128,25 @@ jobs:
           mkdir -p dist-android
           cd android
           if [[ "$DKD_OUTPUT_FORMAT" == 'apk' ]]; then
-            ./gradlew :app:assembleRelease --no-daemon --stacktrace
-            cp app/build/outputs/apk/release/app-release.apk ../dist-android/DraBornGo-LastMile-v0.7.0-release-vc1.apk
+            ./gradlew :app:assembleRelease --no-daemon --stacktrace -PreactNativeArchitectures=arm64-v8a
+            cp app/build/outputs/apk/release/app-release.apk ../dist-android/DraBornGo-LastMile-v${DKD_VERSION}-release-vc1.apk
           else
-            ./gradlew :app:bundleRelease --no-daemon --stacktrace
-            cp app/build/outputs/bundle/release/app-release.aab ../dist-android/DraBornGo-LastMile-v0.7.0-release-vc1.aab
+            ./gradlew :app:bundleRelease --no-daemon --stacktrace -PreactNativeArchitectures=arm64-v8a
+            cp app/build/outputs/bundle/release/app-release.aab ../dist-android/DraBornGo-LastMile-v${DKD_VERSION}-release-vc1.aab
           fi
 
-      - name: Google Play AAB postflight
-        if: env.DKD_OUTPUT_FORMAT == 'aab'
-        env:
-          DKD_LASTMILE_KEYSTORE_PASSWORD: ${{ secrets.DKD_LASTMILE_KEYSTORE_PASSWORD }}
-          DKD_LASTMILE_KEY_ALIAS: ${{ secrets.DKD_LASTMILE_KEY_ALIAS }}
+      - name: Verify signed APK and version
+        if: env.DKD_OUTPUT_FORMAT == 'apk'
         run: |
           set -euo pipefail
-          dkd_aab='dist-android/DraBornGo-LastMile-v0.7.0-release-vc1.aab'
-          jarsigner -verify -certs "$dkd_aab" >/dev/null
-
-          dkd_expected_fingerprint='B3:04:2B:12:0C:61:C1:DE:EC:8C:C2:61:9C:55:13:C4:F7:B3:37:8D:81:C6:23:5E:92:85:CC:F6:06:96:09:BC'
-          dkd_keystore_fingerprint="$(keytool -list -v -keystore "$DKD_LASTMILE_KEYSTORE_PATH" -storepass "$DKD_LASTMILE_KEYSTORE_PASSWORD" -alias "$DKD_LASTMILE_KEY_ALIAS" | sed -n 's/^[[:space:]]*SHA256: //p' | head -n 1 | tr '[:lower:]' '[:upper:]')"
-          dkd_aab_fingerprint="$(keytool -printcert -jarfile "$dkd_aab" | sed -n 's/^[[:space:]]*SHA256: //p' | head -n 1 | tr '[:lower:]' '[:upper:]')"
-          [[ "$dkd_keystore_fingerprint" == "$dkd_expected_fingerprint" ]] || { echo 'Kalıcı JKS sertifika parmak izi beklenen kimlikle eşleşmiyor.'; exit 44; }
-          [[ "$dkd_aab_fingerprint" == "$dkd_expected_fingerprint" ]] || { echo 'AAB kalıcı Last Mile sertifikasıyla imzalanmamış.'; exit 45; }
-
-          dkd_bundletool="$RUNNER_TEMP/bundletool-all-1.18.3.jar"
-          curl -fsSL --retry 3 --retry-delay 2 -o "$dkd_bundletool" 'https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar'
-          java -jar "$dkd_bundletool" dump manifest --bundle="$dkd_aab" > dist-android/PLAY-MANIFEST.xml
-          dkd_target="$(java -jar "$dkd_bundletool" dump manifest --bundle="$dkd_aab" --xpath='/manifest/uses-sdk/@android:targetSdkVersion' | tr -d '\r\n[:space:]')"
-          dkd_version_code="$(java -jar "$dkd_bundletool" dump manifest --bundle="$dkd_aab" --xpath='/manifest/@android:versionCode' | tr -d '\r\n[:space:]')"
-          [[ "$dkd_target" == '36' ]] || { echo "AAB targetSdkVersion beklenen 36 değil: $dkd_target"; exit 41; }
-          [[ "$dkd_version_code" == '1' ]] || { echo "AAB versionCode beklenen 1 değil: $dkd_version_code"; exit 42; }
-          grep -q 'package="com.draborneagle.lastmile"' dist-android/PLAY-MANIFEST.xml
-
-          # Yalnızca uygulamanın gerçekten talep ettiği <uses-permission*> düğümlerini
-          # denetle. Receiver/activity üzerindeki android:permission korumaları izin
-          # talebi değildir (örn. AndroidX ProfileInstaller -> DUMP).
-          python3 - <<'PY'
-          from pathlib import Path
-          import xml.etree.ElementTree as ET
-          dkd_manifest = Path('dist-android/PLAY-MANIFEST.xml')
-          dkd_root = ET.parse(dkd_manifest).getroot()
-          dkd_android = '{http://schemas.android.com/apk/res/android}'
-          dkd_requested = set()
-          for dkd_node in list(dkd_root):
-              dkd_tag = dkd_node.tag.rsplit('}', 1)[-1]
-              if dkd_tag.startswith('uses-permission'):
-                  dkd_name = dkd_node.attrib.get(dkd_android + 'name')
-                  if dkd_name:
-                      dkd_requested.add(dkd_name)
-          dkd_forbidden = {
-              'android.permission.ACCESS_FINE_LOCATION',
-              'android.permission.ACCESS_COARSE_LOCATION',
-              'android.permission.CAMERA',
-              'android.permission.RECORD_AUDIO',
-              'android.permission.READ_CONTACTS',
-              'android.permission.READ_MEDIA_IMAGES',
-              'android.permission.READ_MEDIA_VIDEO',
-              'android.permission.READ_EXTERNAL_STORAGE',
-              'android.permission.WRITE_EXTERNAL_STORAGE',
-              'android.permission.MANAGE_EXTERNAL_STORAGE',
-              'android.permission.SYSTEM_ALERT_WINDOW',
-              'android.permission.DUMP',
-              'android.permission.REQUEST_INSTALL_PACKAGES',
-              'android.permission.QUERY_ALL_PACKAGES',
-              'android.permission.PACKAGE_USAGE_STATS',
-          }
-          dkd_bad = sorted(dkd_requested & dkd_forbidden)
-          Path('dist-android/PLAY-REQUESTED-PERMISSIONS.txt').write_text(
-              '\n'.join(sorted(dkd_requested)) + '\n', encoding='utf-8'
-          )
-          if dkd_bad:
-              raise SystemExit('Gereksiz/kısıtlı uses-permission bulundu:\n' + '\n'.join(dkd_bad))
-          print('Play requested-permission kontrolü başarılı:', ', '.join(sorted(dkd_requested)))
-          PY
-
-          unzip -l "$dkd_aab" | grep -qE 'base/lib/arm64-v8a/.*\.so'
-          mkdir -p "$RUNNER_TEMP/dkd-aab-native"
-          unzip -q "$dkd_aab" 'base/lib/arm64-v8a/*.so' 'base/lib/x86_64/*.so' -d "$RUNNER_TEMP/dkd-aab-native" || true
-          DKD_NATIVE_ROOT="$RUNNER_TEMP/dkd-aab-native" python3 - <<'PY'
-          from pathlib import Path
-          import os, re, subprocess
-          dkd_root = Path(os.environ['DKD_NATIVE_ROOT'])
-          dkd_bad = []
-          dkd_checked = 0
-          for dkd_so in dkd_root.rglob('*.so'):
-              dkd_checked += 1
-              dkd_output = subprocess.check_output(['readelf', '-lW', str(dkd_so)], text=True, errors='ignore')
-              dkd_alignments = []
-              for dkd_line in dkd_output.splitlines():
-                  if dkd_line.lstrip().startswith('LOAD'):
-                      dkd_match = re.search(r'(0x[0-9a-fA-F]+)\s*$', dkd_line)
-                      if dkd_match:
-                          dkd_alignments.append(int(dkd_match.group(1), 16))
-              if dkd_alignments and min(dkd_alignments) < 0x4000:
-                  dkd_bad.append(f'{dkd_so.name}: min LOAD align={hex(min(dkd_alignments))}')
-          if dkd_checked == 0:
-              raise SystemExit('64-bit native kitaplık bulunamadı.')
-          if dkd_bad:
-              raise SystemExit('16 KB sayfa hizalama kontrolü başarısız:\n' + '\n'.join(dkd_bad))
-          Path('dist-android/PLAY-16KB-CHECK.txt').write_text(f'PASS\n64-bit ELF checked={dkd_checked}\nminimum required LOAD alignment=0x4000\n')
-          print(f'16 KB page-size postflight başarılı: {dkd_checked} adet 64-bit ELF kontrol edildi.')
-          PY
-          printf 'PASS\ntargetSdkVersion=36\nversionCode=1\npackage=com.draborneagle.lastmile\nforbiddenSensitiveOrRestrictedRequestedPermissions=none\nsignerSHA256=%s\n' "$dkd_aab_fingerprint" > dist-android/PLAY-AAB-CHECK.txt
+          dkd_tools="$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -1)"
+          "$dkd_tools" verify --verbose --print-certs dist-android/*.apk > dist-android/SIGNING-IDENTITY.txt
+          grep -qi 'b3042b120c61c1deec8cc2619c5513c4f7b3378d81c6235e9285ccf6069609bc' dist-android/SIGNING-IDENTITY.txt
+          "$(dirname "$dkd_tools")/aapt" dump badging dist-android/*.apk > dist-android/BUILD-INFO.txt
+          grep -q "versionCode='1'" dist-android/BUILD-INFO.txt
+          grep -q "versionName='$DKD_VERSION'" dist-android/BUILD-INFO.txt
+          grep -q "name='com.draborneagle.lastmile'" dist-android/BUILD-INFO.txt
+          if grep -q "application-debuggable" dist-android/BUILD-INFO.txt; then exit 46; fi
 
       - name: Record hashes and certificate identity
         env:
@@ -252,20 +154,25 @@ jobs:
           DKD_LASTMILE_KEY_ALIAS: ${{ secrets.DKD_LASTMILE_KEY_ALIAS }}
         run: |
           set -euo pipefail
-          sha256sum dist-android/DraBornGo-LastMile-v0.7.0-release-vc1.* > dist-android/SHA256SUMS.txt
+          sha256sum dist-android/DraBornGo-LastMile-v${DKD_VERSION}-release-vc1.* > dist-android/SHA256SUMS.txt
           keytool -list -v -keystore "$DKD_LASTMILE_KEYSTORE_PATH" -storepass "$DKD_LASTMILE_KEYSTORE_PASSWORD" -alias "$DKD_LASTMILE_KEY_ALIAS" | grep -E 'Alias name:|SHA256:' > dist-android/SIGNING-IDENTITY.txt
-          if [[ "$DKD_OUTPUT_FORMAT" == 'aab' ]]; then
-            cp docs/dkd-google-play-v07.md dist-android/PLAY-CONSOLE-CHECKLIST.md
-            printf 'versionName=0.7.0\nversionCode=1\npackage=com.draborneagle.lastmile\nformat=aab\ntargetSdkVersion=36\nplayRewardMode=virtual-only\nproductionDevClient=removed\nprivacy=https://www.draborneagle.com/draborngo/lastmile/gizlilik/\naccountDeletion=https://www.draborneagle.com/draborngo/lastmile/hesap-silme/\nsigning=DKD_LASTMILE permanent keystore\n' > dist-android/BUILD-INFO.txt
-          else
-            printf 'versionName=0.7.0\nversionCode=1\npackage=com.draborneagle.lastmile\nformat=apk\nsigning=DKD_LASTMILE permanent keystore\n' > dist-android/BUILD-INFO.txt
-          fi
+          printf 'versionName=%s\nversionCode=1\nsourceCommit=%s\ndistribution=web-and-github\n' "$DKD_VERSION" "$GITHUB_SHA" > dist-android/RELEASE-INFO.txt
 
       - name: Upload signed output
         uses: actions/upload-artifact@v4
         with:
-          name: dkd-lastmile-v0.7.0-signed-${{ env.DKD_OUTPUT_FORMAT }}-vc1
+          name: dkd-lastmile-v${{ env.DKD_VERSION }}-signed-${{ env.DKD_OUTPUT_FORMAT }}-vc1
           path: |
             DraBornGo-LastMile/dist-android/*
           if-no-files-found: error
           retention-days: 30
+
+      - name: Publish APK release for website download
+        if: env.DKD_OUTPUT_FORMAT == 'apk'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          dkd_version="$(node -p "require('./app.json').expo.version")"
+          dkd_tag="lastmile-v${dkd_version}-${GITHUB_SHA:0:12}"
+          gh release create "$dkd_tag" dist-android/* --target "$GITHUB_SHA" --title "Last Mile v${dkd_version} · Android Release" --notes-file dist-android/RELEASE-INFO.txt --latest

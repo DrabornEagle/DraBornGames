@@ -8,10 +8,10 @@ const dkd_app = JSON.parse(fs.readFileSync(new URL('../app.json', import.meta.ur
 const dkd_package = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 
 test('v0.2 compatibility layer remains bundled in the current v0.7 Expo Go build', () => {
-  assert.equal(dkd_package.version, '0.7.0');
-  assert.equal(dkd_app.expo.version, '0.7.0');
+  assert.equal(dkd_package.version, '0.7.1');
+  assert.equal(dkd_app.expo.version, '0.7.1');
   assert.equal(dkd_app.expo.android.versionCode, 1);
-  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.7.0');
+  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.7.1');
   assert.match(dkd_build, /v0\.6\.1/);
 });
 

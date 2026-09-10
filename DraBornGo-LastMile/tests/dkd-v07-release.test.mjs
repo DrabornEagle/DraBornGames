@@ -12,9 +12,9 @@ async function dkd_text(dkd_relative) {
   return dkd_readFile(path.join(dkd_root, dkd_relative), 'utf8');
 }
 
-test('v0.7 Android metadata is versionName 0.7.0 and versionCode 1', async () => {
+test('v0.7 Android metadata is versionName 0.7.1 and versionCode 1', async () => {
   const dkd_app = JSON.parse(await dkd_text('app.json'));
-  assert.equal(dkd_app.expo.version, '0.7.0');
+  assert.equal(dkd_app.expo.version, '0.7.1');
   assert.equal(dkd_app.expo.android.package, 'com.draborneagle.lastmile');
   assert.equal(dkd_app.expo.android.versionCode, 1);
   assert.equal(dkd_app.expo.extra.dkd_cameraDefault, 'chase');
@@ -24,11 +24,11 @@ test('v0.7 Android metadata is versionName 0.7.0 and versionCode 1', async () =>
 test('v0.7 Expo development client and bundle wrapper are enabled', async () => {
   const dkd_package = JSON.parse(await dkd_text('package.json'));
   const dkd_wrapper = await dkd_text('scripts/dkd-build-game-v07.mjs');
-  assert.equal(dkd_package.version, '0.7.0');
+  assert.equal(dkd_package.version, '0.7.1');
   assert.equal(dkd_package.dependencies['expo-dev-client'], '~57.0.18');
   assert.equal(dkd_package.scripts['build:game'], 'node scripts/dkd-build-game-v07.mjs');
   assert.match(dkd_wrapper, /dkd-v07-release\.mjs/);
-  assert.match(dkd_wrapper, /v0\.7\.0/);
+  assert.match(dkd_wrapper, /v0\.7\.1/);
 });
 
 test('v0.7 settings exposes standard chase camera and flat visual rules', async () => {
@@ -58,5 +58,5 @@ test('v0.7 Android workflow requires the permanent signing key and builds debug 
   assert.match(dkd_workflow, /DKD_LASTMILE_KEY_ALIAS/);
   assert.match(dkd_workflow, /expo prebuild --platform android --clean/);
   assert.match(dkd_workflow, /assembleDebug/);
-  assert.match(dkd_workflow, /DraBornGo-LastMile-v0\.7\.0-development-vc1\.apk/);
+  assert.match(dkd_workflow, /DraBornGo-LastMile-v0\.7\.1-development-vc1\.apk/);
 });

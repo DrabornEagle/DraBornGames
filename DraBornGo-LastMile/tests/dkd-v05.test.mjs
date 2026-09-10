@@ -13,10 +13,10 @@ const dkd_package = JSON.parse(dkd_read('package.json'));
 const dkd_app = JSON.parse(dkd_read('app.json'));
 
 test('v0.7 is active while the v0.5 runtime layer remains bundled', () => {
-  assert.equal(dkd_package.version, '0.7.0');
-  assert.equal(dkd_app.expo.version, '0.7.0');
+  assert.equal(dkd_package.version, '0.7.1');
+  assert.equal(dkd_app.expo.version, '0.7.1');
   assert.equal(dkd_app.expo.android.versionCode, 1);
-  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.7.0');
+  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.7.1');
   assert.match(dkd_build, /dkd_version = 'v0\.6\.1'/);
   assert.match(dkd_build, /SON KİLOMETRE · v0\.6\.1/);
   assert.match(dkd_build, /dkd-v05-style\.mjs/);

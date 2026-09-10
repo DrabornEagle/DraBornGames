@@ -46,13 +46,13 @@ test('reward vault uses generic active-rewards wording', () => {
 });
 
 test('v0.7 keeps Expo SDK 57 dependency family while v0.6 layers remain bundled', () => {
-  assert.equal(dkd_package.version, '0.7.0');
+  assert.equal(dkd_package.version, '0.7.1');
   assert.equal(dkd_package.dependencies.expo, '~57.0.20');
   assert.equal(dkd_package.dependencies['expo-file-system'], '~57.0.6');
   assert.equal(dkd_package.dependencies['react-native'], '0.86.3');
-  assert.equal(dkd_app.expo.version, '0.7.0');
+  assert.equal(dkd_app.expo.version, '0.7.1');
   assert.equal(dkd_app.expo.android.versionCode, 1);
-  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.7.0');
+  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.7.1');
   assert.match(dkd_build, /dkd-v06-release\.mjs/);
   assert.match(dkd_build, /dkd-v061-release\.mjs/);
   assert.match(dkd_build, /SON KİLOMETRE · v0\.6\.1/);

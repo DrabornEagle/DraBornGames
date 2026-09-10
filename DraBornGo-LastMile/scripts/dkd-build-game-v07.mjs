@@ -13,7 +13,7 @@ if (!dkd_source.includes(dkd_sourceNeedle)) throw new Error('v0.7 kaynak ekleme 
 dkd_source = dkd_source.replace(dkd_sourceNeedle, dkd_sourceReplacement);
 
 // Keep the stable v0.6.1 builder untouched in Git history while generating a v0.7 bundle.
-dkd_source = dkd_source.replaceAll('v0.6.1', 'v0.7.0');
+dkd_source = dkd_source.replaceAll('v0.6.1', 'v0.7.1');
 dkd_source = dkd_source
   .replace("dkd_name: 'Ankara Gece Merkezi', dkd_sub: 'Nightwave', dkd_bpm: 96", "dkd_name: 'Kurye Merkezi / Gece', dkd_sub: 'Night Ops', dkd_bpm: 82")
   .replace("dkd_name: 'Kızılay Hattı', dkd_sub: 'Urban Electro', dkd_bpm: 128", "dkd_name: 'Gece Ekspres', dkd_sub: 'Urban Drive', dkd_bpm: 128")

@@ -139,7 +139,7 @@ function dkd_Container() {
     try {
       await dkd_edge('save_progress', { dkd_game_state: dkd_gameState });
     } catch {
-      dkd_cloudSavePending.current = dkd_gameState;
+      dkd_cloudSavePending.current ??= dkd_gameState;
     } finally {
       dkd_cloudSaveBusy.current = false;
       if (dkd_cloudSavePending.current) setTimeout(() => void dkd_flushCloudSave(), 1200);

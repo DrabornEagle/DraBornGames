@@ -14,10 +14,10 @@ const dkd_app = JSON.parse(await dkd_read('app.json'));
 const dkd_package = JSON.parse(await dkd_read('package.json'));
 
 test('v0.7 release metadata is authoritative while v0.6.1 runtime stays intact', () => {
-  assert.equal(dkd_package.version, '0.7.0');
-  assert.equal(dkd_app.expo.version, '0.7.0');
+  assert.equal(dkd_package.version, '0.7.1');
+  assert.equal(dkd_app.expo.version, '0.7.1');
   assert.equal(dkd_app.expo.android.versionCode, 1);
-  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.7.0');
+  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.7.1');
   assert.equal(dkd_package.dependencies.expo, '~57.0.20');
   assert.match(dkd_build, /dkd-v061-release\.mjs/);
   assert.match(dkd_build, /dkd-v061-runtime-repair\.mjs/);

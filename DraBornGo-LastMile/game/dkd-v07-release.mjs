@@ -9,7 +9,7 @@ const dkd_v07Previous = {
   dkd_audioPause: dkd_Audio.prototype.dkd_pause,
 };
 
-const dkd_v07Version = 'v0.7.0';
+const dkd_v07Version = 'v0.7.1';
 const dkd_v07CameraDefault = 'chase';
 let dkd_v07Game = null;
 
