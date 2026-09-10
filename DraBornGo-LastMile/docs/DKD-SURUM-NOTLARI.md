@@ -1,3 +1,21 @@
+# v0.7.0 · 10 Eylül 2026
+
+Expo Go / Android geliştirme sürümü. Uygulama sürümü `0.7.0`, Android `versionCode 1`, Expo SDK 57 ailesi.
+
+- Ayarlar ekranına oyun içi sürüş kamerası seçenekleri geri getirildi: Yakın, Takip ve Yüksek. Direksiyon yardımı, titreşim ve arayüz animasyonu aynı bölümden değiştirilebilir.
+- Fiziksel cihaz kamerası kullanılmaz ve Android `CAMERA` izni istenmez.
+- Başlangıç Yamaha motosikletinin mevcut doğru yönü korunur. DK61 mesh raporuna göre Quaternius sürücünün yalnızca `22–27` indeksli altı meshi ayrıca 180° çevrilir; Yamaha meshleri yön düzeltmesine dahil edilmez.
+- Kurye Merkezi ve aktif vardiya için tek ses sahibi sistemi eklendi. Sürüş başlarken eski merkez/menu kaynakları durdurulur, prosedürel müzik gain'leri sıfırlanır ve yalnızca seçilen sürüş MP3'ü çalar.
+- Eski basit ritim/prosedürel etkin müzik yolu yerine tam render edilmiş özgün MP3 oyun müziği paketi kullanılır.
+- Ana merkez: `Kurye Merkezi: Gece Ufku`.
+- Sürüş: `Ankara Gece Hattı`, `Son Kilometre`, `Fırtına Hattı`, `Asfalt Yıldızları`, `Final Kontrat`.
+- Supabase `dkd-last-mile-api` Edge Function runtime sürümü `0.7` olarak yayımlandı.
+- `Last-Mile.dkd_lastmile_system_config` içindeki runtime/audio ayarları v0.7, Expo SDK 57, Android versionCode 1 ve `single_owner=true` ile eşitlendi.
+- GitHub → Termux güvenli eşitleme/izleme akışı korunur; yerel değişiklik varsa veri silinmeden çalışma dalı/stash ile korunur.
+- CI generated-file yarışı giderildi: doğrulama workflow'u deterministic yeniden üretimi kontrol eder, generated artifact commit işini ayrı autogen workflow'u yürütür.
+- Autogen workflow'u remote dal arada ilerlerse üretilen bundle commit'ini güncel dal üzerine rebase ederek non-fast-forward yarışını önler.
+- APK/AAB ve release keystore bu sürümde bilerek üretilmez. Test hedefi Expo Go 57.x'tir.
+
 # v0.3.0 · 8 Eylül 2026
 
 Expo Go / Android geliştirme sürümü.
