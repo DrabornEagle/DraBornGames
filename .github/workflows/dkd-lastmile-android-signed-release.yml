@@ -28,9 +28,6 @@ jobs:
       run:
         working-directory: DraBornGo-LastMile
     env:
-      DKD_LASTMILE_KEYSTORE_PASSWORD: ${{ secrets.DKD_LASTMILE_KEYSTORE_PASSWORD }}
-      DKD_LASTMILE_KEY_ALIAS: ${{ secrets.DKD_LASTMILE_KEY_ALIAS }}
-      DKD_LASTMILE_KEY_PASSWORD: ${{ secrets.DKD_LASTMILE_KEY_PASSWORD }}
       DKD_LASTMILE_KEYSTORE_PATH: ${{ github.workspace }}/DraBornGo-LastMile/android/app/dkd-lastmile-release.jks
 
     steps:
@@ -39,6 +36,9 @@ jobs:
       - name: Require permanent signing identity
         env:
           DKD_LASTMILE_KEYSTORE_B64: ${{ secrets.DKD_LASTMILE_KEYSTORE_B64 }}
+          DKD_LASTMILE_KEYSTORE_PASSWORD: ${{ secrets.DKD_LASTMILE_KEYSTORE_PASSWORD }}
+          DKD_LASTMILE_KEY_ALIAS: ${{ secrets.DKD_LASTMILE_KEY_ALIAS }}
+          DKD_LASTMILE_KEY_PASSWORD: ${{ secrets.DKD_LASTMILE_KEY_PASSWORD }}
         run: |
           set -euo pipefail
           for dkd_secret in DKD_LASTMILE_KEYSTORE_B64 DKD_LASTMILE_KEYSTORE_PASSWORD DKD_LASTMILE_KEY_ALIAS DKD_LASTMILE_KEY_PASSWORD; do
@@ -72,6 +72,8 @@ jobs:
       - name: Restore and verify permanent key
         env:
           DKD_LASTMILE_KEYSTORE_B64: ${{ secrets.DKD_LASTMILE_KEYSTORE_B64 }}
+          DKD_LASTMILE_KEYSTORE_PASSWORD: ${{ secrets.DKD_LASTMILE_KEYSTORE_PASSWORD }}
+          DKD_LASTMILE_KEY_ALIAS: ${{ secrets.DKD_LASTMILE_KEY_ALIAS }}
         run: |
           printf '%s' "$DKD_LASTMILE_KEYSTORE_B64" | base64 --decode > "$DKD_LASTMILE_KEYSTORE_PATH"
           chmod 600 "$DKD_LASTMILE_KEYSTORE_PATH"
@@ -97,6 +99,10 @@ jobs:
           PY
 
       - name: Build signed Android output
+        env:
+          DKD_LASTMILE_KEYSTORE_PASSWORD: ${{ secrets.DKD_LASTMILE_KEYSTORE_PASSWORD }}
+          DKD_LASTMILE_KEY_ALIAS: ${{ secrets.DKD_LASTMILE_KEY_ALIAS }}
+          DKD_LASTMILE_KEY_PASSWORD: ${{ secrets.DKD_LASTMILE_KEY_PASSWORD }}
         run: |
           set -euo pipefail
           mkdir -p dist-android
@@ -110,6 +116,9 @@ jobs:
           fi
 
       - name: Record hashes and certificate identity
+        env:
+          DKD_LASTMILE_KEYSTORE_PASSWORD: ${{ secrets.DKD_LASTMILE_KEYSTORE_PASSWORD }}
+          DKD_LASTMILE_KEY_ALIAS: ${{ secrets.DKD_LASTMILE_KEY_ALIAS }}
         run: |
           set -euo pipefail
           sha256sum dist-android/DraBornGo-LastMile-v0.7.0-release-vc1.* > dist-android/SHA256SUMS.txt
