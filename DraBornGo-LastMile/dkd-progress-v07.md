@@ -27,35 +27,36 @@
 - Signing secret'ları job geneline verilmek yerine yalnızca doğrulama, keystore ve Gradle imzalama adımlarına sınırlandı.
 - GitHub native Android smoke workflow'u eklendi ve başarıyla tamamlandı.
 - Native smoke run `34501461560`: Java 17, npm/build/test/typecheck, Expo dependency kontrolü, `expo prebuild --platform android --clean`, Gradle `:app:assembleDebug` ve Android metadata doğrulaması geçti.
-- Böylece Expo SDK 57 Development Client native Android derlenebilirliği gerçek GitHub runner üzerinde doğrulandı.
-- İlk signed-development denemesinde prebuild öncesi Gradle cache kaynaklı setup-java hatası tespit edildi ve kalıcı olarak giderildi.
-- GitHub signing repository secret'larının henüz tanımlı olmadığı doğrulandı; private key public repoya taşınmadı.
+- Development workflow secret yokken güvenli unsigned handoff üretip private JKS ile dışarıda imzalanabilecek şekilde güçlendirildi.
+- Development workflow run `34505927974` başarıyla tamamlandı ve artifact `10164147386` üretildi.
+- Son Development Client Android derlemesi `arm64-v8a` hedefiyle gerçek GitHub runner üzerinde başarıyla tamamlandı.
+- Unsigned handoff aynı permanent JKS ile imzalandı; APK Signature Scheme v2 ve v3 doğrulaması geçti.
+- Son imzalı Development APK SHA-256: `30fa12efa085db0c6f93e3c6df16fe4ba695a5aa569ce977f886c2c2e63d931a`.
+- Termux bootstrap güncellendi: Signing ZIP Downloads klasöründe bulunursa private dizine açılır, `github-secrets-termux.sh` otomatik çalıştırılır, dört GitHub Actions signing secret güvenli `gh secret set` komutlarıyla tanımlanır ve ardından normal sync/Metro akışı başlar.
 - Termux güvenli sync mevcut: yerel commit/değişiklikler korunarak GitHub `main` kaynak kabul ediliyor.
 - Termux başlatıcısı GitHub `main` dalını yaklaşık 30 saniyede bir kontrol eder; yeni sürümde Metro'yu günceller.
-- Termux v0.7 tek-komut bootstrap betiği eklendi.
 - `scripts/dkd-android-output.sh` ile `development`, `apk` ve `aab` workflow başlatma + artifact indirme akışı eklendi.
 - `npm run start:dev-client`, `npm run android:development`, `npm run android:apk`, `npm run android:aab` komutları eklendi.
 - README v0.7 Android, Expo Go/Development Client, signing ve Termux akışına göre güncellendi.
 
-## Güvenli signing için kalan tek hesap bağlantısı
-GitHub Actions repository secrets altında aşağıdaki dört isim bir kez tanımlanmalıdır:
+## GitHub Actions private signing bağlantısı
+GitHub Actions repository secrets altında aşağıdaki dört isim kalıcı olarak kullanılır:
 - `DKD_LASTMILE_KEYSTORE_B64`
 - `DKD_LASTMILE_KEYSTORE_PASSWORD`
 - `DKD_LASTMILE_KEY_ALIAS`
 - `DKD_LASTMILE_KEY_PASSWORD`
 
-Bu değerler private signing ZIP içindeki `github-secrets-termux.sh` tarafından `gh secret set` ile yüklenir. Betik GitHub CLI oturumu yoksa güvenli web yetkilendirmesini başlatır, secret'ları tanımlar, Development APK workflow'unu çalıştırır, sonucu izler ve artifact'ı indirir. Özel anahtar veya parolalar bu dosyaya ya da Git geçmişine yazılmaz.
+Bağlı GitHub uygulamasının güvenlik modeli repository secret endpoint'ini dışarı açmadığı için bu dört özel değer sohbet bağlantısından doğrudan yazılamaz. Private signing ZIP içindeki `github-secrets-termux.sh` ve güncel `dkd-termux-v07-bootstrap.sh` bu işlemi kullanıcı GitHub CLI yetkilendirmesi mevcut olduğu anda otomatik yapar. Özel anahtar veya parolalar bu dosyaya, Supabase'e veya Git geçmişine yazılmaz.
 
 ## Kalıcı signing kimliği
 - Sertifika SHA-256: `B3:04:2B:12:0C:61:C1:DE:EC:8C:C2:61:9C:55:13:C4:F7:B3:37:8D:81:C6:23:5E:92:85:CC:F6:06:96:09:BC`
 - Yeni sürümlerde yeni signing key üretilmeyecek.
 
 ## Build hedefleri
-- Development APK: `dkd-lastmile-v0.7.0-development-vc1`
+- Development APK: `DraBornGo-LastMile-v0.7.0-development-vc1.apk`
+- GitHub Development artifact: `dkd-lastmile-v0.7.0-development-vc1` veya güvenli handoff modu `dkd-lastmile-v0.7.0-development-vc1-unsigned-handoff`
 - Release APK: `dkd-lastmile-v0.7.0-signed-apk-vc1`
 - Release AAB: `dkd-lastmile-v0.7.0-signed-aab-vc1`
 
 ## Devam kuralı
 Bundan sonraki DraBornGo / Last Mile Android APK ve AAB çıktıları yeni bir key üretmeden aynı `DKD_LASTMILE_*` permanent signing identity ile imzalanmalıdır.
-
-İmzalı v0.7 Development APK'nın üretilebilmesi için kod/native tarafta açık hata kalmadı; kalan tek adım GitHub hesabına dört private signing secret'ın bir kez güvenli olarak bağlanmasıdır.
