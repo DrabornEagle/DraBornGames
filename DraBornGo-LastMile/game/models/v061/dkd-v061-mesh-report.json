@@ -927,5 +927,416 @@
         0.3615
       ]
     }
+  ],
+  "dkd_yamaha_components": 103,
+  "dkd_wheel_candidates": [
+    {
+      "dkd_mesh_index": 1,
+      "dkd_component_index": 0,
+      "dkd_vertices": 166,
+      "dkd_center": [
+        -0.7816,
+        0.3772,
+        -0.0026
+      ],
+      "dkd_size": [
+        0.4305,
+        0.4301,
+        0.1164
+      ],
+      "dkd_roundness": 0.9991,
+      "dkd_wheel_score": 10.9981
+    },
+    {
+      "dkd_mesh_index": 1,
+      "dkd_component_index": 13,
+      "dkd_vertices": 171,
+      "dkd_center": [
+        0.7879,
+        0.285,
+        -0.0058
+      ],
+      "dkd_size": [
+        0.4227,
+        0.4213,
+        0.1185
+      ],
+      "dkd_roundness": 0.9968,
+      "dkd_wheel_score": 10.9936
+    },
+    {
+      "dkd_mesh_index": 2,
+      "dkd_component_index": 0,
+      "dkd_vertices": 60,
+      "dkd_center": [
+        -0.7777,
+        0.3918,
+        -0.0116
+      ],
+      "dkd_size": [
+        0.5706,
+        0.5386,
+        0.1717
+      ],
+      "dkd_roundness": 0.944,
+      "dkd_wheel_score": 10.8879
+    },
+    {
+      "dkd_mesh_index": 3,
+      "dkd_component_index": 3,
+      "dkd_vertices": 60,
+      "dkd_center": [
+        0.7836,
+        0.3017,
+        -0.006
+      ],
+      "dkd_size": [
+        0.5539,
+        0.5111,
+        0.1256
+      ],
+      "dkd_roundness": 0.9226,
+      "dkd_wheel_score": 10.8452
+    },
+    {
+      "dkd_mesh_index": 0,
+      "dkd_component_index": 1,
+      "dkd_vertices": 99,
+      "dkd_center": [
+        -0.5351,
+        0.4295,
+        -0.0749
+      ],
+      "dkd_size": [
+        0.4436,
+        0.3415,
+        0.371
+      ],
+      "dkd_roundness": 0.7699,
+      "dkd_wheel_score": 10.5398
+    },
+    {
+      "dkd_mesh_index": 17,
+      "dkd_component_index": 1,
+      "dkd_vertices": 24,
+      "dkd_center": [
+        -0.7271,
+        0.5873,
+        0.1961
+      ],
+      "dkd_size": [
+        0.3671,
+        0.4013,
+        0.082
+      ],
+      "dkd_roundness": 0.9149,
+      "dkd_wheel_score": 10.4298
+    },
+    {
+      "dkd_mesh_index": 1,
+      "dkd_component_index": 10,
+      "dkd_vertices": 14,
+      "dkd_center": [
+        0.4943,
+        0.533,
+        -0.0068
+      ],
+      "dkd_size": [
+        0.3053,
+        0.6101,
+        0.1079
+      ],
+      "dkd_roundness": 0.5004,
+      "dkd_wheel_score": 9.3508
+    },
+    {
+      "dkd_mesh_index": 5,
+      "dkd_component_index": 5,
+      "dkd_vertices": 59,
+      "dkd_center": [
+        0.6623,
+        0.728,
+        -0.1685
+      ],
+      "dkd_size": [
+        0.3704,
+        0.5526,
+        0.174
+      ],
+      "dkd_roundness": 0.6703,
+      "dkd_wheel_score": 8.3406
+    },
+    {
+      "dkd_mesh_index": 5,
+      "dkd_component_index": 0,
+      "dkd_vertices": 51,
+      "dkd_center": [
+        -0.4419,
+        0.7737,
+        -0.1745
+      ],
+      "dkd_size": [
+        0.7338,
+        0.4391,
+        0.15
+      ],
+      "dkd_roundness": 0.5984,
+      "dkd_wheel_score": 8.1969
+    },
+    {
+      "dkd_mesh_index": 5,
+      "dkd_component_index": 1,
+      "dkd_vertices": 53,
+      "dkd_center": [
+        -0.4419,
+        0.7737,
+        0.1805
+      ],
+      "dkd_size": [
+        0.7338,
+        0.4391,
+        0.144
+      ],
+      "dkd_roundness": 0.5984,
+      "dkd_wheel_score": 8.1969
+    },
+    {
+      "dkd_mesh_index": 1,
+      "dkd_component_index": 5,
+      "dkd_vertices": 13,
+      "dkd_center": [
+        -0.2219,
+        0.522,
+        0.0239
+      ],
+      "dkd_size": [
+        0.4383,
+        0.5793,
+        0.347
+      ],
+      "dkd_roundness": 0.7566,
+      "dkd_wheel_score": 7.8383
+    },
+    {
+      "dkd_mesh_index": 14,
+      "dkd_component_index": 7,
+      "dkd_vertices": 15,
+      "dkd_center": [
+        -0.3491,
+        0.3624,
+        -0.236
+      ],
+      "dkd_size": [
+        0.0197,
+        0.0193,
+        0.0689
+      ],
+      "dkd_roundness": 0.9784,
+      "dkd_wheel_score": 7.3318
+    },
+    {
+      "dkd_mesh_index": 14,
+      "dkd_component_index": 6,
+      "dkd_vertices": 13,
+      "dkd_center": [
+        -0.3967,
+        0.4446,
+        0.1161
+      ],
+      "dkd_size": [
+        0.0164,
+        0.0158,
+        0.064
+      ],
+      "dkd_roundness": 0.9606,
+      "dkd_wheel_score": 7.2463
+    },
+    {
+      "dkd_mesh_index": 14,
+      "dkd_component_index": 4,
+      "dkd_vertices": 8,
+      "dkd_center": [
+        -0.7525,
+        0.4578,
+        -0.1326
+      ],
+      "dkd_size": [
+        0.0131,
+        0.014,
+        0.0131
+      ],
+      "dkd_roundness": 0.9369,
+      "dkd_wheel_score": 7.0738
+    },
+    {
+      "dkd_mesh_index": 1,
+      "dkd_component_index": 1,
+      "dkd_vertices": 8,
+      "dkd_center": [
+        -0.7268,
+        0.5396,
+        -0.1422
+      ],
+      "dkd_size": [
+        0.0704,
+        0.0614,
+        0.0317
+      ],
+      "dkd_roundness": 0.8722,
+      "dkd_wheel_score": 6.9444
+    },
+    {
+      "dkd_mesh_index": 14,
+      "dkd_component_index": 1,
+      "dkd_vertices": 12,
+      "dkd_center": [
+        -0.8345,
+        0.3379,
+        -0.0793
+      ],
+      "dkd_size": [
+        0.0066,
+        0.0053,
+        0.0279
+      ],
+      "dkd_roundness": 0.8005,
+      "dkd_wheel_score": 6.9011
+    },
+    {
+      "dkd_mesh_index": 14,
+      "dkd_component_index": 3,
+      "dkd_vertices": 12,
+      "dkd_center": [
+        -0.7935,
+        0.4359,
+        -0.0826
+      ],
+      "dkd_size": [
+        0.0164,
+        0.0123,
+        0.0345
+      ],
+      "dkd_roundness": 0.7472,
+      "dkd_wheel_score": 6.7943
+    },
+    {
+      "dkd_mesh_index": 14,
+      "dkd_component_index": 2,
+      "dkd_vertices": 10,
+      "dkd_center": [
+        -0.7919,
+        0.3169,
+        -0.0793
+      ],
+      "dkd_size": [
+        0.0066,
+        0.0088,
+        0.0279
+      ],
+      "dkd_roundness": 0.7495,
+      "dkd_wheel_score": 6.749
+    },
+    {
+      "dkd_mesh_index": 20,
+      "dkd_component_index": 0,
+      "dkd_vertices": 68,
+      "dkd_center": [
+        -0.3562,
+        0.3027,
+        0.0965
+      ],
+      "dkd_size": [
+        0.5177,
+        0.1905,
+        0.2248
+      ],
+      "dkd_roundness": 0.368,
+      "dkd_wheel_score": 6.7361
+    },
+    {
+      "dkd_mesh_index": 7,
+      "dkd_component_index": 0,
+      "dkd_vertices": 87,
+      "dkd_center": [
+        -0.4434,
+        0.3653,
+        -0.068
+      ],
+      "dkd_size": [
+        0.8158,
+        0.2334,
+        0.3831
+      ],
+      "dkd_roundness": 0.2861,
+      "dkd_wheel_score": 6.5722
+    },
+    {
+      "dkd_mesh_index": 15,
+      "dkd_component_index": 3,
+      "dkd_vertices": 19,
+      "dkd_center": [
+        0.7572,
+        0.4238,
+        -0.0944
+      ],
+      "dkd_size": [
+        0.1104,
+        0.2636,
+        0.0298
+      ],
+      "dkd_roundness": 0.4186,
+      "dkd_wheel_score": 6.3123
+    },
+    {
+      "dkd_mesh_index": 15,
+      "dkd_component_index": 4,
+      "dkd_vertices": 19,
+      "dkd_center": [
+        0.7572,
+        0.425,
+        0.0978
+      ],
+      "dkd_size": [
+        0.1104,
+        0.2661,
+        0.0232
+      ],
+      "dkd_roundness": 0.4148,
+      "dkd_wheel_score": 6.3046
+    },
+    {
+      "dkd_mesh_index": 1,
+      "dkd_component_index": 4,
+      "dkd_vertices": 21,
+      "dkd_center": [
+        -0.4019,
+        0.1424,
+        -0.0544
+      ],
+      "dkd_size": [
+        0.0626,
+        0.2502,
+        0.2412
+      ],
+      "dkd_roundness": 0.2503,
+      "dkd_wheel_score": 6.0256
+    },
+    {
+      "dkd_mesh_index": 15,
+      "dkd_component_index": 2,
+      "dkd_vertices": 38,
+      "dkd_center": [
+        0.6701,
+        0.7924,
+        0.0009
+      ],
+      "dkd_size": [
+        0.1452,
+        0.1416,
+        0.2237
+      ],
+      "dkd_roundness": 0.975,
+      "dkd_wheel_score": 5.8999
+    }
   ]
 }
