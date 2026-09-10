@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 
 const dkd_read = dkd_path => readFile(new URL(`../${dkd_path}`, import.meta.url), 'utf8');
 const dkd_runtime = await dkd_read('game/dkd-v061-release.mjs');
+const dkd_repair = await dkd_read('game/dkd-v061-runtime-repair.mjs');
 const dkd_build = await dkd_read('scripts/dkd-build-game.mjs');
 const dkd_appSource = await dkd_read('App.tsx');
 const dkd_edge = await dkd_read('supabase/functions/dkd-last-mile-api/index.ts');
@@ -19,6 +20,7 @@ test('v0.6.1 release metadata is authoritative and Expo SDK 57 stays intact', ()
   assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.6.1');
   assert.equal(dkd_package.dependencies.expo, '~57.0.20');
   assert.match(dkd_build, /dkd-v061-release\.mjs/);
+  assert.match(dkd_build, /dkd-v061-runtime-repair\.mjs/);
   assert.match(dkd_build, /SON KİLOMETRE · v0\.6\.1/);
 });
 
@@ -32,18 +34,21 @@ test('uploaded Yamaha plus Quaternius rider replaces only the starter vehicle', 
   assert.match(dkd_manifest, /dkd_v061ModelFaceCount = 5909/);
 });
 
-test('home has a calm 72 bpm music profile and customer image fallback is hardened', () => {
-  assert.match(dkd_runtime, /dkd_bpm=72/);
+test('effective home music is the calmer 54 bpm repair and customer image fallback is hardened', () => {
   assert.match(dkd_runtime, /dkd_v061ApplyHomeMusic/);
+  assert.match(dkd_repair, /const dkd_bpm = 54/);
+  assert.match(dkd_repair, /v061-calm-home-54/);
   assert.match(dkd_runtime, /dkd_v061PortraitInfo/);
   assert.match(dkd_runtime, /dkd_v061SafePortraitPool/);
   assert.match(dkd_runtime, /window\.dkd_v061AvatarError/);
+  assert.match(dkd_repair, /dkd_v061RepairQuarantinePortrait/);
 });
 
 test('privacy and account deletion are available inside app and on public web', () => {
   assert.match(dkd_runtime, /https:\/\/www\.draborneagle\.com\/draborngo\/lastmile\/gizlilik\//);
   assert.match(dkd_runtime, /https:\/\/www\.draborneagle\.com\/draborngo\/lastmile\/hesap-silme\//);
   assert.match(dkd_runtime, /auth-delete-account/);
+  assert.match(dkd_repair, /GİZLİLİK POLİTİKASI VE HESAP SİLME/);
   assert.match(dkd_appSource, /dkd_Linking\.openURL/);
   assert.match(dkd_appSource, /auth-delete-account/);
   assert.match(dkd_edge, /dkd_action === 'delete_account'/);
