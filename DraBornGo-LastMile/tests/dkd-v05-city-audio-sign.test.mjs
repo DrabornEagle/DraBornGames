@@ -36,13 +36,15 @@ test('city audio sign layer stays before road-edge safety and the final v0.6.1 d
   const dkd_v061 = dkd_build.indexOf("'dkd-v061-release.mjs'");
   const dkd_device = dkd_build.indexOf("'dkd-v061-device-hotfix.mjs'");
   const dkd_repair = dkd_build.indexOf("'dkd-v061-runtime-repair.mjs'");
+  const dkd_finalDevice = dkd_build.indexOf("'dkd-v061-final-device-fix.mjs'");
   assert.ok(dkd_city > dkd_previous);
   assert.ok(dkd_final > dkd_city);
   assert.ok(dkd_v06 > dkd_final);
   assert.ok(dkd_v061 > dkd_v06);
   assert.ok(dkd_device > dkd_v061);
   assert.ok(dkd_repair > dkd_device);
-  assert.match(dkd_build, /54 BPM Kurye Merkezi/);
+  assert.ok(dkd_finalDevice > dkd_repair);
+  assert.match(dkd_build, /48 BPM Kurye Merkezi/);
   assert.match(dkd_build, /ardışık sürüş müzikleri/);
   assert.match(dkd_build, /Supabase native köprü/);
 });
