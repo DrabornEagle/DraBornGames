@@ -2,7 +2,7 @@
 
 ## v0.7 final checkpoint — 10 Eylül 2026
 
-Durum: **v0.7 kodu, Last-Mile production backend'i, server-authority güvenliği, regression testleri ve Developer APK build'i tamamlandı. Kalıcı production release keystore oluşturuldu ve public repoya konulmadan offline teslim edilir. Gerçek cihazdaki son görsel/ses kabul gözlemi kullanıcı tarafından yapılır.**
+Durum: **v0.7 kodu, Last-Mile production backend'i, server-authority güvenliği, regression testleri ve Metro gerektirmeyen standalone Developer APK build'i tamamlandı. Kalıcı production release keystore public repoya konulmadan offline teslim edilir. Gerçek cihazdaki son görsel/ses kabul gözlemi kullanıcı tarafından yapılır.**
 
 ### Sürüm ve build
 
@@ -11,9 +11,10 @@ Durum: **v0.7 kodu, Last-Mile production backend'i, server-authority güvenliği
 - Paket: `com.draborneagle.lastmile`
 - Expo SDK: `57`
 - GitHub: `DrabornEagle/DraBornGames` / `main`
-- Developer APK workflow: `DKD Last Mile Developer APK` run `#2 / 34453332952` — **SUCCESS**.
-- Developer APK SHA-256: `a149d02fbaf55e604d8729332312439e878658f0f72eded7e1092c9c0772815f`.
-- Developer APK Android debug imzası kullanır; production release keystore ayrıdır.
+- Düzeltilmiş Developer APK workflow: `DKD Last Mile Developer APK` run `#3 / 34455258256` — **SUCCESS**.
+- Düzeltilmiş Developer APK SHA-256: `435195b9cebc5f9cfc1bfbe4ff268874cc0d9ed181b852d19c006565427f4d19`.
+- APK içinde `assets/index.android.bundle` bulunduğu CI tarafından ayrıca doğrulanır; Metro/USB/Wi-Fi bundler bağlantısı gerekmez.
+- Standalone test APK release varyantı olarak derlenir fakat production release keystore yerine Android test/debug signing config'i kullanır.
 
 ### v0.7 ürün tarafı
 
@@ -48,16 +49,15 @@ Durum: **v0.7 kodu, Last-Mile production backend'i, server-authority güvenliği
 
 ### GitHub / CI
 
-- Server-authority hardening PR #10 tam CI kontrolünden sonra `main`e alındı.
-- Developer APK final pipeline PR #11 ile düzeltildi ve `main`e alındı.
-- Son Developer APK pipeline'ında oyun bundle üretimi, **177/177 test**, TypeScript typecheck, Expo config kontrolü, clean Android prebuild, Gradle `assembleDebug`, SHA-256 üretimi ve artifact upload başarılı.
-- Developer APK build süresi 26 dakikalık job sınırı içinde tamamlandı.
-- APK workflow artık dokümantasyon-only değişikliklerde gereksiz Android build'i başlatmıyor.
-- Backup branch'leri korunuyor; silinmedi.
+- İlk Developer APK `assembleDebug` ile oluşturulduğu için React Native JS bundle APK içine gömülmemişti; cihaz Metro aradı ve `Unable to load script` ekranı verdi.
+- Bu hata `ca1000614264d8a27b5ffa1801ee92adda39e55c` commit'iyle giderildi.
+- Workflow artık `assembleRelease` kullanıyor ve çıktıdan sonra `assets/index.android.bundle` varlığını zorunlu kontrol ediyor.
+- Düzeltilmiş pipeline'da oyun bundle üretimi, **177/177 test**, TypeScript typecheck, Expo config, clean Android prebuild, standalone APK build, gömülü JS bundle kontrolü, SHA-256 ve artifact upload başarıyla geçti.
+- Backup branch `backup/DraBornGo-LastMile-v0.7-debug-apk-metro-error` korunuyor.
 
 ### Release signing
 
-Kalıcı DraBornGo Last Mile Android release keystore oluşturuldu. JKS/parola/private key public GitHub'a commit edilmedi ve edilmeyecek. Gelecekte production APK/AAB imzalamalarında aynı release keystore kullanılmalı. Developer APK ise test/geliştirme amacıyla debug-signed çıktıdır.
+Kalıcı DraBornGo Last Mile Android release keystore oluşturuldu. JKS/parola/private key public GitHub'a commit edilmedi ve edilmeyecek. Gelecekte production APK/AAB imzalamalarında aynı release keystore kullanılmalı. Bu v0.7 standalone Developer APK ise production dağıtım anahtarıyla değil test signing config'i ile imzalanmıştır.
 
 ### Termux
 
