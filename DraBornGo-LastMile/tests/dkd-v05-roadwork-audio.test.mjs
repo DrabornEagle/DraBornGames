@@ -10,17 +10,18 @@ const dkd_hotfix = await dkd_fs.readFile(dkd_path.join(dkd_root, 'game/dkd-v05-r
 const dkd_build = await dkd_fs.readFile(dkd_path.join(dkd_root, 'scripts/dkd-build-game.mjs'), 'utf8');
 
 const dkd_audioFiles = [
-  'dkd-menu-ankara-gece.mp3',
-  'dkd-drive-kizilay-hatti.mp3',
-  'dkd-drive-gece-vardiyasi.mp3',
-  'dkd-drive-yagmur-asfalti.mp3',
-  'dkd-drive-cankaya-pulse.mp3',
-  'dkd-drive-son-paket.mp3',
+  'dkd-v07-home-kurye-merkezi.mp3',
+  'dkd-v07-drive-ankara-gece.mp3',
+  'dkd-v07-drive-son-kilometre.mp3',
+  'dkd-v07-drive-firtina-hatti.mp3',
+  'dkd-v07-drive-asfalt-yildizlari.mp3',
+  'dkd-v07-drive-final-kontrat.mp3',
 ];
 
-test('v0.5 rendered media soundtrack assets are bundled', async () => {
+test('v0.7 rendered game soundtrack assets are bundled', async () => {
   assert.match(dkd_build, /dkd_v05MediaAssets/);
   assert.match(dkd_build, /dkd-v05-roadwork-audio-hotfix\.mjs/);
+  assert.match(dkd_build, /dkd-v07-release\.mjs/);
   for (const dkd_file of dkd_audioFiles) {
     assert.match(dkd_build, new RegExp(dkd_file.replace('.', '\\.')));
     const dkd_bytes = await dkd_fs.readFile(dkd_path.join(dkd_root, 'game/audio', dkd_file));
@@ -41,7 +42,7 @@ test('hub company sign is corrected toward screen-left', () => {
   assert.match(dkd_hotfix, /dkd_companySign\.position\.x = 2\.65/);
 });
 
-test('stale v0.4 player-facing labels are upgraded to v0.5', () => {
+test('stale v0.4 player-facing labels are upgraded to v0.5 by the historical compatibility layer', () => {
   assert.match(dkd_hotfix, /replace\(\/v0\\\.4\/g, 'v0\.5'\)/);
   assert.match(dkd_hotfix, /replace\(\/V0\\\.4\/g, 'V0\.5'\)/);
 });
@@ -53,7 +54,7 @@ test('insufficient wallet unlocks free fuel or maintenance rescue', () => {
   assert.match(dkd_hotfix, /dkd_info\.dkd_wallet < dkd_info\.dkd_cost/);
 });
 
-test('menu music does not restart on ordinary clicks and shifts avoid immediate repeats', () => {
+test('legacy menu music does not restart on ordinary clicks and shifts avoid immediate repeats', () => {
   assert.match(dkd_hotfix, /dkd_old === dkd_next/);
   assert.match(dkd_hotfix, /dkd_next === dkd_audio\.dkd_v05MediaLastDriveIndex/);
   assert.match(dkd_hotfix, /dkd_v05MediaRunId === dkd_runId/);
