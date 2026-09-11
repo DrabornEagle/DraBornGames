@@ -1,37 +1,66 @@
-name: DKD Last Mile checks
+name: DKD Last Mile v0.7.2 checks
+
 on:
   push:
-    branches: [main]
-    paths: ['DraBornGo-LastMile/**', '.github/workflows/dkd-lastmile-check.yml']
+    branches:
+      - main
+    paths:
+      - 'LastMile/**'
+      - '.github/workflows/dkd-lastmile-check.yml'
   pull_request:
-    paths: ['DraBornGo-LastMile/**', '.github/workflows/dkd-lastmile-check.yml']
+    paths:
+      - 'LastMile/**'
+      - '.github/workflows/dkd-lastmile-check.yml'
   workflow_dispatch:
+
 permissions:
   contents: read
+
 concurrency:
-  group: dkd-lastmile-${{ github.ref }}
+  group: dkd-lastmile-check-${{ github.ref }}
   cancel-in-progress: true
+
 jobs:
   dkd-check:
+    name: Expo Go and web source verification
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     defaults:
       run:
-        working-directory: DraBornGo-LastMile
+        working-directory: LastMile
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: npm
-          cache-dependency-path: DraBornGo-LastMile/package-lock.json
-      - run: npm ci --no-audit --no-fund
-      - run: npm run build:game
+          cache-dependency-path: LastMile/package-lock.json
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build shared Android and web game package
+        run: npm run build:game
+
       - name: Generated files match source
         run: git diff --exit-code -- assets/dkd-lastmile.html src/generated/dkd-game-html.ts
-      - run: npm test
-      - run: npm run typecheck
-      - name: Expo SDK dependency versions
+
+      - name: Run tests
+        run: npm test
+
+      - name: TypeScript validation
+        run: npm run typecheck
+
+      - name: Expo SDK 57 dependency validation
         run: EXPO_OFFLINE=1 npx expo install --check
-      - name: Android JavaScript export (no APK)
-        run: EXPO_OFFLINE=1 npx expo export --platform android --output-dir dist-android
+
+      - name: Android JavaScript export smoke test without APK
+        run: EXPO_OFFLINE=1 npx expo export --platform android --output-dir dist-android-js
+
+      - name: Web package export smoke test
+        run: npm run build:web
+
+      - name: Repository whitespace check
+        working-directory: .
+        run: git diff --check
