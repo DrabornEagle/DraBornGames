@@ -21,17 +21,17 @@ async function dkd_sha256(dkd_relative) {
   };
 }
 
-test('v0.7.4 Android metadata keeps versionCode 1 and Expo Go 57.0.9 test target', async () => {
+test('v0.7.4 Android metadata keeps versionCode 1 and synchronized release target', async () => {
   const dkd_app = JSON.parse(await dkd_text('app.json'));
   assert.equal(dkd_app.expo.version, '0.7.4');
   assert.equal(dkd_app.expo.android.package, 'com.draborneagle.lastmile');
   assert.equal(dkd_app.expo.android.versionCode, 1);
-  assert.equal(dkd_app.expo.extra.dkd_releaseChannel, 'expo-go-test');
+  assert.equal(dkd_app.expo.extra.dkd_releaseChannel, 'web-and-github-release');
   assert.equal(dkd_app.expo.extra.dkd_cameraDefault, 'chase');
   assert.equal(dkd_app.expo.extra.dkd_audioRuntime, 'physical-mp3-two-track-v074-fixed');
   assert.equal(dkd_app.expo.extra.dkd_expoGoTestVersion, '57.0.9');
-  assert.equal(dkd_app.expo.extra.dkd_webPublishedVersion, '0.7.2');
-  assert.equal(dkd_app.expo.extra.dkd_expoCandidateOnly, true);
+  assert.equal(dkd_app.expo.extra.dkd_webPublishedVersion, '0.7.4');
+  assert.equal(dkd_app.expo.extra.dkd_expoCandidateOnly, false);
 });
 
 test('v0.7.4 package and Expo bundle wrapper are aligned', async () => {
@@ -44,6 +44,7 @@ test('v0.7.4 package and Expo bundle wrapper are aligned', async () => {
   assert.match(dkd_wrapper, /dkd-v073-expo\.mjs/);
   assert.match(dkd_wrapper, /dkd-v074-expo\.mjs/);
   assert.match(dkd_wrapper, /dkd-v074-bridge-fix\.mjs/);
+  assert.match(dkd_wrapper, /dkd-v074-release-polish\.mjs/);
   assert.match(dkd_wrapper, /v0\.7\.4/);
 });
 
@@ -81,15 +82,22 @@ test('v0.7.4 continues using only verified InnerLight and SeMeNota music files',
   assert.deepEqual(dkd_audioFiles, ['InnerLight.mp3', 'SeMeNota.mp3']);
 });
 
-test('Android output workflows remain manual-only during Expo testing', async () => {
+test('Android outputs stay manual except the explicit signed release request gate', async () => {
   const dkd_android = await dkd_readFile(path.join(dkd_repoRoot, '.github/workflows/dkd-lastmile-android-v07.yml'), 'utf8');
   const dkd_release = await dkd_readFile(path.join(dkd_repoRoot, '.github/workflows/dkd-lastmile-android-signed-release.yml'), 'utf8');
-  for (const dkd_workflow of [dkd_android, dkd_release]) {
-    assert.match(dkd_workflow, /workflow_dispatch:/);
-    assert.doesNotMatch(dkd_workflow, /^\s*push:/m);
-    assert.match(dkd_workflow, /working-directory: LastMile/);
-    assert.match(dkd_workflow, /DKD_LASTMILE_KEYSTORE_B64/);
-  }
+  assert.match(dkd_android, /workflow_dispatch:/);
+  assert.doesNotMatch(dkd_android, /^\s*push:/m);
+  assert.match(dkd_android, /working-directory: LastMile/);
+  assert.match(dkd_android, /DKD_LASTMILE_KEYSTORE_B64/);
   assert.match(dkd_android, /versionName=0\.7\.4/);
+
+  assert.match(dkd_release, /workflow_dispatch:/);
+  assert.match(dkd_release, /^\s*push:/m);
+  assert.match(dkd_release, /LastMile\/dkd-release-request\.json/);
+  assert.doesNotMatch(dkd_release, /paths:\s*\n\s*- ['"]LastMile\/\*\*/);
+  assert.match(dkd_release, /working-directory: LastMile/);
+  assert.match(dkd_release, /DKD_LASTMILE_KEYSTORE_B64/);
   assert.match(dkd_release, /dkd_publish_github_release/);
+  assert.match(dkd_release, /LastMile-v\$\{DKD_VERSION\}-release-vc1\.apk/);
+  assert.match(dkd_release, /versionCode='1'/);
 });
