@@ -1,4 +1,4 @@
-name: DKD Last Mile v0.7.2 shared bundle
+name: DKD Last Mile v0.7.3 Expo candidate
 
 on:
   push:
@@ -24,7 +24,7 @@ concurrency:
 
 jobs:
   dkd-autogen:
-    name: Regenerate Expo Go and web package
+    name: Regenerate Expo Go game package
     runs-on: ubuntu-latest
     timeout-minutes: 20
     defaults:
@@ -42,13 +42,13 @@ jobs:
           cache: npm
           cache-dependency-path: LastMile/package-lock.json
 
-      - name: Align lockfile with v0.7.2 package metadata
+      - name: Align lockfile with v0.7.3 package metadata
         run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
 
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Build shared Android and web game package
+      - name: Build Android shared game package
         run: npm run build:game
 
       - name: Run tests
@@ -64,7 +64,7 @@ jobs:
         working-directory: .
         run: git diff --check
 
-      - name: Commit deterministic generated files
+      - name: Commit deterministic generated Expo files
         run: |
           set -euo pipefail
           git config user.name 'DKD Last Mile Bot'
@@ -74,6 +74,6 @@ jobs:
             echo 'Generated files already current.'
             exit 0
           fi
-          git commit -m 'build(lastmile): regenerate v0.7.2 shared bundle'
+          git commit -m 'build(lastmile): regenerate v0.7.3 Expo candidate'
           git pull --rebase origin "${{ github.ref_name }}"
           git push origin HEAD:${{ github.ref_name }}
