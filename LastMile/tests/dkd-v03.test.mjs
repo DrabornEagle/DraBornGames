@@ -11,11 +11,9 @@ test('v0.3 başlangıç scooterı bozuk harici model yerine güvenli yerel geome
   const dkd_build = dkd_read('scripts/dkd-build-game.mjs');
   const dkd_fix = dkd_read('game/dkd-v03-runtime-fix.mjs');
   const dkd_html = dkd_read('assets/dkd-lastmile.html');
-
   const dkd_patchIndex = dkd_build.indexOf("'dkd-v03-patch.mjs'");
   const dkd_fixIndex = dkd_build.indexOf("'dkd-v03-runtime-fix.mjs'");
   assert.ok(dkd_patchIndex >= 0 && dkd_fixIndex > dkd_patchIndex, 'v0.3 güvenli çalışma zamanı düzeltmesi en son yüklenmeli.');
-
   assert.match(dkd_fix, /dkd_v03_addStarterScooterDetails/);
   assert.match(dkd_fix, /const dkd_v03_baseBuildBikeFinal = dkd_v03_baseBuildBike/);
   assert.match(dkd_fix, /dkd_v03_baseBuildBikeFinal\.call\(this, dkd_kind\)/);
@@ -26,18 +24,16 @@ test('v0.3 başlangıç scooterı bozuk harici model yerine güvenli yerel geome
   assert.match(dkd_html, /dkd_v03_safe_model/, 'üretilen Expo oyun paketinde güvenli v0.3 scooter bulunmalı.');
 });
 
-test('v0.3 özellikleri güncel v0.7 build içinde korunur', () => {
+test('v0.3 özellikleri güncel v0.7.2 build içinde korunur', () => {
   const dkd_build = dkd_read('scripts/dkd-build-game.mjs');
   const dkd_patch = dkd_read('game/dkd-v03-patch.mjs');
   const dkd_fix = dkd_read('game/dkd-v03-runtime-fix.mjs');
   const dkd_package = JSON.parse(dkd_read('package.json'));
   const dkd_app = JSON.parse(dkd_read('app.json'));
-
-  assert.equal(dkd_package.version, '0.7.1');
-  assert.equal(dkd_app.expo.version, '0.7.1');
+  assert.equal(dkd_package.version, '0.7.2');
+  assert.equal(dkd_app.expo.version, '0.7.2');
   assert.equal(dkd_app.expo.android.versionCode, 1);
-  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.7.1');
-
+  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.7.2');
   assert.match(dkd_build, /dkd-v03-patch\.mjs/);
   assert.match(dkd_build, /dkd-v03-runtime-fix\.mjs/);
   assert.match(dkd_build, /v0\.6\.1/);
