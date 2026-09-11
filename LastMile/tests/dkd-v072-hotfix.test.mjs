@@ -30,19 +30,20 @@ test('v0.7.2 hotfix updates audio percentages while range input moves', () => {
   assert.match(dkd_hotfix, /dkd_v05MediaCurrent\.volume/);
 });
 
-test('v0.7.2 settings removes obsolete backup and Expo test copy', () => {
+test('v0.7.2 settings removes obsolete backup Expo test and audio info copy', () => {
   assert.match(dkd_hotfix, /export-save\|import-save/);
   assert.match(dkd_hotfix, /DrabornEagle system \/ Android/);
   assert.match(dkd_hotfix, /DBG APK/);
-  assert.match(dkd_hotfix, /Expo SDK 57/);
   assert.match(dkd_hotfix, /SDK 57 TEST/);
+  assert.match(dkd_hotfix, /v0\\\.7\\\.2 ses motoru/);
+  assert.match(dkd_hotfix, /dkd_audioInfoCard: false/);
 });
 
-test('v0.7.2 visible UI removes Ankara center card and Pro Max wording', () => {
-  assert.match(dkd_hotfix, /ANKARA KURYE MERKEZİ/);
-  assert.match(dkd_hotfix, /iPhone 18 Pro Max/);
-  assert.match(dkd_hotfix, /iPhone 18 Pro/);
-  assert.match(dkd_hotfix, /dkd_card\.remove\(\)/);
+test('v0.7.2 visible UI removes the actual Courier Center location card and restores reward name', () => {
+  assert.match(dkd_hotfix, /\.dkd-home-hero > \.dkd-location/);
+  assert.match(dkd_hotfix, /dkd_location\.remove\(\)/);
+  assert.match(dkd_hotfix, /iPhone 18 PRO Max/);
+  assert.match(dkd_hotfix, /dkd_homeLocationCard: false/);
 });
 
 test('hotfix is the last shared Android and web runtime layer', () => {
