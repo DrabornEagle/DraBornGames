@@ -1,0 +1,42 @@
+{
+  "dkd_version": "0.7.2",
+  "dkd_codec": "audio/mpeg",
+  "dkd_profile": "mobile-web-optimized-mono-22.05khz-16kbps",
+  "dkd_source_backup": "private-drive-original-48khz",
+  "dkd_tracks": [
+    {
+      "dkd_file": "audio/InnerLight.mp3",
+      "dkd_name": "InnerLight",
+      "dkd_sub": "Kurye Merkezi · Ana Menü",
+      "dkd_bpm": 120,
+      "dkd_mode": "menu",
+      "dkd_bytes": 517948,
+      "dkd_sha256": "abf4e2c2c3525c1ad4003c485732bd1d8dac90601978850d96429cdbbf3f3ff5",
+      "dkd_parts": [
+        "InnerLight.00.b64",
+        "InnerLight.01.b64",
+        "InnerLight.02.b64",
+        "InnerLight.03.b64",
+        "InnerLight.04.b64",
+        "InnerLight.05.b64",
+        "InnerLight.06.b64"
+      ]
+    },
+    {
+      "dkd_file": "audio/SeMeNota.mp3",
+      "dkd_name": "SeMeNota",
+      "dkd_sub": "Vardiya · Sürüş",
+      "dkd_bpm": 128,
+      "dkd_mode": "drive",
+      "dkd_bytes": 352541,
+      "dkd_sha256": "9225c56c726448b40777269482ad4e9d5aaaff9c31267ad1419b1656f42edf71",
+      "dkd_parts": [
+        "SeMeNota.00.b64",
+        "SeMeNota.01.b64",
+        "SeMeNota.02.b64",
+        "SeMeNota.03.b64",
+        "SeMeNota.04.b64"
+      ]
+    }
+  ]
+}
