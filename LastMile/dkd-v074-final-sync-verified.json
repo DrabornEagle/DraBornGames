@@ -1,0 +1,12 @@
+{
+  "dkd_version": "0.7.4",
+  "dkd_versionCode": 1,
+  "dkd_apk_requested": false,
+  "dkd_shared_web_android": true,
+  "dkd_admin_payments_separate": true,
+  "dkd_payment_pending_flow": true,
+  "dkd_payment_database_repaired": true,
+  "dkd_public_note_animated": true,
+  "dkd_visible_version_normalized": true,
+  "dkd_edge_api_version": "0.7.4"
+}
