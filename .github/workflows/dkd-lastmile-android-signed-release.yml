@@ -1,6 +1,10 @@
 name: DKD Last Mile Signed Android Release v0.7.4
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'LastMile/dkd-release-request.json'
   workflow_dispatch:
     inputs:
       dkd_format:
@@ -21,19 +25,19 @@ permissions:
   contents: write
 
 concurrency:
-  group: dkd-lastmile-signed-v074-${{ inputs.dkd_format }}
+  group: dkd-lastmile-signed-v074-${{ inputs.dkd_format || 'apk' }}
   cancel-in-progress: false
 
 jobs:
   dkd-signed-output:
-    name: Permanent-key ${{ inputs.dkd_format }}
+    name: Permanent-key ${{ inputs.dkd_format || 'apk' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     defaults:
       run:
         working-directory: LastMile
     env:
-      DKD_OUTPUT_FORMAT: ${{ inputs.dkd_format }}
+      DKD_OUTPUT_FORMAT: ${{ inputs.dkd_format || 'apk' }}
       DKD_LASTMILE_KEYSTORE_PATH: ${{ github.workspace }}/LastMile/android/app/dkd-lastmile-release.jks
 
     steps:
@@ -161,7 +165,7 @@ jobs:
           retention-days: 30
 
       - name: Publish APK release for website download
-        if: env.DKD_OUTPUT_FORMAT == 'apk' && inputs.dkd_publish_github_release
+        if: env.DKD_OUTPUT_FORMAT == 'apk' && (github.event_name == 'push' || inputs.dkd_publish_github_release)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
