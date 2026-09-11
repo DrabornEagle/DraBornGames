@@ -1,4 +1,4 @@
-name: DKD Last Mile v0.7.3 Expo candidate
+name: DKD Last Mile v0.7.4 Expo candidate
 
 on:
   push:
@@ -42,7 +42,7 @@ jobs:
           cache: npm
           cache-dependency-path: LastMile/package-lock.json
 
-      - name: Align lockfile with v0.7.3 package metadata
+      - name: Align lockfile with v0.7.4 package metadata
         run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
 
       - name: Install locked dependencies
@@ -74,6 +74,6 @@ jobs:
             echo 'Generated files already current.'
             exit 0
           fi
-          git commit -m 'build(lastmile): regenerate v0.7.3 Expo candidate'
+          git commit -m 'build(lastmile): regenerate v0.7.4 Expo candidate'
           git pull --rebase origin "${{ github.ref_name }}"
           git push origin HEAD:${{ github.ref_name }}
