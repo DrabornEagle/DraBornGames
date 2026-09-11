@@ -17,8 +17,8 @@ function dkd_fixture(dkd_context) {
   dkd_git(dkd_root, 'init', '--bare', '--initial-branch=main', dkd_bare);
   dkd_git(dkd_root, 'clone', dkd_bare, dkd_author);
   for (const dkd_pair of [['user.name','DKD Test'],['user.email','dkd-test@invalid.example']]) dkd_git(dkd_author,'config',...dkd_pair);
-  dkd_fs.mkdirSync(dkd_path.join(dkd_author,'DraBornGo-LastMile/scripts'), { recursive: true });
-  dkd_fs.copyFileSync(dkd_source, dkd_path.join(dkd_author,'DraBornGo-LastMile/scripts/dkd-sync.sh'));
+  dkd_fs.mkdirSync(dkd_path.join(dkd_author,'LastMile/scripts'), { recursive: true });
+  dkd_fs.copyFileSync(dkd_source, dkd_path.join(dkd_author,'LastMile/scripts/dkd-sync.sh'));
   dkd_fs.writeFileSync(dkd_path.join(dkd_author,'version.txt'),'one');
   dkd_git(dkd_author,'add','.'); dkd_git(dkd_author,'commit','-m','initial'); dkd_git(dkd_author,'push','origin','main');
   dkd_git(dkd_root,'clone',dkd_bare,dkd_local);
@@ -26,7 +26,7 @@ function dkd_fixture(dkd_context) {
   dkd_git(dkd_local,'config',`url.${dkd_bare}.insteadOf`,dkd_url);
   for (const dkd_pair of [['user.name','DKD Test'],['user.email','dkd-test@invalid.example']]) dkd_git(dkd_local,'config',...dkd_pair);
   const dkd_publish = () => { dkd_fs.writeFileSync(dkd_path.join(dkd_author,'version.txt'),'two'); dkd_git(dkd_author,'add','.'); dkd_git(dkd_author,'commit','-m','remote update'); dkd_git(dkd_author,'push','origin','main'); return dkd_git(dkd_author,'rev-parse','HEAD'); };
-  const dkd_sync = () => dkd_exec('bash',['DraBornGo-LastMile/scripts/dkd-sync.sh'],{cwd:dkd_local,encoding:'utf8',stdio:['ignore','pipe','pipe']});
+  const dkd_sync = () => dkd_exec('bash',['LastMile/scripts/dkd-sync.sh'],{cwd:dkd_local,encoding:'utf8',stdio:['ignore','pipe','pipe']});
   return { dkd_git, dkd_local, dkd_author, dkd_publish, dkd_sync };
 }
 dkd_test('sync fast-forwards to remote and becomes a no-op when equal', dkd_context => {
