@@ -56,8 +56,9 @@ test('privacy and account deletion are available inside app and on public web', 
   assert.match(dkd_migration, /grant execute .* service_role/i);
 });
 
-test('v0.6.1 signup keeps plate metadata for the Last-Mile server profile', () => {
+test('signup plate metadata is persisted through the v0.7.3 safe RPC', () => {
   assert.match(dkd_appSource, /dkd_plate_no: dkd_plateNo/);
   assert.match(dkd_edge, /dkd_plate_no/);
-  assert.match(dkd_edge, /schema\('Last-Mile'\)/);
+  assert.match(dkd_edge, /rpc\('dkd_lastmile_set_plate'/);
+  assert.doesNotMatch(dkd_edge, /schema\('Last-Mile'\)/);
 });
