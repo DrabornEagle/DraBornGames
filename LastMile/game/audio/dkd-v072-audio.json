@@ -1,26 +1,10 @@
 {
   "dkd_version": "0.7.2",
   "dkd_codec": "audio/mpeg",
-  "dkd_profile": "mobile-web-optimized-stereo-44.1khz-64kbps",
-  "dkd_source": "user-supplied-original-mp3",
+  "dkd_profile": "mobile-web-optimized-mono-32khz-32kbps",
+  "dkd_source": "user-supplied-mp3-mobile-encode",
   "dkd_tracks": [
-    {
-      "dkd_file": "audio/InnerLight.mp3",
-      "dkd_name": "InnerLight",
-      "dkd_sub": "Kurye Merkezi · Ana Menü",
-      "dkd_bpm": 120,
-      "dkd_mode": "menu",
-      "dkd_bytes": 2071763,
-      "dkd_sha256": "7ed6370998dff29e932c57d16820cda343579a74591ac10490f243a13cf156e3"
-    },
-    {
-      "dkd_file": "audio/SeMeNota.mp3",
-      "dkd_name": "SeMeNota",
-      "dkd_sub": "Vardiya · Sürüş",
-      "dkd_bpm": 128,
-      "dkd_mode": "drive",
-      "dkd_bytes": 1410123,
-      "dkd_sha256": "78e3955662fcf4b53ec8deef75444973be81f5094e1f9c5fe0b4aed10ab8f499"
-    }
+    {"dkd_file":"audio/InnerLight.mp3","dkd_name":"InnerLight","dkd_sub":"Kurye Merkezi · Ana Menü","dkd_bpm":120,"dkd_mode":"menu","dkd_bytes":1036016,"dkd_sha256":"02bfa5d67476fb20394f8b744d1391f79ba91244bb81ba6e5e68f1e30a5d805a"},
+    {"dkd_file":"audio/SeMeNota.mp3","dkd_name":"SeMeNota","dkd_sub":"Vardiya · Sürüş","dkd_bpm":128,"dkd_mode":"drive","dkd_bytes":705104,"dkd_sha256":"5cd31ddb67ddf011df1bc924d9faaf20f18e346cde6cc147f5e57f65f93647e4"}
   ]
 }
