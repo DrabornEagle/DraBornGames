@@ -104,7 +104,7 @@ dkd_Game.prototype.dkd_receive = function dkd_v074FinalReceive(dkd_payload) {
       this.dkd_render('v074payment');
       return;
     }
-    this.dkd_modal('Dekont gönderilemedi', `Ödeme kaydı oluşturulamadı. ${dkd_message}`, `${dkd_button('TEKRAR DENE','v074-payment','refresh')}${dkd_button('KAPAT','close-modal','close','dkd-secondary')}`);
+    this.dkd_modal('Dekont gönderilemedi', `Ödeme kaydı oluşturulamadı. ${dkd_message}`, `${dkd_button('TEKRAR DENE','v074-payment','refresh')}${dkd_button('KAPAT','modal-close','close','dkd-secondary')}`);
     return;
   }
   return dkd_v074FinalPreviousReceive.call(this, dkd_payload);
