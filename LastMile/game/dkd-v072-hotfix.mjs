@@ -30,10 +30,6 @@ function dkd_v072HotfixVisibleObstacleHit(dkd_run, dkd_beforeObstacles) {
   });
 }
 
-// Core road recovery used dkd_hit() for off-road clamping and dynamically closed roads.
-// Those geometry corrections do not always have a rendered obstacle, which created the
-// reported ghost wall. During rider physics, only authored/rendered obstacle hits may
-// create damage. Traffic collisions remain handled separately by dkd_stepTraffic.
 dkd_stepRun = function dkd_v072HotfixStepRun(dkd_run, dkd_graph, dkd_input, dkd_delta) {
   if (!dkd_run) return dkd_v072HotfixPreviousStepRun(dkd_run, dkd_graph, dkd_input, dkd_delta);
   const dkd_before = {
@@ -67,6 +63,8 @@ dkd_stepRun = function dkd_v072HotfixStepRun(dkd_run, dkd_graph, dkd_input, dkd_
 function dkd_v072HotfixSettingsHtml(dkd_html) {
   return String(dkd_html || '')
     .replace(/<button[^>]*data-dkd-action="(?:export-save|import-save)"[^>]*>[\s\S]*?<\/button>/g, '')
+    .replace(/<div class="dkd-v07-camera-note"><b>v0\.7\.2 ses motoru:<\/b>[\s\S]*?<\/div>/g, '')
+    .replace(/<div class="dkd-v07-camera-note"><b>v0\.7 ses motoru:<\/b>[\s\S]*?<\/div>/g, '')
     .replaceAll('DRA SİSTEM / ANDROID', 'DrabornEagle system / Android')
     .replaceAll('EXPO GO', 'DBG APK')
     .replaceAll('<small>SDK 57 TEST</small>', '')
@@ -79,10 +77,10 @@ dkd_Game.prototype.dkd_view_settings = function dkd_v072HotfixSettings() {
 };
 
 function dkd_v072HotfixText(dkd_value) {
-  return String(dkd_value || '').replaceAll('iPhone 18 Pro Max', 'iPhone 18 Pro');
+  return String(dkd_value || '').replace(/iPhone 18 Pro(?: Max)?/g, 'iPhone 18 PRO Max');
 }
 
-function dkd_v072HotfixNormalizeVisible(dkd_root, dkd_page) {
+function dkd_v072HotfixNormalizeVisible(dkd_root) {
   if (!dkd_root) return;
   const dkd_walker = document.createTreeWalker(dkd_root, NodeFilter.SHOW_TEXT);
   const dkd_nodes = [];
@@ -92,20 +90,17 @@ function dkd_v072HotfixNormalizeVisible(dkd_root, dkd_page) {
     const dkd_next = dkd_v072HotfixText(dkd_value);
     if (dkd_next !== dkd_value) dkd_node.nodeValue = dkd_next;
   }
-
-  if (dkd_page === 'home') {
-    const dkd_target = 'ANKARA KURYE MERKEZİ';
-    const dkd_normalize = dkd_value => String(dkd_value || '').replace(/\s+/g, ' ').trim().toLocaleUpperCase('tr-TR');
-    const dkd_matches = [...dkd_root.querySelectorAll('div,section,article,button')]
-      .filter(dkd_element => dkd_normalize(dkd_element.textContent) === dkd_target);
-    const dkd_card = dkd_matches.find(dkd_element => dkd_normalize(dkd_element.parentElement?.textContent) !== dkd_target) || dkd_matches.at(-1);
-    if (dkd_card) dkd_card.remove();
+  // This is the actual Courier Center home overlay from dkd-ui.mjs. Remove by
+  // stable class instead of matching page id or translated text.
+  for (const dkd_location of dkd_root.querySelectorAll?.('.dkd-home-hero > .dkd-location, .dkd-location') || []) {
+    const dkd_text = String(dkd_location.textContent || '').replace(/\s+/g, ' ').trim().toLocaleUpperCase('tr-TR');
+    if (dkd_text.includes('ANKARA') && dkd_text.includes('KURYE MERKEZİ')) dkd_location.remove();
   }
 }
 
 dkd_Game.prototype.dkd_render = function dkd_v072HotfixRender(dkd_page, dkd_arg = null) {
   const dkd_result = dkd_v072HotfixPreviousRender.call(this, dkd_page, dkd_arg);
-  dkd_v072HotfixNormalizeVisible(this.dkd_root, dkd_page);
+  dkd_v072HotfixNormalizeVisible(this.dkd_root);
   return dkd_result;
 };
 
@@ -139,9 +134,7 @@ dkd_Game.prototype.dkd_action = function dkd_v072HotfixAction(dkd_action) {
       }, 350);
     }
   }
-  if (dkd_command === 'deliver' && this.dkd_run?.dkd_finished) {
-    dkd_v072HotfixClearOrders(this);
-  }
+  if (dkd_command === 'deliver' && this.dkd_run?.dkd_finished) dkd_v072HotfixClearOrders(this);
   return dkd_result;
 };
 
@@ -149,18 +142,18 @@ dkd_Game.prototype.dkd_receive = function dkd_v072HotfixReceive(dkd_payload) {
   const dkd_message = String(dkd_payload?.dkd_data || '');
   if (dkd_payload?.dkd_type === 'cloud-error' && /job_not_found|job.*not.*found/i.test(dkd_message)) {
     dkd_v072HotfixClearOrders(this);
-    if (!this.dkd_run && this.dkd_v04CloudReady) {
-      setTimeout(() => this.dkd_refreshOrders(), 250);
-    }
+    if (!this.dkd_run && this.dkd_v04CloudReady) setTimeout(() => this.dkd_refreshOrders(), 250);
   }
   return dkd_v072HotfixPreviousReceive.call(this, dkd_payload);
 };
 
 window.dkd_lastMileV072Hotfix = {
-  dkd_version: 'v0.7.2-hotfix-2',
+  dkd_version: 'v0.7.2-hotfix-3',
   dkd_staleCloudOrderReset: true,
   dkd_ghostRoadCollisionPenalty: false,
   dkd_visibleObstacleCollisionOnly: true,
   dkd_liveAudioPercentages: true,
-  dkd_compactSettings: true,
+  dkd_homeLocationCard: false,
+  dkd_audioInfoCard: false,
+  dkd_rewardName: 'iPhone 18 PRO Max',
 };
