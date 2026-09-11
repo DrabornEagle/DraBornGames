@@ -4,5 +4,6 @@
   "dkd_format": "apk",
   "dkd_publishGithubRelease": true,
   "dkd_channel": "web-and-github",
-  "dkd_requestedAt": "2026-09-12"
+  "dkd_requestedAt": "2026-09-12",
+  "dkd_attempt": 2
 }
