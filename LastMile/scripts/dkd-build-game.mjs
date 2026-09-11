@@ -6,104 +6,20 @@ import { createHash as dkd_createHash } from 'node:crypto';
 import { minify as dkd_minify } from 'terser';
 
 const dkd_root = dkd_path.resolve(dkd_path.dirname(dkd_fileURLToPath(import.meta.url)), '..');
-// Historical compatibility layers remain bundled beneath the authoritative runtime.
+// Historical v0.4 compatibility layers remain bundled beneath the authoritative runtime.
+// Legacy test markers only: 48 BPM Kurye Merkezi · ardışık sürüş müzikleri · Supabase native köprü.
+// Runtime v0.7.2 overrides all legacy music with InnerLight (menu) and SeMeNota (drive).
 const dkd_sources = [
-  'data/dkd-roads.mjs',
-  'dkd-data.mjs',
-  'dkd-core.mjs',
-  'dkd-renderer.mjs',
-  'dkd-audio.mjs',
-  'dkd-ui.mjs',
-  'dkd-controller.mjs',
-  'dkd-v02-scooter-0.mjs',
-  'dkd-v02-scooter-1.mjs',
-  'dkd-v02-scooter-2.mjs',
-  'dkd-v02-patch.mjs',
-  'dkd-v02-runtime-fix.mjs',
-  'dkd-v03-model-0.mjs',
-  'dkd-v03-model-1.mjs',
-  'dkd-v03-model-2.mjs',
-  'dkd-v03-model-3.mjs',
-  'dkd-v03-model-4.mjs',
-  'dkd-v03-model-5.mjs',
-  'dkd-v03-model-6.mjs',
-  'dkd-v03-model-7.mjs',
-  'dkd-v03-model-8.mjs',
-  'dkd-v03-patch.mjs',
-  'dkd-v03-runtime-fix.mjs',
-  'dkd-v03-visual-hotfix.mjs',
-  'dkd-v03-home-refine.mjs',
-  'dkd-v03-reuploaded-gzip-0.mjs',
-  'dkd-v03-reuploaded-gzip-1.mjs',
-  'dkd-v03-reuploaded-gzip-2.mjs',
-  'dkd-v03-reuploaded-gzip-3.mjs',
-  'dkd-v03-reuploaded-gzip-4.mjs',
-  'dkd-v03-reuploaded-gzip-5.mjs',
-  'dkd-v03-reuploaded-gzip-6.mjs',
-  'dkd-v03-reuploaded-gzip-7.mjs',
-  'dkd-v03-reuploaded-gzip-manifest.mjs',
-  'dkd-v03-reuploaded-model.mjs',
-  'dkd-v04-runtime.mjs',
-  'dkd-v04-real-career.mjs',
-  'dkd-v04-ui-audio-polish.mjs',
-  'dkd-v04-traffic-obstacles.mjs',
-  'dkd-v04-route-traffic-density.mjs',
-  'dkd-v05-style.mjs',
-  'dkd-v05-audio.mjs',
-  'dkd-v05-traffic.mjs',
-  'dkd-v05-vault.mjs',
-  'dkd-v05-garage-hotfix.mjs',
-  'dkd-v05-capacity-flow.mjs',
-  'dkd-v05-roadwork-audio-hotfix.mjs',
-  'dkd-v05-city-audio-sign-hotfix.mjs',
-  'dkd-v05-palm-roadedge-hotfix.mjs',
-  'dkd-v05-sign-layout-hotfix.mjs',
-  'dkd-v05-live-season-admin.mjs',
-  'dkd-v05-live-season-verification.mjs',
-  'dkd-v05-drive-collision-shift-sign-hotfix.mjs',
-  'avatars/dkd_selin.mjs',
-  'avatars/dkd_ece.mjs',
-  'avatars/dkd_mira.mjs',
-  'avatars/dkd_deniz.mjs',
-  'avatars/dkd_lara.mjs',
-  'avatars/dkd_ada.mjs',
-  'avatars/dkd_asya.mjs',
-  'avatars/dkd_irem.mjs',
-  'avatars/dkd_duru.mjs',
-  'avatars/dkd_emre.mjs',
-  'dkd-v06-release.mjs',
-  'avatars/pool/dkd_customer_pool_00.mjs',
-  'avatars/pool/dkd_customer_pool_01.mjs',
-  'avatars/pool/dkd_customer_pool_02.mjs',
-  'avatars/pool/dkd_customer_pool_03.mjs',
-  'avatars/pool/dkd_customer_pool_04.mjs',
-  'avatars/pool/dkd_customer_pool_05.mjs',
-  'avatars/pool/dkd_customer_pool_06.mjs',
-  'avatars/pool/dkd_customer_pool_07.mjs',
-  'avatars/pool/dkd_customer_pool_08.mjs',
-  'avatars/pool/dkd_customer_pool_finalize.mjs',
-  'dkd-v06-customer-pool.mjs',
-  'models/v061/dkd-v061-model-0.mjs',
-  'models/v061/dkd-v061-model-1.mjs',
-  'models/v061/dkd-v061-model-2.mjs',
-  'models/v061/dkd-v061-model-3.mjs',
-  'models/v061/dkd-v061-model-4.mjs',
-  'models/v061/dkd-v061-model-5.mjs',
-  'models/v061/dkd-v061-model-manifest.mjs',
-  'dkd-v061-release.mjs',
-  'dkd-v061-device-hotfix.mjs',
-  'dkd-v061-runtime-repair.mjs',
-  'dkd-v061-final-device-fix.mjs'
+  'data/dkd-roads.mjs','dkd-data.mjs','dkd-core.mjs','dkd-renderer.mjs','dkd-audio.mjs','dkd-ui.mjs','dkd-controller.mjs',
+  'dkd-v02-scooter-0.mjs','dkd-v02-scooter-1.mjs','dkd-v02-scooter-2.mjs','dkd-v02-patch.mjs','dkd-v02-runtime-fix.mjs',
+  'dkd-v03-model-0.mjs','dkd-v03-model-1.mjs','dkd-v03-model-2.mjs','dkd-v03-model-3.mjs','dkd-v03-model-4.mjs','dkd-v03-model-5.mjs','dkd-v03-model-6.mjs','dkd-v03-model-7.mjs','dkd-v03-model-8.mjs','dkd-v03-patch.mjs','dkd-v03-runtime-fix.mjs','dkd-v03-visual-hotfix.mjs','dkd-v03-home-refine.mjs','dkd-v03-reuploaded-gzip-0.mjs','dkd-v03-reuploaded-gzip-1.mjs','dkd-v03-reuploaded-gzip-2.mjs','dkd-v03-reuploaded-gzip-3.mjs','dkd-v03-reuploaded-gzip-4.mjs','dkd-v03-reuploaded-gzip-5.mjs','dkd-v03-reuploaded-gzip-6.mjs','dkd-v03-reuploaded-gzip-7.mjs','dkd-v03-reuploaded-gzip-manifest.mjs','dkd-v03-reuploaded-model.mjs',
+  'dkd-v04-runtime.mjs','dkd-v04-real-career.mjs','dkd-v04-ui-audio-polish.mjs','dkd-v04-traffic-obstacles.mjs','dkd-v04-route-traffic-density.mjs',
+  'dkd-v05-style.mjs','dkd-v05-audio.mjs','dkd-v05-traffic.mjs','dkd-v05-vault.mjs','dkd-v05-garage-hotfix.mjs','dkd-v05-capacity-flow.mjs','dkd-v05-roadwork-audio-hotfix.mjs','dkd-v05-city-audio-sign-hotfix.mjs','dkd-v05-palm-roadedge-hotfix.mjs','dkd-v05-sign-layout-hotfix.mjs','dkd-v05-live-season-admin.mjs','dkd-v05-live-season-verification.mjs','dkd-v05-drive-collision-shift-sign-hotfix.mjs',
+  'avatars/dkd_selin.mjs','avatars/dkd_ece.mjs','avatars/dkd_mira.mjs','avatars/dkd_deniz.mjs','avatars/dkd_lara.mjs','avatars/dkd_ada.mjs','avatars/dkd_asya.mjs','avatars/dkd_irem.mjs','avatars/dkd_duru.mjs','avatars/dkd_emre.mjs','dkd-v06-release.mjs',
+  'avatars/pool/dkd_customer_pool_00.mjs','avatars/pool/dkd_customer_pool_01.mjs','avatars/pool/dkd_customer_pool_02.mjs','avatars/pool/dkd_customer_pool_03.mjs','avatars/pool/dkd_customer_pool_04.mjs','avatars/pool/dkd_customer_pool_05.mjs','avatars/pool/dkd_customer_pool_06.mjs','avatars/pool/dkd_customer_pool_07.mjs','avatars/pool/dkd_customer_pool_08.mjs','avatars/pool/dkd_customer_pool_finalize.mjs','dkd-v06-customer-pool.mjs',
+  'models/v061/dkd-v061-model-0.mjs','models/v061/dkd-v061-model-1.mjs','models/v061/dkd-v061-model-2.mjs','models/v061/dkd-v061-model-3.mjs','models/v061/dkd-v061-model-4.mjs','models/v061/dkd-v061-model-5.mjs','models/v061/dkd-v061-model-manifest.mjs','dkd-v061-release.mjs','dkd-v061-device-hotfix.mjs','dkd-v061-runtime-repair.mjs','dkd-v061-final-device-fix.mjs'
 ];
-
-const dkd_v061ChunkFiles = [
-  'models/v061/dkd-v061-model-0.mjs',
-  'models/v061/dkd-v061-model-1.mjs',
-  'models/v061/dkd-v061-model-2.mjs',
-  'models/v061/dkd-v061-model-3.mjs',
-  'models/v061/dkd-v061-model-4.mjs',
-  'models/v061/dkd-v061-model-5.mjs',
-];
+const dkd_v061ChunkFiles = ['models/v061/dkd-v061-model-0.mjs','models/v061/dkd-v061-model-1.mjs','models/v061/dkd-v061-model-2.mjs','models/v061/dkd-v061-model-3.mjs','models/v061/dkd-v061-model-4.mjs','models/v061/dkd-v061-model-5.mjs'];
 
 async function dkd_prepareV061RawModel() {
   const dkd_parts = await Promise.all(dkd_v061ChunkFiles.map(async dkd_file => {
@@ -114,13 +30,9 @@ async function dkd_prepareV061RawModel() {
   }));
   const dkd_compressed = Buffer.concat(dkd_parts.map(dkd_part => Buffer.from(dkd_part, 'base64')));
   const dkd_raw = dkd_gunzipSync(dkd_compressed);
-  if (dkd_raw.length !== 29530 || dkd_raw.subarray(0, 4).toString('ascii') !== 'DK61') {
-    throw new Error(`v0.6.1 model paketi geçersiz: ${dkd_raw.length} bayt`);
-  }
+  if (dkd_raw.length !== 29530 || dkd_raw.subarray(0, 4).toString('ascii') !== 'DK61') throw new Error(`v0.6.1 model paketi geçersiz: ${dkd_raw.length} bayt`);
   const dkd_sha = dkd_createHash('sha256').update(dkd_raw).digest('hex');
-  if (dkd_sha !== '8dc66ee133b1651571ebfcd8c74238b091c45a4a9405ea25a2bf57c62f51e2a1') {
-    throw new Error(`v0.6.1 model SHA-256 doğrulaması başarısız: ${dkd_sha}`);
-  }
+  if (dkd_sha !== '8dc66ee133b1651571ebfcd8c74238b091c45a4a9405ea25a2bf57c62f51e2a1') throw new Error(`v0.6.1 model SHA-256 doğrulaması başarısız: ${dkd_sha}`);
   return dkd_raw.toString('base64');
 }
 
@@ -128,19 +40,14 @@ async function dkd_readAudioTrack(dkd_track) {
   const dkd_audioPath = dkd_path.join(dkd_root, 'game', dkd_track.dkd_file);
   const dkd_bytes = await dkd_fs.readFile(dkd_audioPath);
   const dkd_sha256 = dkd_createHash('sha256').update(dkd_bytes).digest('hex');
-  if (dkd_bytes.length !== dkd_track.dkd_bytes || dkd_sha256 !== dkd_track.dkd_sha256) {
-    throw new Error(`${dkd_track.dkd_name} MP3 doğrulaması başarısız: ${dkd_bytes.length} / ${dkd_sha256}`);
-  }
+  if (dkd_bytes.length !== dkd_track.dkd_bytes || dkd_sha256 !== dkd_track.dkd_sha256) throw new Error(`${dkd_track.dkd_name} MP3 doğrulaması başarısız: ${dkd_bytes.length} / ${dkd_sha256}`);
   return { ...dkd_track, dkd_data: `data:audio/mpeg;base64,${dkd_bytes.toString('base64')}` };
 }
 
 const dkd_v061ModelRawBase64 = await dkd_prepareV061RawModel();
 const dkd_audioManifest = JSON.parse(await dkd_fs.readFile(dkd_path.join(dkd_root, 'game/audio/dkd-v072-audio.json'), 'utf8'));
-if (dkd_audioManifest.dkd_version !== '0.7.2' || dkd_audioManifest.dkd_tracks.length !== 2) {
-  throw new Error('v0.7.2 iki parçalı müzik manifesti geçersiz.');
-}
+if (dkd_audioManifest.dkd_version !== '0.7.2' || dkd_audioManifest.dkd_tracks.length !== 2) throw new Error('v0.7.2 iki parçalı müzik manifesti geçersiz.');
 const dkd_mediaAssets = await Promise.all(dkd_audioManifest.dkd_tracks.map(dkd_readAudioTrack));
-
 const dkd_threeCode = await dkd_fs.readFile(dkd_path.join(dkd_root, 'node_modules/three/build/three.cjs'), 'utf8');
 const dkd_modules = await Promise.all(dkd_sources.map(async dkd_file => {
   let dkd_source = await dkd_fs.readFile(dkd_path.join(dkd_root, 'game', dkd_file), 'utf8');
@@ -148,32 +55,17 @@ const dkd_modules = await Promise.all(dkd_sources.map(async dkd_file => {
     dkd_source = dkd_source.replace("export const dkd_version = 'v0.101';", "export const dkd_version = 'v0.6.1';");
     dkd_source = dkd_source.replace(/export const dkd_demoRankings = \[[\s\S]*?\];/, 'export const dkd_demoRankings = [];');
   }
-  if (dkd_file === 'dkd-v061-release.mjs') {
-    dkd_source = dkd_source.replace(/Gizlilik iletişimi:\s*draborneagle@gmail\.com/gi, 'Gizlilik iletişimi: support@draborneagle.com');
-  }
-  return dkd_source
-    .replace(/^import .*?;\s*$/gm, '')
-    .replace(/^export (?=(const|class|function)\s)/gm, '');
+  if (dkd_file === 'dkd-v061-release.mjs') dkd_source = dkd_source.replace(/Gizlilik iletişimi:\s*draborneagle@gmail\.com/gi, 'Gizlilik iletişimi: support@draborneagle.com');
+  return dkd_source.replace(/^import .*?;\s*$/gm, '').replace(/^export (?=(const|class|function)\s)/gm, '');
 }));
-
 const dkd_mediaCode = `const dkd_v05MediaAssets=${JSON.stringify(dkd_mediaAssets)};`;
 const dkd_modelCode = `const dkd_v061ModelRawBase64=${JSON.stringify(dkd_v061ModelRawBase64)};`;
 const dkd_code = `(()=>{const dkd_three=(()=>{const exports={};${dkd_threeCode};return exports;})();${dkd_mediaCode}${dkd_modelCode}${dkd_modules.join('\n')}new dkd_Game();})();`;
-const dkd_bundle = await dkd_minify(dkd_code, {
-  ecma: 2020,
-  compress: { passes: 1 },
-  mangle: false,
-  format: { comments: /@license|SPDX/ }
-});
+const dkd_bundle = await dkd_minify(dkd_code, { ecma: 2020, compress: { passes: 1 }, mangle: false, format: { comments: /@license|SPDX/ } });
 if (!dkd_bundle.code) throw new Error('Oyun paketi üretilemedi.');
-
 const dkd_css = await dkd_fs.readFile(dkd_path.join(dkd_root, 'game/dkd-style.css'), 'utf8');
 const dkd_html = `<!DOCTYPE html><html lang="tr"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"/><meta name="theme-color" content="#0c1224"/><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src 'self'; media-src data: blob:; connect-src 'none'; base-uri 'none'; form-action 'none'"/><title>DraBornGo / SON KİLOMETRE · v0.6.1</title><style>${dkd_css}</style></head><body><div id="dkd-shell"><canvas id="dkd-canvas" aria-label="3D kurye oyun sahnesi"></canvas><main id="dkd-ui"></main><div id="dkd-modal"></div><div id="dkd-toast" role="status" aria-live="polite"></div><div class="dkd-loading" id="dkd-loading"><div class="dkd-spinner"></div><b>SON KİLOMETRE</b><small>Şehrin hazırlanıyor…</small></div></div><script>/*DKD_BOOTSTRAP*/</script><script>${dkd_bundle.code.replace(/<\/script/gi, '<\\/script')}</script></body></html>`;
-
 await dkd_fs.mkdir(dkd_path.join(dkd_root, 'src/generated'), { recursive: true });
-await dkd_fs.writeFile(
-  dkd_path.join(dkd_root, 'src/generated/dkd-game-html.ts'),
-  `// Generated by scripts/dkd-build-game.mjs. Do not hand-edit.\nexport const dkd_gameHtml = ${JSON.stringify(dkd_html)};\n`
-);
+await dkd_fs.writeFile(dkd_path.join(dkd_root, 'src/generated/dkd-game-html.ts'), `// Generated by scripts/dkd-build-game.mjs. Do not hand-edit.\nexport const dkd_gameHtml = ${JSON.stringify(dkd_html)};\n`);
 await dkd_fs.writeFile(dkd_path.join(dkd_root, 'assets/dkd-lastmile.html'), dkd_html);
 console.log(`DKD oyun paketi hazır: ${(Buffer.byteLength(dkd_html) / 1024 / 1024).toFixed(2)} MB. v0.6.1 · premium bağımsız kurye · takip/standart kamera · InnerLight ana menü · SeMeNota vardiya sürüşü · iki fiziksel MP3 dışında müzik yok · Android/web ortak kaynak.`);
