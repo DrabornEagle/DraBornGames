@@ -20,6 +20,8 @@ dkd_test('visible release normalization targets v0.7.4 and payment errors stay o
   dkd_assert.match(dkd_hotfix, /dkd_v05PendingStart = false/);
   dkd_assert.match(dkd_hotfix, /Dekont gönderilemedi/);
   dkd_assert.match(dkd_hotfix, /ödemeniz inceleniyor/);
+  dkd_assert.match(dkd_hotfix, /'KAPAT','modal-close'/);
+  dkd_assert.doesNotMatch(dkd_hotfix, /'KAPAT','close-modal'/);
 });
 
 dkd_test('receipt persistence has an explicit path and production API reports v0.7.4', () => {
