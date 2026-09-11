@@ -125,12 +125,8 @@ async function dkd_prepareV061RawModel() {
 }
 
 async function dkd_readAudioTrack(dkd_track) {
-  const dkd_audioRoot = dkd_path.join(dkd_root, 'game', 'audio', 'v072');
-  const dkd_parts = await Promise.all(dkd_track.dkd_parts.map(async dkd_part => {
-    const dkd_text = await dkd_fs.readFile(dkd_path.join(dkd_audioRoot, dkd_part), 'utf8');
-    return Buffer.from(dkd_text.trim(), 'base64');
-  }));
-  const dkd_bytes = Buffer.concat(dkd_parts);
+  const dkd_audioPath = dkd_path.join(dkd_root, 'game', dkd_track.dkd_file);
+  const dkd_bytes = await dkd_fs.readFile(dkd_audioPath);
   const dkd_sha256 = dkd_createHash('sha256').update(dkd_bytes).digest('hex');
   if (dkd_bytes.length !== dkd_track.dkd_bytes || dkd_sha256 !== dkd_track.dkd_sha256) {
     throw new Error(`${dkd_track.dkd_name} MP3 doğrulaması başarısız: ${dkd_bytes.length} / ${dkd_sha256}`);
