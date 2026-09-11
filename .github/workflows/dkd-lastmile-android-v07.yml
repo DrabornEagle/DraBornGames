@@ -1,4 +1,4 @@
-name: DKD Last Mile Android v0.7.2
+name: DKD Last Mile Android v0.7.3
 
 on:
   workflow_dispatch:
@@ -17,12 +17,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: dkd-lastmile-android-v072-${{ inputs.dkd_output }}
+  group: dkd-lastmile-android-v073-${{ inputs.dkd_output }}
   cancel-in-progress: false
 
 jobs:
   dkd-android:
-    name: LastMile v0.7.2 · ${{ inputs.dkd_output }}
+    name: LastMile v0.7.3 · ${{ inputs.dkd_output }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     defaults:
@@ -51,7 +51,7 @@ jobs:
       - name: Install JavaScript dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Verify shared Android and web source
+      - name: Verify Expo candidate source
         run: |
           npm run build:game
           npm test
@@ -121,15 +121,15 @@ jobs:
           case "$DKD_OUTPUT" in
             development)
               dkd_source='android/app/build/outputs/apk/debug/app-debug.apk'
-              dkd_name='LastMile-v0.7.2-development-vc1.apk'
+              dkd_name='LastMile-v0.7.3-development-vc1.apk'
               ;;
             apk)
               dkd_source='android/app/build/outputs/apk/release/app-release.apk'
-              dkd_name='LastMile-v0.7.2-release-vc1.apk'
+              dkd_name='LastMile-v0.7.3-release-vc1.apk'
               ;;
             aab)
               dkd_source='android/app/build/outputs/bundle/release/app-release.aab'
-              dkd_name='LastMile-v0.7.2-release-vc1.aab'
+              dkd_name='LastMile-v0.7.3-release-vc1.aab'
               ;;
           esac
           test -f "$dkd_source"
@@ -138,12 +138,12 @@ jobs:
           if [[ "$dkd_name" == *.apk ]]; then
             "$dkd_apksigner" verify --verbose --print-certs "dist-android/$dkd_name" > dist-android/SIGNATURE.txt
           fi
-          printf 'DraBornGo / LastMile\nversionName=0.7.2\nversionCode=1\npackage=com.draborneagle.lastmile\nExpo SDK=57\noutput=%s\nsigning=DKD_LASTMILE permanent JKS\n' "$DKD_OUTPUT" > dist-android/BUILD-INFO.txt
+          printf 'DraBornGo / LastMile\nversionName=0.7.3\nversionCode=1\npackage=com.draborneagle.lastmile\nExpo SDK=57\noutput=%s\nsigning=DKD_LASTMILE permanent JKS\n' "$DKD_OUTPUT" > dist-android/BUILD-INFO.txt
 
       - name: Upload Android artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dkd-lastmile-v0.7.2-${{ inputs.dkd_output }}-vc1
+          name: dkd-lastmile-v0.7.3-${{ inputs.dkd_output }}-vc1
           path: LastMile/dist-android/
           if-no-files-found: error
           retention-days: 30
