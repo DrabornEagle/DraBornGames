@@ -5,29 +5,21 @@ import * as dkd_path from 'node:path';
 import { fileURLToPath as dkd_fileURLToPath } from 'node:url';
 
 const dkd_root = dkd_path.resolve(dkd_path.dirname(dkd_fileURLToPath(import.meta.url)), '..');
-
 const dkd_hotfix = await dkd_fs.readFile(dkd_path.join(dkd_root, 'game/dkd-v05-roadwork-audio-hotfix.mjs'), 'utf8');
 const dkd_build = await dkd_fs.readFile(dkd_path.join(dkd_root, 'scripts/dkd-build-game.mjs'), 'utf8');
+const dkd_audioFiles = ['InnerLight.mp3', 'SeMeNota.mp3'];
 
-const dkd_audioFiles = [
-  'dkd-menu-ankara-gece.mp3',
-  'dkd-drive-kizilay-hatti.mp3',
-  'dkd-drive-gece-vardiyasi.mp3',
-  'dkd-drive-yagmur-asfalti.mp3',
-  'dkd-drive-cankaya-pulse.mp3',
-  'dkd-drive-son-paket.mp3',
-];
-
-test('v0.5 rendered media soundtrack assets are bundled', async () => {
+test('v0.7.2 physical MP3 soundtrack contains only menu and drive masters', async () => {
   assert.match(dkd_build, /dkd_v05MediaAssets/);
-  assert.match(dkd_build, /dkd-v05-roadwork-audio-hotfix\.mjs/);
+  assert.match(dkd_build, /dkd-v072-audio\.json/);
   for (const dkd_file of dkd_audioFiles) {
-    assert.match(dkd_build, new RegExp(dkd_file.replace('.', '\\.')));
     const dkd_bytes = await dkd_fs.readFile(dkd_path.join(dkd_root, 'game/audio', dkd_file));
-    assert.ok(dkd_bytes.length > 100_000, `${dkd_file} should contain a full rendered music loop`);
+    assert.ok(dkd_bytes.length > 500_000, `${dkd_file} should contain the complete optimized music track`);
     const dkd_header = dkd_bytes.subarray(0, 3).toString('latin1');
     assert.ok(dkd_header === 'ID3' || dkd_bytes[0] === 0xff, `${dkd_file} should be an MP3 asset`);
   }
+  const dkd_present = (await dkd_fs.readdir(dkd_path.join(dkd_root, 'game/audio'))).filter(dkd_file => dkd_file.endsWith('.mp3')).sort();
+  assert.deepEqual(dkd_present, dkd_audioFiles.sort());
 });
 
 test('roadwork event creates visible work-zone geometry', () => {
@@ -53,7 +45,7 @@ test('insufficient wallet unlocks free fuel or maintenance rescue', () => {
   assert.match(dkd_hotfix, /dkd_info\.dkd_wallet < dkd_info\.dkd_cost/);
 });
 
-test('menu music does not restart on ordinary clicks and shifts avoid immediate repeats', () => {
+test('legacy runtime still avoids menu restarts and repeated drive selection underneath v0.7.2 override', () => {
   assert.match(dkd_hotfix, /dkd_old === dkd_next/);
   assert.match(dkd_hotfix, /dkd_next === dkd_audio\.dkd_v05MediaLastDriveIndex/);
   assert.match(dkd_hotfix, /dkd_v05MediaRunId === dkd_runId/);
