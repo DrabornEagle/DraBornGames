@@ -10,7 +10,7 @@ function dkd_v074ReleaseInstallStyles() {
   dkd_style.id = 'dkd-v074-release-style';
   dkd_style.textContent = `
     .dkd-v074-receipt-card{position:relative!important;overflow:hidden!important;border-color:#46c9c0!important;background:#142f42!important}
-    .dkd-v074-receipt-card:before{content:'';display:block;height:5px;margin:-17px -17px 17px;background:linear-gradient(90deg,#62e4d5,#8a9cff,#ffcf70)}
+    .dkd-v074-receipt-card:before{content:'';display:block;height:5px;margin:-17px -17px 17px;background:#62e4d5;border-right:120px solid #8a9cff;border-left:70px solid #ffcf70}
     .dkd-v074-receipt-card h2{font-size:24px!important}.dkd-v074-receipt-card>p{font-size:15px!important;color:#d0deed!important}
     .dkd-v074-file{min-height:72px!important;border-color:#66d9d0!important;background:#0f293c!important;font-size:15px!important;padding:20px!important}
     .dkd-v074-note{font-size:16px!important;border-color:#607b9e!important;background:#10263a!important}
@@ -35,8 +35,6 @@ function dkd_v074ReleaseInstallStyles() {
 }
 dkd_v074ReleaseInstallStyles();
 
-// Light courier colors stay selected after re-rendering. The legacy brand renderer
-// compares against the old palette, so temporarily map only for that comparison.
 const dkd_v074ReleaseUniformLightToDark = {'#5e8f98':'#233d44','#747bb3':'#333652','#b67666':'#653d32','#879f69':'#3e4831','#aaa09a':'#68605a'};
 const dkd_v074ReleaseUniformDarkToLight = Object.fromEntries(Object.entries(dkd_v074ReleaseUniformLightToDark).map(([dkd_light,dkd_dark])=>[dkd_dark,dkd_light]));
 dkd_Game.prototype.dkd_view_brand = function dkd_v074ReleaseBrandView() {
@@ -49,9 +47,6 @@ dkd_Game.prototype.dkd_view_brand = function dkd_v074ReleaseBrandView() {
   return dkd_html;
 };
 
-// One idempotent audio writer is used by both the v0.7.3 and v0.7.4 wrappers.
-// This prevents 0..1 volume values from being divided by 100 and then immediately
-// restored on every animation frame, which caused audible pops and stutters.
 function dkd_v074ReleaseAudio(dkd_audio, dkd_run = null) {
   if (!dkd_audio) return;
   const dkd_muted = dkd_audio.dkd_v073UserMuted === true || dkd_audio.dkd_muted === true;
@@ -87,7 +82,6 @@ function dkd_v074ReleaseAudio(dkd_audio, dkd_run = null) {
 dkd_v073ApplyMute = dkd_v074ReleaseAudio;
 dkd_v074FixAudio = dkd_v074ReleaseAudio;
 
-// Upgrade the existing payment HTML without duplicating payment-state logic.
 dkd_v074PaymentBody = function dkd_v074ReleasePaymentBody(dkd_game) {
   let dkd_html = String(dkd_v074ReleasePreviousPaymentBody(dkd_game) || '');
   dkd_html = dkd_html.replace(/<div class="dkd-v074-example">Bu IBAN şu anda örnek test bilgisidir\.[\s\S]*?<\/div>/, '');
