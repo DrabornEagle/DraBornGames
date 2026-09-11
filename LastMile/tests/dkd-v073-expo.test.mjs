@@ -65,8 +65,8 @@ test('v0.7.3 drive music button toggles complete game audio', () => {
   assert.match(dkd_v073, /Oyun sesleri açıldı/);
 });
 
-test('v0.7.3 plate bootstrap uses public RPC instead of direct non-exposed schema REST', () => {
-  assert.match(dkd_edge, /const dkd_version = '0\.7\.3'/);
+test('plate bootstrap keeps its public RPC while the active API reports v0.7.4', () => {
+  assert.match(dkd_edge, /const dkd_version = '0\.7\.4'/);
   assert.match(dkd_edge, /rpc\('dkd_lastmile_set_plate'/);
   assert.doesNotMatch(dkd_edge, /schema\('Last-Mile'\)\.from\('dkd_lastmile_profiles'\)/);
   assert.match(dkd_plateMigration, /function public\.dkd_lastmile_set_plate/);
