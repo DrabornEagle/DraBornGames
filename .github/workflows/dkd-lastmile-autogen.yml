@@ -1,18 +1,17 @@
-# DraBornGo / Last Mile v0.7 Expo Go bundle generation and verification
-name: DKD Last Mile autogen
+name: DKD Last Mile v0.7.2 shared bundle
 
 on:
   push:
     branches:
       - main
+      - work/lastmile-v0.7.2
     paths:
-      - 'DraBornGo-LastMile/game/**'
-      - 'DraBornGo-LastMile/tests/**'
-      - 'DraBornGo-LastMile/scripts/dkd-build-game.mjs'
-      - 'DraBornGo-LastMile/scripts/dkd-build-game-v07.mjs'
-      - 'DraBornGo-LastMile/scripts/dkd-render-music-v07.py'
-      - 'DraBornGo-LastMile/package.json'
-      - 'DraBornGo-LastMile/app.json'
+      - 'LastMile/game/**'
+      - 'LastMile/tests/**'
+      - 'LastMile/scripts/dkd-build-game.mjs'
+      - 'LastMile/scripts/dkd-build-game-v07.mjs'
+      - 'LastMile/package.json'
+      - 'LastMile/app.json'
       - '.github/workflows/dkd-lastmile-autogen.yml'
   workflow_dispatch:
 
@@ -25,56 +24,56 @@ concurrency:
 
 jobs:
   dkd-autogen:
+    name: Regenerate Expo Go and web package
     runs-on: ubuntu-latest
     timeout-minutes: 20
     defaults:
       run:
-        working-directory: DraBornGo-LastMile
+        working-directory: LastMile
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: npm
-          cache-dependency-path: DraBornGo-LastMile/package-lock.json
+          cache-dependency-path: LastMile/package-lock.json
 
-      - name: Install ffmpeg for v0.7 soundtrack renderer
-        run: |
-          if ! command -v ffmpeg >/dev/null 2>&1; then
-            sudo apt-get update -qq
-            sudo apt-get install -y ffmpeg
-          fi
-
-      - name: Render v0.7 MP3 soundtrack from scratch
-        run: python3 scripts/dkd-render-music-v07.py
-
-      - name: Refresh lockfile from package.json
+      - name: Align lockfile with v0.7.2 package metadata
         run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
 
-      - run: npm ci --no-audit --no-fund
-      - run: npm run build:game
-      - run: npm test
-      - run: npm run typecheck
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
 
-      - name: Expo SDK dependency versions
+      - name: Build shared Android and web game package
+        run: npm run build:game
+
+      - name: Run tests
+        run: npm test
+
+      - name: TypeScript validation
+        run: npm run typecheck
+
+      - name: Expo SDK 57 dependency validation
         run: EXPO_OFFLINE=1 npx expo install --check
 
-      - name: JavaScript whitespace check
+      - name: Repository whitespace check
+        working-directory: .
         run: git diff --check
 
       - name: Commit deterministic generated files
         run: |
+          set -euo pipefail
           git config user.name 'DKD Last Mile Bot'
           git config user.email 'dkd-lastmile-bot@users.noreply.github.com'
-          git add package-lock.json assets/dkd-lastmile.html src/generated/dkd-game-html.ts game/audio/*.mp3
+          git add package-lock.json assets/dkd-lastmile.html src/generated/dkd-game-html.ts
           if git diff --cached --quiet; then
             echo 'Generated files already current.'
             exit 0
           fi
-          git commit -m 'build(lastmile): regenerate v0.7 Expo Go bundle'
+          git commit -m 'build(lastmile): regenerate v0.7.2 shared bundle'
           git pull --rebase origin "${{ github.ref_name }}"
           git push origin HEAD:${{ github.ref_name }}
