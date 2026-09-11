@@ -12,11 +12,11 @@ const dkd_manifest = await dkd_read('game/models/v061/dkd-v061-model-manifest.mj
 const dkd_app = JSON.parse(await dkd_read('app.json'));
 const dkd_package = JSON.parse(await dkd_read('package.json'));
 
-test('v0.7.2 release metadata is authoritative while v0.6.1 runtime stays intact', () => {
-  assert.equal(dkd_package.version, '0.7.2');
-  assert.equal(dkd_app.expo.version, '0.7.2');
+test('v0.7.3 release metadata is authoritative while v0.6.1 runtime stays intact', () => {
+  assert.equal(dkd_package.version, '0.7.3');
+  assert.equal(dkd_app.expo.version, '0.7.3');
   assert.equal(dkd_app.expo.android.versionCode, 1);
-  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.7.2');
+  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.7.3');
   assert.equal(dkd_package.dependencies.expo, '~57.0.20');
   assert.match(dkd_build, /dkd-v061-release\.mjs/);
   assert.match(dkd_build, /dkd-v061-runtime-repair\.mjs/);
@@ -33,7 +33,7 @@ test('uploaded Yamaha plus Quaternius rider replaces only the starter vehicle', 
   assert.match(dkd_manifest, /dkd_v061ModelFaceCount = 5909/);
 });
 
-test('v0.6.1 home music repair remains bundled but v0.7.2 overrides it with physical MP3 playback', () => {
+test('v0.6.1 home music repair remains bundled but v0.7.3 overrides it with physical MP3 playback', () => {
   assert.match(dkd_runtime, /dkd_v061ApplyHomeMusic/);
   assert.match(dkd_repair, /const dkd_bpm = 54/);
   assert.match(dkd_repair, /v061-calm-home-54/);
