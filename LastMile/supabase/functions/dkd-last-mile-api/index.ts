@@ -1,6 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
-const dkd_version = '0.7.3';
+const dkd_version = '0.7.4';
 const dkd_cors = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -46,10 +46,7 @@ Deno.serve(async (dkd_request: Request) => {
 
     const dkd_plateNo = dkd_plate(dkd_userMetadata.dkd_plate_no);
     if (dkd_plateNo) {
-      const { data: dkd_plateSaved, error: dkd_plateError } = await dkd_admin.rpc('dkd_lastmile_set_plate', {
-        dkd_user_id: dkd_user.id,
-        dkd_plate_no: dkd_plateNo,
-      });
+      const { data: dkd_plateSaved, error: dkd_plateError } = await dkd_admin.rpc('dkd_lastmile_set_plate', { dkd_user_id: dkd_user.id, dkd_plate_no: dkd_plateNo });
       if (dkd_plateError) throw dkd_plateError;
       if (dkd_plateSaved !== true) return dkd_json({ dkd_error: 'invalid_plate' }, 400);
     }
