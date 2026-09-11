@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - work/lastmile-v0.7.2
+      - work/lastmile-v0.7.2-hotfix
     paths:
       - 'LastMile/game/**'
       - 'LastMile/tests/**'
