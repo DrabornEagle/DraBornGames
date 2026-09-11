@@ -21,30 +21,33 @@ async function dkd_sha256(dkd_relative) {
   };
 }
 
-test('v0.7.3 Android metadata keeps versionCode 1 and Expo Go test channel', async () => {
+test('v0.7.4 Android metadata keeps versionCode 1 and Expo Go 57.0.9 test target', async () => {
   const dkd_app = JSON.parse(await dkd_text('app.json'));
-  assert.equal(dkd_app.expo.version, '0.7.3');
+  assert.equal(dkd_app.expo.version, '0.7.4');
   assert.equal(dkd_app.expo.android.package, 'com.draborneagle.lastmile');
   assert.equal(dkd_app.expo.android.versionCode, 1);
   assert.equal(dkd_app.expo.extra.dkd_releaseChannel, 'expo-go-test');
   assert.equal(dkd_app.expo.extra.dkd_cameraDefault, 'chase');
-  assert.equal(dkd_app.expo.extra.dkd_audioRuntime, 'physical-mp3-two-track');
+  assert.equal(dkd_app.expo.extra.dkd_audioRuntime, 'physical-mp3-two-track-v074-fixed');
+  assert.equal(dkd_app.expo.extra.dkd_expoGoTestVersion, '57.0.9');
   assert.equal(dkd_app.expo.extra.dkd_webPublishedVersion, '0.7.2');
   assert.equal(dkd_app.expo.extra.dkd_expoCandidateOnly, true);
 });
 
-test('v0.7.3 package and Expo bundle wrapper are aligned', async () => {
+test('v0.7.4 package and Expo bundle wrapper are aligned', async () => {
   const dkd_package = JSON.parse(await dkd_text('package.json'));
   const dkd_wrapper = await dkd_text('scripts/dkd-build-game-v07.mjs');
-  assert.equal(dkd_package.version, '0.7.3');
+  assert.equal(dkd_package.version, '0.7.4');
   assert.equal(dkd_package.dependencies.expo, '~57.0.20');
   assert.equal(dkd_package.scripts['build:game'], 'node scripts/dkd-build-game-v07.mjs');
   assert.match(dkd_wrapper, /dkd-v072-release\.mjs/);
   assert.match(dkd_wrapper, /dkd-v073-expo\.mjs/);
-  assert.match(dkd_wrapper, /v0\.7\.3/);
+  assert.match(dkd_wrapper, /dkd-v074-expo\.mjs/);
+  assert.match(dkd_wrapper, /dkd-v074-bridge-fix\.mjs/);
+  assert.match(dkd_wrapper, /v0\.7\.4/);
 });
 
-test('v0.7.3 retains standard chase camera and physical two-track audio', async () => {
+test('v0.7.4 retains standard chase camera and physical two-track audio', async () => {
   const dkd_release = await dkd_text('game/dkd-v07-release.mjs');
   const dkd_v072 = await dkd_text('game/dkd-v072-release.mjs');
   assert.match(dkd_release, /dkd_v07CameraDefault = 'chase'/);
@@ -57,7 +60,7 @@ test('v0.7.3 retains standard chase camera and physical two-track audio', async 
   assert.doesNotMatch(dkd_release, /text-shadow\s*:/i);
 });
 
-test('v0.7.3 continues using only verified InnerLight and SeMeNota music files', async () => {
+test('v0.7.4 continues using only verified InnerLight and SeMeNota music files', async () => {
   const dkd_manifest = JSON.parse(await dkd_text('game/audio/dkd-v072-audio.json'));
   assert.equal(dkd_manifest.dkd_tracks.length, 2);
   assert.deepEqual(
@@ -87,6 +90,6 @@ test('Android output workflows remain manual-only during Expo testing', async ()
     assert.match(dkd_workflow, /working-directory: LastMile/);
     assert.match(dkd_workflow, /DKD_LASTMILE_KEYSTORE_B64/);
   }
-  assert.match(dkd_android, /versionName=0\.7\.3/);
+  assert.match(dkd_android, /versionName=0\.7\.4/);
   assert.match(dkd_release, /dkd_publish_github_release/);
 });
