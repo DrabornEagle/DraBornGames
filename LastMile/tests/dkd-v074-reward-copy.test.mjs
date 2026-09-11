@@ -15,3 +15,5 @@ dkd_test('reward selection no longer describes live seasonal prizes as demo rewa
   dkd_assert.match(dkd_copy, /Sezon büyük ödülü/);
   dkd_assert.match(dkd_copy, /ödül teslim sürecine geçersin/);
 });
+
+// Post-regeneration checkpoint: generated Android/Expo and Web inputs must remain deterministic.
