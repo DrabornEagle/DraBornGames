@@ -1,6 +1,8 @@
-# LastMile v0.7.2 — Termux ve Expo Go
+# LastMile v0.7.4 — Termux ve Expo Go
 
-## Tek komutla kurulum ve çalıştırma
+## Tek komutla güncel kurulum ve çalıştırma
+
+Bu akış APK üretmez. GitHub `main` üzerindeki ortak v0.7.4 kaynağını alır, Android/Expo oyun paketini yerelde üretir ve Expo Go ile başlatır. Mevcut yerel değişiklik varsa önce güvenli bir stash yedeğine alınır.
 
 ```bash
 pkg update -y && \
@@ -10,6 +12,7 @@ cd "$HOME/projects" && \
 if [ -d DraBornGames/.git ]; then \
   cd DraBornGames && \
   git remote set-url origin https://github.com/DrabornEagle/DraBornGames.git && \
+  git status --porcelain | grep -q . && git stash push -u -m "dkd-auto-backup-$(date +%Y%m%d-%H%M%S)" || true && \
   git fetch origin --prune && \
   git switch main && \
   git reset --hard origin/main; \
@@ -19,18 +22,20 @@ else \
 fi && \
 cd LastMile && \
 chmod +x scripts/dkd-sync.sh scripts/dkd-termux.sh && \
+npm ci && \
+npm run build:game && \
 bash scripts/dkd-termux.sh
 ```
 
 Başlatıcı şunları otomatik yapar:
 
-- GitHub `main` dalını kontrol eder ve yerel repoyu güvenli biçimde eşitler.
-- Yerel commit veya dosya varsa silmek yerine yedek dalı ve stash oluşturur.
-- `npm ci` ile kilitli Expo SDK 57 paketlerini kurar.
-- `InnerLight.mp3` ve `SeMeNota.mp3` dosyalarının boyut ve SHA-256 doğrulamasını yapar.
-- Android ve web tarafından kullanılan ortak HTML oyun paketini üretir.
-- Expo Go 57.0.9 için `exp://127.0.0.1:8081` adresini açar.
-- GitHub `main` dalını her 30 saniyede kontrol eder; güncelleme gelirse Metro'yu yeniden başlatır.
+- GitHub `main` dalını kontrol eder ve LastMile kaynağını eşitler.
+- Yerel değişiklik varsa kurulum komutu önce tarih damgalı stash yedeği oluşturur.
+- Kilitli Expo SDK 57 paketlerini kurar.
+- `InnerLight.mp3` ve `SeMeNota.mp3` dosyalarının doğrulamasını yapar.
+- Web ve Android/Expo tarafından paylaşılan aynı v0.7.4 oyun paketini üretir.
+- Expo Go 57.x üzerinde yerel geliştirme sunucusunu başlatır.
+- APK/AAB üretmez ve Release workflow'unu tetiklemez.
 
 ## Sonraki çalıştırmalar
 
@@ -44,16 +49,23 @@ cd "$HOME/projects/DraBornGames/LastMile" && bash scripts/dkd-termux.sh
 cd "$HOME/projects/DraBornGames/LastMile" && bash scripts/dkd-sync.sh once
 ```
 
+## Kontrol
+
+```bash
+cd "$HOME/projects/DraBornGames/LastMile" && npm run verify
+```
+
 ## Durdurma
 
 Termux oturumunda `Ctrl+C` kullanılır.
 
-## Sürüm
+## Güncel sürüm
 
-- LastMile: `v0.7.2`
+- LastMile: `v0.7.4`
 - Android versionCode: `1`
-- Expo SDK: `57`
-- Test uygulaması: Expo Go `57.0.9`
+- Expo SDK: `57` (`expo ~57.0.20`)
+- Hedef: Expo Go `57.x`
 - Menü müziği: `InnerLight.mp3`
 - Vardiya müziği: `SeMeNota.mp3`
-- APK/AAB: yalnızca GitHub Actions içinden elle başlatılır.
+- Web + Android/Expo: aynı ortak oyun kaynağı
+- APK: bu geliştirme akışında üretilmez
