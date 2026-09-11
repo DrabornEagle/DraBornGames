@@ -1,4 +1,4 @@
-name: DKD Last Mile v0.7.2 checks
+name: DKD Last Mile v0.7.4 checks
 
 on:
   push:
@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   dkd-check:
-    name: Expo Go and web source verification
+    name: Expo Go candidate and shared-source verification
     runs-on: ubuntu-latest
     timeout-minutes: 20
     defaults:
@@ -40,7 +40,7 @@ jobs:
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Build shared Android and web game package
+      - name: Build v0.7.4 shared game package
         run: npm run build:game
 
       - name: Generated files match source
@@ -58,7 +58,7 @@ jobs:
       - name: Android JavaScript export smoke test without APK
         run: EXPO_OFFLINE=1 npx expo export --platform android --output-dir dist-android-js
 
-      - name: Web package export smoke test
+      - name: Web shared-source smoke test only - no deployment
         run: npm run build:web
 
       - name: Repository whitespace check
