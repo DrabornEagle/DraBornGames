@@ -1,17 +1,6 @@
-name: DKD Last Mile Signed Android Output
+name: DKD Last Mile Signed Android Release v0.7.2
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'DraBornGo-LastMile/game/**'
-      - 'DraBornGo-LastMile/App.tsx'
-      - 'DraBornGo-LastMile/web/**'
-      - 'DraBornGo-LastMile/scripts/dkd-build*.mjs'
-      - 'DraBornGo-LastMile/package*.json'
-      - 'DraBornGo-LastMile/app.json'
-      - '.github/workflows/dkd-lastmile-android-signed-release.yml'
   workflow_dispatch:
     inputs:
       dkd_format:
@@ -22,25 +11,30 @@ on:
         options:
           - apk
           - aab
+      dkd_publish_github_release:
+        description: 'APK için GitHub Release oluştur'
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: write
 
 concurrency:
-  group: dkd-lastmile-signed-${{ github.event_name == 'workflow_dispatch' && inputs.dkd_format || 'apk' }}
+  group: dkd-lastmile-signed-v072-${{ inputs.dkd_format }}
   cancel-in-progress: false
 
 jobs:
   dkd-signed-output:
-    name: Permanent-key ${{ github.event_name == 'workflow_dispatch' && inputs.dkd_format || 'apk' }}
+    name: Permanent-key ${{ inputs.dkd_format }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     defaults:
       run:
-        working-directory: DraBornGo-LastMile
+        working-directory: LastMile
     env:
-      DKD_OUTPUT_FORMAT: ${{ github.event_name == 'workflow_dispatch' && inputs.dkd_format || 'apk' }}
-      DKD_LASTMILE_KEYSTORE_PATH: ${{ github.workspace }}/DraBornGo-LastMile/android/app/dkd-lastmile-release.jks
+      DKD_OUTPUT_FORMAT: ${{ inputs.dkd_format }}
+      DKD_LASTMILE_KEYSTORE_PATH: ${{ github.workspace }}/LastMile/android/app/dkd-lastmile-release.jks
 
     steps:
       - uses: actions/checkout@v5
@@ -64,7 +58,7 @@ jobs:
         with:
           node-version: '24'
           cache: npm
-          cache-dependency-path: DraBornGo-LastMile/package-lock.json
+          cache-dependency-path: LastMile/package-lock.json
 
       - uses: actions/setup-java@v5
         with:
@@ -129,10 +123,10 @@ jobs:
           cd android
           if [[ "$DKD_OUTPUT_FORMAT" == 'apk' ]]; then
             ./gradlew :app:assembleRelease --no-daemon --stacktrace -PreactNativeArchitectures=arm64-v8a
-            cp app/build/outputs/apk/release/app-release.apk ../dist-android/DraBornGo-LastMile-v${DKD_VERSION}-release-vc1.apk
+            cp app/build/outputs/apk/release/app-release.apk ../dist-android/LastMile-v${DKD_VERSION}-release-vc1.apk
           else
             ./gradlew :app:bundleRelease --no-daemon --stacktrace -PreactNativeArchitectures=arm64-v8a
-            cp app/build/outputs/bundle/release/app-release.aab ../dist-android/DraBornGo-LastMile-v${DKD_VERSION}-release-vc1.aab
+            cp app/build/outputs/bundle/release/app-release.aab ../dist-android/LastMile-v${DKD_VERSION}-release-vc1.aab
           fi
 
       - name: Verify signed APK and version
@@ -154,7 +148,7 @@ jobs:
           DKD_LASTMILE_KEY_ALIAS: ${{ secrets.DKD_LASTMILE_KEY_ALIAS }}
         run: |
           set -euo pipefail
-          sha256sum dist-android/DraBornGo-LastMile-v${DKD_VERSION}-release-vc1.* > dist-android/SHA256SUMS.txt
+          sha256sum dist-android/LastMile-v${DKD_VERSION}-release-vc1.* > dist-android/SHA256SUMS.txt
           keytool -list -v -keystore "$DKD_LASTMILE_KEYSTORE_PATH" -storepass "$DKD_LASTMILE_KEYSTORE_PASSWORD" -alias "$DKD_LASTMILE_KEY_ALIAS" | grep -E 'Alias name:|SHA256:' > dist-android/SIGNING-IDENTITY.txt
           printf 'versionName=%s\nversionCode=1\nsourceCommit=%s\ndistribution=web-and-github\n' "$DKD_VERSION" "$GITHUB_SHA" > dist-android/RELEASE-INFO.txt
 
@@ -162,13 +156,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dkd-lastmile-v${{ env.DKD_VERSION }}-signed-${{ env.DKD_OUTPUT_FORMAT }}-vc1
-          path: |
-            DraBornGo-LastMile/dist-android/*
+          path: LastMile/dist-android/*
           if-no-files-found: error
           retention-days: 30
 
       - name: Publish APK release for website download
-        if: env.DKD_OUTPUT_FORMAT == 'apk'
+        if: env.DKD_OUTPUT_FORMAT == 'apk' && inputs.dkd_publish_github_release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
