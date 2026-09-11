@@ -1,39 +1,37 @@
-name: DKD Last Mile Android Native Smoke v0.7
+name: DKD Last Mile Android Native Smoke v0.7.2
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'DraBornGo-LastMile/.dkd-build-native-smoke-v07'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: dkd-lastmile-android-native-smoke-v07
+  group: dkd-lastmile-android-native-smoke-v072
   cancel-in-progress: true
 
 jobs:
   dkd-native-smoke:
-    name: Expo SDK 57 native compile smoke
+    name: Manual Expo SDK 57 native compile smoke
     runs-on: ubuntu-latest
     timeout-minutes: 35
     defaults:
       run:
-        working-directory: DraBornGo-LastMile
+        working-directory: LastMile
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: npm
-          cache-dependency-path: DraBornGo-LastMile/package-lock.json
+          cache-dependency-path: LastMile/package-lock.json
+
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
+
       - name: Verify JavaScript and Expo state
         run: |
           npm ci --no-audit --no-fund
@@ -41,17 +39,20 @@ jobs:
           npm test
           npm run typecheck
           EXPO_OFFLINE=1 npx expo install --check
+
       - name: Generate Expo Android project
         env:
           CI: '1'
         run: npx expo prebuild --platform android --clean
-      - name: Compile development client with disposable debug identity
+
+      - name: Compile disposable native smoke APK
         run: |
           cd android
           ./gradlew :app:assembleDebug --no-daemon --stacktrace
+
       - name: Verify generated Android metadata
         run: |
           set -euo pipefail
           test -f android/app/build/outputs/apk/debug/app-debug.apk
           grep -R "com.draborneagle.lastmile" android/app/build.gradle android/app/src/main/AndroidManifest.xml >/dev/null || true
-          printf 'Native compile smoke passed for v0.7.0 / versionCode 1 / Expo SDK 57.\n'
+          printf 'Native compile smoke passed for v0.7.2 / versionCode 1 / Expo SDK 57.\n'
