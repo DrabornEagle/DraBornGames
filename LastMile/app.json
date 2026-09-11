@@ -30,15 +30,15 @@
       "dkd_adminPreviewOnly": false,
       "dkd_realRewardsEnabled": true,
       "dkd_supabaseArea": "LastMile",
-      "dkd_releaseChannel": "expo-go-test",
+      "dkd_releaseChannel": "web-and-github-release",
       "dkd_cameraDefault": "chase",
       "dkd_audioRuntime": "physical-mp3-two-track-v074-fixed",
       "dkd_expoGoTestVersion": "57.0.9",
       "dkd_seasonPaymentGate": true,
       "dkd_googlePlayPrep": false,
       "dkd_webUrl": "https://www.draborneagle.com/DraBornGames/LastMile/",
-      "dkd_webPublishedVersion": "0.7.2",
-      "dkd_expoCandidateOnly": true
+      "dkd_webPublishedVersion": "0.7.4",
+      "dkd_expoCandidateOnly": false
     },
     "plugins": [
       "expo-sharing"
