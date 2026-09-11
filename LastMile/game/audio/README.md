@@ -5,4 +5,4 @@ Oyunda yalnızca iki gerçek MP3 müzik parçası bulunur:
 - `InnerLight.mp3` — Kurye Merkezi ve ana menü.
 - `SeMeNota.mp3` — aktif vardiya ve sürüş.
 
-Telefon/WebView paket boyutunu düşük tutmak için kullanıcı tarafından sağlanan MP3 kaynakları 32 kHz mono / 32 kbps mobil oyun kopyasına dönüştürülmüştür. Derleme boyut ve SHA-256 değerlerini doğrular; eski prosedürel ve v0.5 müzikleri kullanılmaz.
+Telefon ve WebView paket boyutunu düşük tutmak için kullanıcı tarafından sağlanan MP3 kaynakları 32 kHz mono / 32 kbps mobil oyun kopyasına dönüştürülmüştür. Derleme her iki dosyanın boyutunu ve SHA-256 değerini doğrular; eski prosedürel müzik motoru susturulur ve önceki altı v0.5 MP3 dosyası paketten kaldırılmıştır.
