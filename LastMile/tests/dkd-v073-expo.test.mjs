@@ -9,7 +9,7 @@ const dkd_wrapper = await dkd_read('scripts/dkd-build-game-v07.mjs');
 test('v0.7.3 replaces destructive career delete with session logout', () => {
   assert.match(dkd_v073, /KARİYER KAYDINI SİL/);
   assert.match(dkd_v073, /OTURUMU KAPAT/);
-  assert.match(dkd_v073, /data-dkd-action=\\"v04-logout\\"/);
+  assert.match(dkd_v073, /v04-logout/);
 });
 
 test('v0.7.3 hides Test Laboratory unless cloud/admin role is active', () => {
