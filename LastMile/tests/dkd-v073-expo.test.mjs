@@ -73,8 +73,8 @@ test('v0.7.3 plate bootstrap uses public RPC instead of direct non-exposed schem
   assert.match(dkd_plateMigration, /grant execute .* service_role/i);
 });
 
-test('v0.7.3 Expo layer is the final runtime layer and web is held at v0.7.2', () => {
-  assert.match(dkd_wrapper, /dkd-v072-hotfix\.mjs','dkd-v073-expo\.mjs/);
-  assert.match(dkd_wrapper, /v0\.7\.3/);
+test('v0.7.3 runtime remains intact beneath the v0.7.4 Expo test layer', () => {
+  assert.match(dkd_wrapper, /dkd-v072-hotfix\.mjs','dkd-v073-expo\.mjs','dkd-v074-expo\.mjs','dkd-v074-bridge-fix\.mjs/);
+  assert.match(dkd_wrapper, /v0\.7\.4/);
   assert.match(dkd_v073, /dkd_webPublished: false/);
 });
