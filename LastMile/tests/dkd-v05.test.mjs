@@ -1,7 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-
 const dkd_read = dkd_path => fs.readFileSync(new URL(`../${dkd_path}`, import.meta.url), 'utf8');
 const dkd_style = dkd_read('game/dkd-v05-style.mjs');
 const dkd_audio = dkd_read('game/dkd-v05-audio.mjs');
@@ -12,11 +11,11 @@ const dkd_build = dkd_read('scripts/dkd-build-game.mjs');
 const dkd_package = JSON.parse(dkd_read('package.json'));
 const dkd_app = JSON.parse(dkd_read('app.json'));
 
-test('v0.7 is active while the v0.5 runtime layer remains bundled', () => {
-  assert.equal(dkd_package.version, '0.7.1');
-  assert.equal(dkd_app.expo.version, '0.7.1');
+test('v0.7.2 is active while the v0.5 runtime layer remains bundled', () => {
+  assert.equal(dkd_package.version, '0.7.2');
+  assert.equal(dkd_app.expo.version, '0.7.2');
   assert.equal(dkd_app.expo.android.versionCode, 1);
-  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.7.1');
+  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.7.2');
   assert.match(dkd_build, /dkd_version = 'v0\.6\.1'/);
   assert.match(dkd_build, /SON KİLOMETRE · v0\.6\.1/);
   assert.match(dkd_build, /dkd-v05-style\.mjs/);
@@ -34,17 +33,16 @@ test('player full name moves down directly above level and rating badges', () =>
   assert.match(dkd_patch, /\.dkd-home-header \.dkd-profile-pills\{margin-top:10px!important/);
 });
 
-test('music page has eight distinct selectable tracks and track clicks switch buffers', () => {
+test('historical v0.5 music controls stay bundled beneath the v0.7.2 two-track override', () => {
   assert.match(dkd_patch, /const dkd_v05Tracks = \[/);
   assert.equal((dkd_patch.match(/dkd_name:/g) || []).length >= 8, true);
   assert.match(dkd_patch, /dkd_v05SwitchTrack/);
   assert.match(dkd_patch, /dkd_text\.startsWith\('track:'\)/);
-  assert.match(dkd_patch, /Müzik değişti/);
   assert.match(dkd_patch, /Kızılay Rush/);
   assert.match(dkd_patch, /Sabaha Karşı/);
 });
 
-test('every shift selects a different driving track', () => {
+test('historical shift selection layer remains available beneath v0.7.2 override', () => {
   assert.match(dkd_patch, /dkd_Game\.prototype\.dkd_startRun = function dkd_v05StartRun/);
   assert.match(dkd_patch, /if \(dkd_nextTrack === dkd_previousTrack\)/);
   assert.match(dkd_patch, /dkd_v05LastShiftTrack = dkd_nextTrack/);
