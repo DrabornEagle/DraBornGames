@@ -5,6 +5,6 @@
   "dkd_publishGithubRelease": true,
   "dkd_channel": "web-and-github",
   "dkd_requestedAt": "2026-09-13",
-  "dkd_attempt": 8,
-  "dkd_reason": "Current v0.7.5 shared Android/Web build with latest Courier Center layout and all synchronized gameplay/save/payment fixes"
+  "dkd_attempt": 9,
+  "dkd_reason": "Last Mine launcher icon and branded startup; compact Season 01 + level/rating identity row; restored bottom quick menu; synchronized Android/Web shared source"
 }
