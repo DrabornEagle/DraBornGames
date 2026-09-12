@@ -82,6 +82,7 @@ test('Android outputs stay manual except the explicit signed release request gat
   assert.match(dkd_release, /working-directory: LastMile/);
   assert.match(dkd_release, /DKD_LASTMILE_KEYSTORE_B64/);
   assert.match(dkd_release, /dkd_publish_github_release/);
-  assert.match(dkd_release, /LastMile-v\$\{DKD_VERSION\}-release-vc1\.apk/);
+  assert.match(dkd_release, /Last-Mine-v\$\{DKD_VERSION\}-release-vc1\.apk/);
+  assert.match(dkd_release, /application-label:'Last Mine'/);
   assert.match(dkd_release, /versionCode='1'/);
 });
