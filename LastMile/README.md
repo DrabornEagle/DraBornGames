@@ -1,33 +1,37 @@
-# DraBornGo / Last Mile — v0.7.4
+# DraBornGo / Last Mile — v0.7.5
 
 Android `versionCode 1` · Expo SDK `57` · Web + Android/Expo ortak kaynak.
 
 - Oyun platformu: https://www.draborneagle.com/DraBornGames/
-- Web oyunu: https://www.draborneagle.com/DraBornGames/Last-Mile/
+- Web oyunu: https://www.draborneagle.com/DraBornGames/LastMile/
 - Kaynak depo: https://github.com/DrabornEagle/DraBornGames
 - Google Play dağıtımı: **yok**
 - Güncel geliştirme akışı: **APK/AAB üretmez**
 
-## v0.7.4 güncel durum
+## v0.7.5 güncel durum
 
-v0.7.4, Web ve Android/Expo tarafında aynı `game/` kaynağından ilerler. Ortak oyun paketi `scripts/dkd-build-game-v07.mjs` ile deterministik olarak oluşturulur; platforma özel farklar yalnız gerekli tarayıcı/Expo köprülerinde tutulur.
+v0.7.5, Web ve Android/Expo tarafında aynı `game/` kaynağından ilerler. Ortak oyun paketi `scripts/dkd-build-game-v07.mjs` ile deterministik olarak oluşturulur; platforma özel farklar yalnız gerekli tarayıcı/Expo köprülerinde tutulur.
 
 Bu checkpoint ile:
 
-- görünen sürüm etiketleri yalnızca `v0.7.4` gösterir ve tekrar normalizasyonunda `.4` eklenmez,
+- Android sürümü `v0.7.5`, `versionCode 1` olarak sabittir,
+- Last Mile kayıt sistemi Supabase üzerinde sıfırdan dayanıklı ve cihazlar arası devam edebilir yapıya taşınmıştır,
+- oyuncunun anlamlı işlemleri append-only event journal'a yazılır; yeniden gönderilen aynı event ikinci kez sayılmaz,
+- oyun state'i revision numarasıyla buluta kaydedilir ve yeni cihaz/oturumda bootstrap üzerinden geri yüklenir,
+- cihaz ve oturum bilgileri ayrı kayıt altında tutulur,
+- vardiya sürüşünde her 5 saniyede bir konum, yön, geçen süre, mesafe, hasar/kalite ve aktif iş bilgisi `drive_checkpoint` olarak işaretlenir,
+- gerçek teslimat tamamlandığında `order_completed` eventi sezon tarih aralığına göre ilgili sezonun toplam sipariş sayısını artırır,
+- **KURYE MERKEZİ** aktif ve geçmiş sezonları başlangıç/bitiş tarihleriyle birlikte ayrı ayrı gösterir ve sezon toplam sipariş bilgisini buluttan okur,
+- vardiya sırasında sağdaki yardımcı ikonlar harita/üst HUD alanının üzerine binmemesi için aşağı taşınmıştır,
+- görünen sürüm etiketleri `v0.7.5` olarak normalize edilir,
 - yönetici **Ödemeler** bölümü Test Laboratuvarı'ndan bağımsızdır,
 - ödeme/dekont gönderimi vardiya başlatma akışından ayrıdır,
 - ödeme gönderiminden sonra `Ödemeniz inceleniyor` durumu kullanılır,
 - IBAN/Havale kullanıcı notu renkli ve hareketli vurguya sahiptir,
 - yönetici ödeme ekranında dekonta dokunulduğunda tam ekran dekont görüntüleyici açılır,
-- kayıt sonrası büyük ödül bilgilendirmesi gösterilir; sonraki girişlerde kullanıcı Sezonluk Ödeme ekranına düşüyorsa **giriş oturumu başına bir kez** `ACELE ET` bilgilendirmesi yeniden açılır,
-- çıkış yapıldığında oturumluk ödül bilgilendirme işareti temizlenir; yeni giriş yeni bir oturum sayılır,
-- Sezonluk Ödeme ekranındaki aktif sezon kartı renkli/premium düzene sahiptir ve kullanıcının seçtiği büyük ödülü gösterir,
-- **Sonraki sezonlar** satırları dokunulabilirdir; sezon adı, başlangıç/bitiş, süre, erişim fiyatı ve sezon koşulunu modern ayrıntı penceresinde gösterir,
-- sonraki sezon ayrıntılarındaki büyük ödüller doğrudan **Ödül Kasası ile aynı sezon kataloğundan** okunur: Sezon 02 PlayStation 5 Pro / ROG Ally X / Meta Quest 3S; Sezon 03 MacBook Air / iPad Pro / Apple Watch Ultra; Sezon 04 Galaxy S Ultra / Lenovo Legion Gaming Laptop / Steam Deck OLED,
-- sezon ayrıntı popup'ı kendi kaydırma alanında çalışır; kapandığında ödeme sayfasının kaydırma/viewport konumu geri yüklenir ve sezonlar art arda yeniden açılabilir,
-- tarayıcı yenilemesi, Expo WebView yeniden yüklemesi veya geri yüklenen oturum `home` üzerinden ödeme kapısına yönlendirilse bile premium aktif-sezon kartı, seçilen büyük ödül ve Sonraki Sezonlar tıklama bağları gerçek render edilen ödeme DOM'una göre yeniden uygulanır,
-- Web ve Android/Expo aynı davranışı paylaşır.
+- kayıt sonrası büyük ödül bilgilendirmesi ve sezonluk ödeme akışı korunur,
+- **Sonraki sezonlar** satırları sezon adı, başlangıç/bitiş, süre, erişim fiyatı, sezon koşulu ve Ödül Kasası kataloğunu gösterir,
+- Web ve Android/Expo aynı davranışı ve aynı Supabase kariyer kaydını paylaşır.
 
 ## Termux / Expo Go 57.x
 
@@ -68,7 +72,18 @@ Ayrıntılı Termux rehberi: `TERMUX.md`.
 
 Ana oyun kaynağı `game/` altındadır. Web çıktısı ve Expo/Android paketi aynı modül sırasından üretilir. `web/dkd-browser-adapter.js` yalnız tarayıcıya özgü aygıt davranışlarını uyarlar. Üretilmiş dosyalar elle düzenlenmemelidir.
 
-Web senkronizasyonu DraBornGames kaynağını `DrabornEagle_Web/DraBornGames/Last-Mile/` hedefine taşır. Android/Expo geliştirme paketi de aynı kaynak revision'ından oluşturulur. Böylece oyun mantığı ve arayüz değişiklikleri iki tarafta birlikte ilerler.
+Web senkronizasyonu DraBornGames kaynağını `DrabornEagle_Web/DraBornGames/LastMile/` hedefine taşır. Android/Expo geliştirme paketi de aynı source revision'dan oluşturulur. v0.7.5 Web senkronu APK üretmez, kopyalamaz veya mevcut APK dosyasını değiştirmez.
+
+## Supabase kalıcı kayıt modeli
+
+Last Mile verileri diğer DraBorn projelerinden ayrı `Last-Mile` şemasında tutulur. v0.7.5 temel tabloları:
+
+- `dkd_lastmile_game_saves`: son doğrulanmış kariyer state'i ve revision,
+- `dkd_lastmile_game_events`: kullanıcı işlem/event günlüğü,
+- `dkd_lastmile_device_sessions`: cihaz ve oturum takibi,
+- `dkd_lastmile_season_order_stats`: sezon başlangıcı ile bitişi arasındaki toplam sipariş sayısı.
+
+Doğrudan istemci tablo erişimi kapalıdır; oyun mevcut kimlik doğrulamalı Last Mile API/RPC katmanı üzerinden çalışır. Event kimlikleri kullanıcı bazında benzersiz olduğu için ağ tekrarlarında aynı teslimat veya işlem ikinci kez sayılmaz.
 
 ## Bulut ve ödeme
 
@@ -87,10 +102,11 @@ CI kontrolü ortak oyun paketini yeniden üretir; üretilen dosyaların kaynakla
 
 ## Sürüm
 
-- Last Mile: **v0.7.4**
+- Last Mile: **v0.7.5**
 - Android versionCode: **1**
 - Expo SDK: **57** (`expo ~57.0.20`)
 - Hedef: Expo Go **57.x**
 - Menü müziği: `InnerLight.mp3`
 - Vardiya müziği: `SeMeNota.mp3`
 - Web + Android/Expo: **senkron ortak kaynak**
+- Bulut kayıt: **Supabase durable save + event journal + season stats**
