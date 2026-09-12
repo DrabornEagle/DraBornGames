@@ -1,4 +1,4 @@
-name: DKD Last Mile Android v0.7.4
+name: DKD Last Mile Android v0.7.5
 
 on:
   workflow_dispatch:
@@ -17,12 +17,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: dkd-lastmile-android-v074-${{ inputs.dkd_output }}
+  group: dkd-lastmile-android-v075-${{ inputs.dkd_output }}
   cancel-in-progress: false
 
 jobs:
   dkd-android:
-    name: LastMile v0.7.4 · ${{ inputs.dkd_output }}
+    name: LastMile v0.7.5 · ${{ inputs.dkd_output }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     defaults:
@@ -36,33 +36,27 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 1
-
       - uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: npm
           cache-dependency-path: LastMile/package-lock.json
-
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
-
       - name: Install JavaScript dependencies
         run: npm ci --no-audit --no-fund
-
       - name: Verify Expo candidate source
         run: |
           npm run build:game
           npm test
           npm run typecheck
           EXPO_OFFLINE=1 npx expo install --check
-
       - name: Generate Android project
         env:
           CI: '1'
         run: npx expo prebuild --platform android --clean
-
       - name: Require and restore permanent signing key
         env:
           DKD_LASTMILE_KEYSTORE_B64: ${{ secrets.DKD_LASTMILE_KEYSTORE_B64 }}
@@ -94,7 +88,6 @@ jobs:
               dkd_source = dkd_source.replace(dkd_old, dkd_new, 1)
           dkd_file.write_text(dkd_source)
           PY
-
       - name: Build selected Android output
         env:
           DKD_LASTMILE_KEYSTORE_PASSWORD: ${{ secrets.DKD_LASTMILE_KEYSTORE_PASSWORD }}
@@ -110,7 +103,6 @@ jobs:
             aab) ./gradlew :app:bundleRelease --no-daemon --stacktrace ;;
             *) exit 22 ;;
           esac
-
       - name: Package and verify output
         env:
           DKD_OUTPUT: ${{ inputs.dkd_output }}
@@ -121,15 +113,15 @@ jobs:
           case "$DKD_OUTPUT" in
             development)
               dkd_source='android/app/build/outputs/apk/debug/app-debug.apk'
-              dkd_name='LastMile-v0.7.4-development-vc1.apk'
+              dkd_name='LastMile-v0.7.5-development-vc1.apk'
               ;;
             apk)
               dkd_source='android/app/build/outputs/apk/release/app-release.apk'
-              dkd_name='LastMile-v0.7.4-release-vc1.apk'
+              dkd_name='LastMile-v0.7.5-release-vc1.apk'
               ;;
             aab)
               dkd_source='android/app/build/outputs/bundle/release/app-release.aab'
-              dkd_name='LastMile-v0.7.4-release-vc1.aab'
+              dkd_name='LastMile-v0.7.5-release-vc1.aab'
               ;;
           esac
           test -f "$dkd_source"
@@ -138,12 +130,11 @@ jobs:
           if [[ "$dkd_name" == *.apk ]]; then
             "$dkd_apksigner" verify --verbose --print-certs "dist-android/$dkd_name" > dist-android/SIGNATURE.txt
           fi
-          printf 'DraBornGo / LastMile\nversionName=0.7.4\nversionCode=1\npackage=com.draborneagle.lastmile\nExpo SDK=57\noutput=%s\nsigning=DKD_LASTMILE permanent JKS\n' "$DKD_OUTPUT" > dist-android/BUILD-INFO.txt
-
+          printf 'DraBornGo / LastMile\nversionName=0.7.5\nversionCode=1\npackage=com.draborneagle.lastmile\nExpo SDK=57\noutput=%s\nsigning=DKD_LASTMILE permanent JKS\n' "$DKD_OUTPUT" > dist-android/BUILD-INFO.txt
       - name: Upload Android artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dkd-lastmile-v0.7.4-${{ inputs.dkd_output }}-vc1
+          name: dkd-lastmile-v0.7.5-${{ inputs.dkd_output }}-vc1
           path: LastMile/dist-android/
           if-no-files-found: error
           retention-days: 30
