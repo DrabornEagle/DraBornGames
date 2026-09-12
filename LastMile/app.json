@@ -1,14 +1,29 @@
 {
   "expo": {
-    "name": "DraBornGo / Son Kilometre",
+    "name": "Last Mine",
     "slug": "dkd-draborngo-lastmile",
     "version": "0.7.5",
     "orientation": "portrait",
+    "icon": "./assets/dkd-last-mine-icon.png",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#080e15",
+    "splash": {
+      "image": "./assets/dkd-last-mine-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#080e15"
+    },
+    "androidStatusBar": {
+      "backgroundColor": "#080e15",
+      "barStyle": "light-content",
+      "translucent": false
+    },
     "android": {
       "package": "com.draborneagle.lastmile",
       "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/dkd-last-mine-icon.png",
+        "backgroundColor": "#080e15"
+      },
       "permissions": [],
       "blockedPermissions": [
         "android.permission.ACCESS_FINE_LOCATION",
@@ -41,9 +56,24 @@
       "dkd_expoCandidateOnly": false,
       "dkd_durableCloudSave": true,
       "dkd_eventJournal": true,
-      "dkd_driveCheckpointSeconds": 5
+      "dkd_driveCheckpointSeconds": 5,
+      "dkd_androidDisplayName": "Last Mine",
+      "dkd_androidBrandedSplash": true
     },
     "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/dkd-last-mine-icon.png",
+          "imageWidth": 150,
+          "resizeMode": "contain",
+          "backgroundColor": "#080e15",
+          "dark": {
+            "image": "./assets/dkd-last-mine-icon.png",
+            "backgroundColor": "#080e15"
+          }
+        }
+      ],
       "expo-sharing"
     ]
   }
