@@ -11,31 +11,34 @@ test('v0.7.5 Courier Center identity polish is the final shared Android/Web UI l
   assert.match(dkd_patch, /dkd_seasonBadgeAboveName: true/);
 });
 
-test('player name returns to historical position while season badge is independently placed above it', () => {
-  assert.match(dkd_patch, /\.dkd-home-header \.dkd-player-name\{margin:72px 0 8px!important\}/);
-  assert.match(dkd_patch, /\.dkd-home-header \.dkd-season-pill\{position:absolute!important/);
-  assert.match(dkd_patch, /dkd_compactNameMargin: 56/);
+test('identity cluster moves lower while season badge stays close above player name', () => {
+  assert.match(dkd_patch, /\.dkd-home-header \.dkd-player-name\{margin:92px 0 8px!important\}/);
+  assert.match(dkd_patch, /\.dkd-home-header \.dkd-season-pill\{position:absolute!important;left:20px!important;top:65px!important/);
+  assert.match(dkd_patch, /dkd_compactNameMargin: 76/);
+  assert.match(dkd_patch, /dkd_compactSeasonBadgeTop: 48/);
 });
 
-test('level and rating badges use modern colorful flat motion', () => {
+test('level and rating badges keep modern colorful flat motion', () => {
   assert.match(dkd_patch, /\.dkd-home-header \.dkd-profile-pills>span/);
   assert.match(dkd_patch, /border-top:4px solid #83a7ff/);
   assert.match(dkd_patch, /dkd-v075-rating-icon/);
   assert.match(dkd_patch, /dkd-v075-badge-meter/);
 });
 
-test('season goal progress is a colorful segmented animated track without forbidden visual effects', () => {
-  assert.match(dkd_patch, /\.dkd-contract-mini \.dkd-progress span:before/);
-  assert.match(dkd_patch, /background:#85a4ff/);
-  assert.match(dkd_patch, /background:#ed8fbd/);
+test('season goal progress uses a modern single rail and end marker without forbidden visual effects', () => {
+  assert.match(dkd_patch, /height:12px!important/);
+  assert.match(dkd_patch, /background:#67ded0/);
+  assert.match(dkd_patch, /background:#e4ff5e/);
+  assert.match(dkd_patch, /right:2px;top:50%;width:7px;height:7px/);
   assert.match(dkd_patch, /dkd-v075-goal-progress-color/);
   assert.doesNotMatch(dkd_patch, /linear-gradient|radial-gradient|box-shadow|text-shadow/i);
 });
 
-test('shift CTA is larger and animated with reduced-motion support', () => {
+test('shift CTA stays large but has no animation', () => {
   assert.match(dkd_patch, /font-size:17px!important/);
-  assert.match(dkd_patch, /dkd-v075-shift-breathe/);
-  assert.match(dkd_patch, /dkd-v075-shift-runner/);
-  assert.match(dkd_patch, /data-dkd-motion='off'/);
-  assert.match(dkd_patch, /prefers-reduced-motion:reduce/);
+  assert.match(dkd_patch, /dkd_shiftButtonStatic: true/);
+  assert.match(dkd_patch, /\.dkd-shift-action \.dkd-button\{[^}]*animation:none!important/);
+  assert.match(dkd_patch, /\.dkd-shift-action \.dkd-button svg\{[^}]*animation:none!important/);
+  assert.match(dkd_patch, /\.dkd-shift-action \.dkd-button:after\{display:none!important/);
+  assert.doesNotMatch(dkd_patch, /dkd-v075-shift-breathe|dkd-v075-shift-icon|dkd-v075-shift-runner/);
 });
