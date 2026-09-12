@@ -23,8 +23,9 @@ Bu checkpoint ile:
 - kayıt sonrası büyük ödül bilgilendirmesi gösterilir; sonraki girişlerde kullanıcı Sezonluk Ödeme ekranına düşüyorsa **giriş oturumu başına bir kez** `ACELE ET` bilgilendirmesi yeniden açılır,
 - çıkış yapıldığında oturumluk ödül bilgilendirme işareti temizlenir; yeni giriş yeni bir oturum sayılır,
 - Sezonluk Ödeme ekranındaki aktif sezon kartı renkli/premium düzene sahiptir ve kullanıcının seçtiği büyük ödülü gösterir,
-- **Sonraki sezonlar** satırları dokunulabilirdir; sezon adı, başlangıç/bitiş, süre, erişim fiyatı, sezon koşulu ve güncel büyük ödül havuzunu modern ayrıntı penceresinde gösterir,
-- gelecek sezon ödül ürün/model ve stokları kesinleşmeden uygulamada yeni fiziksel ürün vaadi oluşturulmaz; ekranda yayınlanan güncel liste esas alınır,
+- **Sonraki sezonlar** satırları dokunulabilirdir; sezon adı, başlangıç/bitiş, süre, erişim fiyatı ve sezon koşulunu modern ayrıntı penceresinde gösterir,
+- sonraki sezon ayrıntılarındaki büyük ödüller doğrudan **Ödül Kasası ile aynı sezon kataloğundan** okunur: Sezon 02 PlayStation 5 Pro / ROG Ally X / Meta Quest 3S; Sezon 03 MacBook Air / iPad Pro / Apple Watch Ultra; Sezon 04 Galaxy S Ultra / Lenovo Legion Gaming Laptop / Steam Deck OLED,
+- sezon ayrıntı popup'ı kendi kaydırma alanında çalışır; kapandığında ödeme sayfasının kaydırma/viewport konumu geri yüklenir ve sezonlar art arda yeniden açılabilir,
 - Web ve Android/Expo aynı davranışı paylaşır.
 
 ## Termux / Expo Go 57.x
@@ -72,7 +73,7 @@ Web senkronizasyonu DraBornGames kaynağını `DrabornEagle_Web/DraBornGames/Las
 
 Kariyer ve ödeme merkezi Supabase üzerinden ortak hesaba bağlıdır. Dekont gönderimi ödeme iş akışıdır; vardiya başlatma hatası olarak işlenmez. Yönetici ödeme panelinden bekleyen dekontlar görüntülenebilir, tam ekran incelenebilir, onaylanabilir veya reddedilebilir. IBAN, hesap sahibi, kullanıcı notu ve sezon fiyatları yönetici panelinden güncellenir.
 
-Sezonluk Ödeme ekranında aktif sezon, seçilen ödül ve sonraki sezon ayrıntıları aynı ortak kaynaktan gösterilir. Gelecek sezon detay penceresi buluttaki tarih/fiyat bilgileriyle oyun içindeki sezon tema ve ödül verisini birleştirir.
+Sezonluk Ödeme ekranında aktif sezon, seçilen ödül ve sonraki sezon ayrıntıları aynı ortak kaynaktan gösterilir. Gelecek sezon detay penceresi buluttaki tarih/fiyat bilgilerini oyun içindeki sezon temasıyla ve Ödül Kasasının sezon kataloğuyla birleştirir.
 
 ## Doğrulama
 
