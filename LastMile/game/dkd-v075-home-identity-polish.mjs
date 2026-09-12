@@ -56,7 +56,7 @@ function dkd_v075HomeIdentityInstallStyles() {
     html[data-dkd-motion='off'] .dkd-home-header .dkd-profile-pills>span:after,
     html[data-dkd-motion='off'] .dkd-contract-mini .dkd-progress span{animation:none!important;transform:none!important}
     @media(prefers-reduced-motion:reduce){
-      .dkd-home-header .dkd-season-pill,.dkd-home-header .dkd-profile-pills>span,.dkd-home-header .dkd-profile-pills>span svg,.dkd-home-header .dkd-home-header .dkd-profile-pills>span:after,.dkd-contract-mini .dkd-progress span{animation:none!important;transform:none!important}
+      .dkd-home-header .dkd-season-pill,.dkd-home-header .dkd-profile-pills>span,.dkd-home-header .dkd-profile-pills>span svg,.dkd-home-header .dkd-profile-pills>span:after,.dkd-contract-mini .dkd-progress span{animation:none!important;transform:none!important}
     }
   `;
   document.head.appendChild(dkd_style);
