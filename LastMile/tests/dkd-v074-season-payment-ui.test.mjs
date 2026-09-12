@@ -5,10 +5,11 @@ import * as dkd_fs from 'node:fs/promises';
 const dkd_patch = await dkd_fs.readFile(new URL('../game/dkd-v074-season-payment-ui.mjs', import.meta.url), 'utf8');
 const dkd_hotfix = await dkd_fs.readFile(new URL('../game/dkd-v074-season-modal-hotfix.mjs', import.meta.url), 'utf8');
 const dkd_refresh = await dkd_fs.readFile(new URL('../game/dkd-v074-payment-refresh-fix.mjs', import.meta.url), 'utf8');
+const dkd_loginNotice = await dkd_fs.readFile(new URL('../game/dkd-v074-login-payment-notice-fix.mjs', import.meta.url), 'utf8');
 const dkd_builder = await dkd_fs.readFile(new URL('../scripts/dkd-build-game-v07.mjs', import.meta.url), 'utf8');
 
-dkd_test('shared v0.7.4 bundle includes seasonal payment UI, modal and refresh stability fixes', () => {
-  dkd_assert.match(dkd_builder, /dkd-v074-reward-copy\.mjs','dkd-v074-season-payment-ui\.mjs','dkd-v074-season-modal-hotfix\.mjs','dkd-v074-payment-refresh-fix\.mjs/);
+dkd_test('shared v0.7.4 bundle includes seasonal payment UI and all stability fixes', () => {
+  dkd_assert.match(dkd_builder, /dkd-v074-season-payment-ui\.mjs','dkd-v074-season-modal-hotfix\.mjs','dkd-v074-payment-refresh-fix\.mjs','dkd-v074-login-payment-notice-fix\.mjs/);
   dkd_assert.match(dkd_patch, /dkd_rewardNoticePerLogin: true/);
   dkd_assert.match(dkd_patch, /dkd_futureSeasonDetails: true/);
   dkd_assert.match(dkd_patch, /dkd_paymentSelectedPrizeVisible: true/);
@@ -17,12 +18,16 @@ dkd_test('shared v0.7.4 bundle includes seasonal payment UI, modal and refresh s
   dkd_assert.match(dkd_refresh, /dkd_paymentRefreshStable: true/);
 });
 
-dkd_test('reward notice is scoped to login session and reset on logout', () => {
-  dkd_assert.match(dkd_patch, /sessionStorage\.getItem/);
-  dkd_assert.match(dkd_patch, /sessionStorage\.removeItem/);
-  dkd_assert.match(dkd_patch, /v04-logout/);
-  dkd_assert.match(dkd_patch, /dkd_pageName === 'v074payment'/);
-  dkd_assert.match(dkd_patch, /ACELE ET/);
+dkd_test('ACELE ET notice belongs to seasonal payment, once per login, and resets on logout', () => {
+  dkd_assert.match(dkd_loginNotice, /sessionStorage\.getItem/);
+  dkd_assert.match(dkd_loginNotice, /sessionStorage\.removeItem/);
+  dkd_assert.match(dkd_loginNotice, /v04-logout/);
+  dkd_assert.match(dkd_loginNotice, /dkd-v074-pay/);
+  dkd_assert.match(dkd_loginNotice, /ACELE ET/);
+  dkd_assert.match(dkd_loginNotice, /dkd_rewardNoticeOnPaymentPerLogin: true/);
+  dkd_assert.match(dkd_loginNotice, /dkd_rewardNoticeResetOnLogout: true/);
+  dkd_assert.match(dkd_loginNotice, /dkd_rewardNoticeNotOnChoose: true/);
+  dkd_assert.match(dkd_loginNotice, /dkd_rewardNoticeRefreshSafe: true/);
 });
 
 dkd_test('future season details read the same catalog as Reward Vault', () => {
@@ -48,7 +53,7 @@ dkd_test('season modal owns its scroll and restores the payment viewport after c
   dkd_assert.match(dkd_hotfix, /dkd_game\?\.dkd_root \|\| document\.getElementById\('dkd-ui'\)/);
 });
 
-dkd_test('payment enhancements follow the rendered payment DOM after reload redirects', () => {
+dkd_test('payment enhancements follow rendered payment DOM after reload redirects', () => {
   dkd_assert.match(dkd_refresh, /querySelector\?\.\('\.dkd-v074-pay'\)/);
   dkd_assert.match(dkd_refresh, /dkd_v074SeasonDecoratePayment\(dkd_game\)/);
   dkd_assert.match(dkd_refresh, /queueMicrotask/);
@@ -56,4 +61,5 @@ dkd_test('payment enhancements follow the rendered payment DOM after reload redi
   dkd_assert.match(dkd_refresh, /MutationObserver/);
   dkd_assert.match(dkd_refresh, /dkd_paymentDecorationByRenderedDom: true/);
   dkd_assert.match(dkd_refresh, /dkd_futureSeasonRebindAfterRefresh: true/);
+  dkd_assert.match(dkd_loginNotice, /dkd_v074RefreshSyncPayment/);
 });
