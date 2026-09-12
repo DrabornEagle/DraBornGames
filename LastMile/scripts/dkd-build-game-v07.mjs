@@ -8,7 +8,7 @@ const dkd_generatedFile = dkd_path.join(dkd_scriptsDir, '.dkd-build-game-v07.gen
 
 let dkd_source = await dkd_fs.readFile(dkd_baseFile, 'utf8');
 const dkd_sourceNeedle = "'dkd-v061-final-device-fix.mjs'";
-const dkd_sourceReplacement = "'dkd-v061-final-device-fix.mjs','dkd-v07-release.mjs','dkd-v07-premium-rider.mjs','dkd-v07-google-play.mjs','dkd-v072-release.mjs','dkd-v072-hotfix.mjs','dkd-v073-expo.mjs','dkd-v074-expo.mjs','dkd-v074-bridge-fix.mjs','dkd-v074-release-polish.mjs','dkd-v074-final-sync.mjs','dkd-v074-reward-copy.mjs'";
+const dkd_sourceReplacement = "'dkd-v061-final-device-fix.mjs','dkd-v07-release.mjs','dkd-v07-premium-rider.mjs','dkd-v07-google-play.mjs','dkd-v072-release.mjs','dkd-v072-hotfix.mjs','dkd-v073-expo.mjs','dkd-v074-expo.mjs','dkd-v074-bridge-fix.mjs','dkd-v074-release-polish.mjs','dkd-v074-final-sync.mjs','dkd-v074-reward-copy.mjs','dkd-v074-season-payment-ui.mjs'";
 if (!dkd_source.includes(dkd_sourceNeedle)) throw new Error('v0.7 kaynak ekleme noktası bulunamadı.');
 dkd_source = dkd_source.replace(dkd_sourceNeedle, dkd_sourceReplacement);
 
