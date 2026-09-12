@@ -22,9 +22,7 @@ test('v0.7.3 hides Test Laboratory unless cloud/admin role is active', () => {
 });
 
 test('v0.7.3 registration identifies each invalid field with prominent inline guidance', () => {
-  for (const dkd_name of ['dkd_full_name','dkd_username','dkd_phone','dkd_company_name','dkd_plate_no','dkd_email','dkd_password']) {
-    assert.match(dkd_v073, new RegExp(dkd_name));
-  }
+  for (const dkd_name of ['dkd_full_name','dkd_username','dkd_phone','dkd_company_name','dkd_plate_no','dkd_email','dkd_password']) assert.match(dkd_v073, new RegExp(dkd_name));
   assert.match(dkd_v073, /Kayıt tamamlanmadı/);
   assert.match(dkd_v073, /Hatalı alanlar:/);
   assert.match(dkd_v073, /06 ABC 123/);
@@ -65,7 +63,7 @@ test('v0.7.3 drive music button toggles complete game audio', () => {
   assert.match(dkd_v073, /Oyun sesleri açıldı/);
 });
 
-test('plate bootstrap keeps its public RPC while the active API reports v0.7.4', () => {
+test('plate bootstrap keeps its public RPC while the compatibility API remains deployed', () => {
   assert.match(dkd_edge, /const dkd_version = '0\.7\.4'/);
   assert.match(dkd_edge, /rpc\('dkd_lastmile_set_plate'/);
   assert.doesNotMatch(dkd_edge, /schema\('Last-Mile'\)\.from\('dkd_lastmile_profiles'\)/);
@@ -73,8 +71,9 @@ test('plate bootstrap keeps its public RPC while the active API reports v0.7.4',
   assert.match(dkd_plateMigration, /grant execute .* service_role/i);
 });
 
-test('v0.7.3 runtime remains intact beneath the v0.7.4 Expo test layer', () => {
+test('v0.7.3 runtime remains intact beneath the v0.7.5 shared layer', () => {
   assert.match(dkd_wrapper, /dkd-v072-hotfix\.mjs','dkd-v073-expo\.mjs','dkd-v074-expo\.mjs','dkd-v074-bridge-fix\.mjs/);
-  assert.match(dkd_wrapper, /v0\.7\.4/);
+  assert.match(dkd_wrapper, /dkd-v075-durable-save\.mjs/);
+  assert.match(dkd_wrapper, /v0\.7\.5/);
   assert.match(dkd_v073, /dkd_webPublished: false/);
 });
