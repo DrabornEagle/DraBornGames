@@ -21,7 +21,12 @@ Bu checkpoint ile:
 - cihaz ve oturum bilgileri ayrı kayıt altında tutulur,
 - vardiya sürüşünde her 5 saniyede bir konum, yön, geçen süre, mesafe, hasar/kalite ve aktif iş bilgisi `drive_checkpoint` olarak işaretlenir,
 - gerçek teslimat tamamlandığında `order_completed` eventi sezon tarih aralığına göre ilgili sezonun toplam sipariş sayısını artırır,
-- **KURYE MERKEZİ** aktif ve geçmiş sezonları başlangıç/bitiş tarihleriyle birlikte ayrı ayrı gösterir ve sezon toplam sipariş bilgisini buluttan okur,
+- ana sayfadaki büyük sezon sipariş bloğu kaldırılmıştır; alt hızlı menüdeki **Günlük** kısayolu **Sezon** olarak değiştirilmiştir,
+- **Sezon** kısayolu, her sezonun toplam siparişini, tarihlerini, durumunu, ilerlemesini ve aktif sezonda kalan günü gösteren ayrı hareketli **Sezon Merkezi** ekranını açar,
+- günlük görevler kaybolmaz; **Dra Telefon** içinden kullanılmaya devam eder,
+- sezon sayıları Supabase bootstrap ile yenilenebilir ve Web/Android hesabında aynı veriyi gösterir,
+- dekont yüklemede büyük JPG/PNG/WEBP görseller güvenli gönderim boyutuna otomatik küçültülüp JPEG olarak optimize edilir; böylece büyük Base64 isteklerinin ödeme gönderimini bozması engellenir,
+- ödeme API katmanı PostgREST/RPC hata mesajlarını artık genel `server_error` içine gizlemek yerine tanılama için gerçek sunucu mesajını döndürür,
 - vardiya sırasında sağdaki yardımcı ikonlar harita/üst HUD alanının üzerine binmemesi için aşağı taşınmıştır,
 - görünen sürüm etiketleri `v0.7.5` olarak normalize edilir,
 - yönetici **Ödemeler** bölümü Test Laboratuvarı'ndan bağımsızdır,
@@ -88,6 +93,8 @@ Doğrudan istemci tablo erişimi kapalıdır; oyun mevcut kimlik doğrulamalı L
 ## Bulut ve ödeme
 
 Kariyer ve ödeme merkezi Supabase üzerinden ortak hesaba bağlıdır. Dekont gönderimi ödeme iş akışıdır; vardiya başlatma hatası olarak işlenmez. Yönetici ödeme panelinden bekleyen dekontlar görüntülenebilir, tam ekran incelenebilir, onaylanabilir veya reddedilebilir. IBAN, hesap sahibi, kullanıcı notu ve sezon fiyatları yönetici panelinden güncellenir.
+
+Dekont seçildiğinde istemci desteklenen görüntüyü doğrular. Büyük görseller, okunabilirlik korunarak azami 1800 piksel kenar uzunluğuna küçültülür ve HTTP/RPC yükünü güvenli seviyede tutacak şekilde sıkıştırılır. Bu işlem yalnız gönderim kopyasına uygulanır; kullanıcının cihazındaki orijinal dosya değiştirilmez.
 
 Sezonluk Ödeme ekranında aktif sezon, seçilen ödül ve sonraki sezon ayrıntıları aynı ortak kaynaktan gösterilir. Gelecek sezon detay penceresi buluttaki tarih/fiyat bilgilerini oyun içindeki sezon temasıyla ve Ödül Kasasının sezon kataloğuyla birleştirir.
 
