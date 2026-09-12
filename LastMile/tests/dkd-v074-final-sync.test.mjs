@@ -64,7 +64,7 @@ dkd_test('README and Termux guide are current at v0.7.5 and normal development d
   dkd_assert.match(dkd_readme, /Last Mile — v0\.7\.5/);
   dkd_assert.match(dkd_readme, /Android `versionCode 1`/);
   dkd_assert.match(dkd_readme, /normal geliştirme checkpoint'leri APK üretmez/);
-  dkd_assert.match(dkd_readme, /tam ekran dekont görüntüleyici/);
+  dkd_assert.match(dkd_readme, /tam ekran incelenebilir/);
   dkd_assert.match(dkd_readme, /dkd_lastmile_game_events/);
   dkd_assert.match(dkd_readme, /dkd_lastmile_season_order_stats/);
   dkd_assert.match(dkd_termux, /LastMile v0\.7\.5/);
