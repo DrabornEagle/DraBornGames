@@ -26,6 +26,7 @@ Bu checkpoint ile:
 - **Sonraki sezonlar** satırları dokunulabilirdir; sezon adı, başlangıç/bitiş, süre, erişim fiyatı ve sezon koşulunu modern ayrıntı penceresinde gösterir,
 - sonraki sezon ayrıntılarındaki büyük ödüller doğrudan **Ödül Kasası ile aynı sezon kataloğundan** okunur: Sezon 02 PlayStation 5 Pro / ROG Ally X / Meta Quest 3S; Sezon 03 MacBook Air / iPad Pro / Apple Watch Ultra; Sezon 04 Galaxy S Ultra / Lenovo Legion Gaming Laptop / Steam Deck OLED,
 - sezon ayrıntı popup'ı kendi kaydırma alanında çalışır; kapandığında ödeme sayfasının kaydırma/viewport konumu geri yüklenir ve sezonlar art arda yeniden açılabilir,
+- tarayıcı yenilemesi, Expo WebView yeniden yüklemesi veya geri yüklenen oturum `home` üzerinden ödeme kapısına yönlendirilse bile premium aktif-sezon kartı, seçilen büyük ödül ve Sonraki Sezonlar tıklama bağları gerçek render edilen ödeme DOM'una göre yeniden uygulanır,
 - Web ve Android/Expo aynı davranışı paylaşır.
 
 ## Termux / Expo Go 57.x
