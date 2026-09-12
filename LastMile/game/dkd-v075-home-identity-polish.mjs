@@ -5,13 +5,13 @@ function dkd_v075HomeIdentityInstallStyles() {
   const dkd_style = document.createElement('style');
   dkd_style.id = 'dkd-v075-home-identity-polish-style';
   dkd_style.textContent = `
-    /* Move the complete identity cluster lower and keep the season badge close above Ad Soyad. */
+    /* Move Ad Soyad + level + rating + season as one cluster materially lower. */
     .dkd-home-header{display:block!important;position:relative!important;align-items:initial!important}
-    .dkd-home-header .dkd-player-name{margin:92px 0 8px!important}
-    .dkd-home-header .dkd-season-pill{position:absolute!important;left:20px!important;top:65px!important;margin:0!important;z-index:2!important;align-self:auto!important;animation:dkd-v075-season-badge-arrive .42s cubic-bezier(.2,.8,.2,1) both!important}
+    .dkd-home-header .dkd-player-name{margin:150px 0 8px!important}
+    .dkd-home-header .dkd-season-pill{position:absolute!important;left:20px!important;top:122px!important;margin:0!important;z-index:2!important;align-self:auto!important;animation:dkd-v075-season-badge-arrive .42s cubic-bezier(.2,.8,.2,1) both!important}
 
-    /* Level + rating keep their modern flat-color identity. */
-    .dkd-home-header .dkd-profile-pills{gap:9px!important;margin-top:10px!important;margin-bottom:8px!important}
+    /* Level + rating stay immediately below Ad Soyad. */
+    .dkd-home-header .dkd-profile-pills{gap:9px!important;margin-top:8px!important;margin-bottom:8px!important}
     .dkd-home-header .dkd-profile-pills>span{position:relative!important;overflow:hidden!important;min-height:35px!important;padding:8px 11px!important;border:1px solid #6688bf!important;border-top:4px solid #83a7ff!important;border-radius:13px!important;background:#243b67!important;color:#dce8ff!important;font-size:11px!important;font-weight:900!important;letter-spacing:.15px!important;animation:dkd-v075-profile-badge-in .46s cubic-bezier(.2,.8,.2,1) both!important}
     .dkd-home-header .dkd-profile-pills>span:nth-child(2){border-color:#8a7441!important;border-top-color:#f2ca6c!important;background:#493c29!important;color:#fff0b1!important;animation-delay:.08s!important}
     .dkd-home-header .dkd-profile-pills>span svg{width:19px!important;height:19px!important}
@@ -26,7 +26,7 @@ function dkd_v075HomeIdentityInstallStyles() {
     .dkd-contract-mini .dkd-progress span:before{content:'';position:absolute;right:2px;top:50%;width:7px;height:7px;border:2px solid #24475a;border-radius:50%;background:#e4ff5e;transform:translateY(-50%);pointer-events:none}
     .dkd-contract-mini .dkd-progress span:after{content:'';position:absolute;right:14px;top:50%;width:18px;height:2px;border-radius:999px;background:#eaf7f4;transform:translateY(-50%);opacity:.8;pointer-events:none}
 
-    /* Keep the larger shift CTA, but make it completely static. */
+    /* Keep the larger shift CTA completely static. */
     .dkd-shift-action .dkd-button{position:relative!important;min-height:64px!important;font-size:17px!important;font-weight:950!important;letter-spacing:.7px!important;border:1px solid #f1ff9b!important;background:#e4ff5e!important;animation:none!important;transform:none!important}
     .dkd-shift-action .dkd-button svg{width:26px!important;height:26px!important;animation:none!important;transform:none!important}
     .dkd-shift-action .dkd-button:after{display:none!important;content:none!important;animation:none!important}
@@ -38,9 +38,10 @@ function dkd_v075HomeIdentityInstallStyles() {
     @keyframes dkd-v075-badge-meter{0%,100%{transform:scaleX(.35);opacity:.65}50%{transform:scaleX(1);opacity:1}}
     @keyframes dkd-v075-goal-progress-color{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 
+    /* Short mobile viewports still move the whole cluster down, not back to the old position. */
     @media(max-height:760px){
-      .dkd-home-header .dkd-player-name{margin-top:76px!important}
-      .dkd-home-header .dkd-season-pill{top:48px!important}
+      .dkd-home-header .dkd-player-name{margin-top:128px!important}
+      .dkd-home-header .dkd-season-pill{top:100px!important}
       .dkd-shift-action .dkd-button{min-height:58px!important;font-size:16px!important}
     }
     @media(max-width:370px){
@@ -55,7 +56,7 @@ function dkd_v075HomeIdentityInstallStyles() {
     html[data-dkd-motion='off'] .dkd-home-header .dkd-profile-pills>span:after,
     html[data-dkd-motion='off'] .dkd-contract-mini .dkd-progress span{animation:none!important;transform:none!important}
     @media(prefers-reduced-motion:reduce){
-      .dkd-home-header .dkd-season-pill,.dkd-home-header .dkd-profile-pills>span,.dkd-home-header .dkd-profile-pills>span svg,.dkd-home-header .dkd-profile-pills>span:after,.dkd-contract-mini .dkd-progress span{animation:none!important;transform:none!important}
+      .dkd-home-header .dkd-season-pill,.dkd-home-header .dkd-profile-pills>span,.dkd-home-header .dkd-profile-pills>span svg,.dkd-home-header .dkd-home-header .dkd-profile-pills>span:after,.dkd-contract-mini .dkd-progress span{animation:none!important;transform:none!important}
     }
   `;
   document.head.appendChild(dkd_style);
@@ -63,11 +64,12 @@ function dkd_v075HomeIdentityInstallStyles() {
 
 dkd_v075HomeIdentityInstallStyles();
 window.dkd_lastMileV075HomeIdentityPolish = {
-  dkd_nameHistoricalMargin: 92,
-  dkd_compactNameMargin: 76,
-  dkd_seasonBadgeTop: 65,
-  dkd_compactSeasonBadgeTop: 48,
+  dkd_nameHistoricalMargin: 150,
+  dkd_compactNameMargin: 128,
+  dkd_seasonBadgeTop: 122,
+  dkd_compactSeasonBadgeTop: 100,
   dkd_seasonBadgeAboveName: true,
+  dkd_identityClusterLoweredFurther: true,
   dkd_shiftButtonStatic: true,
   dkd_flatColorsOnly: true,
 };
