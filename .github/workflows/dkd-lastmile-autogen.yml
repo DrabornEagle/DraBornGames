@@ -10,6 +10,7 @@ on:
       - 'LastMile/tests/**'
       - 'LastMile/scripts/dkd-build-game.mjs'
       - 'LastMile/scripts/dkd-build-game-v07.mjs'
+      - 'LastMile/scripts/dkd-generate-android-icon.py'
       - 'LastMile/supabase/functions/dkd-last-mile-api/**'
       - 'LastMile/package.json'
       - 'LastMile/app.json'
@@ -41,6 +42,8 @@ jobs:
           node-version: '24'
           cache: npm
           cache-dependency-path: LastMile/package-lock.json
+      - name: Generate deterministic Last Mine Android icon
+        run: python3 scripts/dkd-generate-android-icon.py
       - name: Align lockfile with v0.7.5 package metadata
         run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
       - name: Install locked dependencies
@@ -61,7 +64,7 @@ jobs:
           set -euo pipefail
           git config user.name 'DKD Last Mile Bot'
           git config user.email 'dkd-lastmile-bot@users.noreply.github.com'
-          git add package-lock.json assets/dkd-lastmile.html src/generated/dkd-game-html.ts
+          git add package-lock.json assets/dkd-lastmile.html assets/dkd-last-mine-icon.png src/generated/dkd-game-html.ts
           if git diff --cached --quiet; then
             echo 'Generated files already current.'
             exit 0
