@@ -1,4 +1,4 @@
-name: DKD Last Mile v0.7.4 Expo candidate
+name: DKD Last Mile v0.7.5 Expo candidate
 
 on:
   push:
@@ -35,35 +35,26 @@ jobs:
         with:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
-
       - uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: npm
           cache-dependency-path: LastMile/package-lock.json
-
-      - name: Align lockfile with v0.7.4 package metadata
+      - name: Align lockfile with v0.7.5 package metadata
         run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
-
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
-
       - name: Build Android shared game package
         run: npm run build:game
-
       - name: Run tests
         run: npm test
-
       - name: TypeScript validation
         run: npm run typecheck
-
       - name: Expo SDK 57 dependency validation
         run: EXPO_OFFLINE=1 npx expo install --check
-
       - name: Repository whitespace check
         working-directory: .
         run: git diff --check
-
       - name: Commit deterministic generated Expo files
         run: |
           set -euo pipefail
@@ -74,6 +65,6 @@ jobs:
             echo 'Generated files already current.'
             exit 0
           fi
-          git commit -m 'build(lastmile): regenerate v0.7.4 Expo candidate'
+          git commit -m 'build(lastmile): regenerate v0.7.5 Expo candidate'
           git pull --rebase origin "${{ github.ref_name }}"
           git push origin HEAD:${{ github.ref_name }}
