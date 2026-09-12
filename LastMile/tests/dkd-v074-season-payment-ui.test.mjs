@@ -9,6 +9,7 @@ dkd_test('shared v0.7.4 bundle includes seasonal payment UI after reward copy', 
   dkd_assert.match(dkd_builder, /dkd-v074-reward-copy\.mjs','dkd-v074-season-payment-ui\.mjs/);
   dkd_assert.match(dkd_patch, /dkd_rewardNoticePerLogin: true/);
   dkd_assert.match(dkd_patch, /dkd_futureSeasonDetails: true/);
+  dkd_assert.match(dkd_patch, /dkd_paymentSelectedPrizeVisible: true/);
 });
 
 dkd_test('reward notice is scoped to login session and reset on logout', () => {
@@ -25,4 +26,5 @@ dkd_test('payment screen exposes selected prize and clickable future season deta
   dkd_assert.match(dkd_patch, /Büyük ödül havuzu/);
   dkd_assert.match(dkd_patch, /dkd_prizes\.map/);
   dkd_assert.match(dkd_patch, /dkd-v074-current-season-card/);
+  dkd_assert.match(dkd_patch, /Sonraki sezonların kesin ürün\/model ve stok bilgileri/);
 });
