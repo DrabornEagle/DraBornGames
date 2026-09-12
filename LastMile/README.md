@@ -20,7 +20,11 @@ Bu checkpoint ile:
 - ödeme gönderiminden sonra `Ödemeniz inceleniyor` durumu kullanılır,
 - IBAN/Havale kullanıcı notu renkli ve hareketli vurguya sahiptir,
 - yönetici ödeme ekranında dekonta dokunulduğunda tam ekran dekont görüntüleyici açılır,
-- kayıt sonrası Sezonluk Ödül/Hedef seçimi ekranında büyük ödül teslimi ve sezon süresi hakkında tek seferlik bilgilendirme penceresi gösterilir,
+- kayıt sonrası büyük ödül bilgilendirmesi gösterilir; sonraki girişlerde kullanıcı Sezonluk Ödeme ekranına düşüyorsa **giriş oturumu başına bir kez** `ACELE ET` bilgilendirmesi yeniden açılır,
+- çıkış yapıldığında oturumluk ödül bilgilendirme işareti temizlenir; yeni giriş yeni bir oturum sayılır,
+- Sezonluk Ödeme ekranındaki aktif sezon kartı renkli/premium düzene sahiptir ve kullanıcının seçtiği büyük ödülü gösterir,
+- **Sonraki sezonlar** satırları dokunulabilirdir; sezon adı, başlangıç/bitiş, süre, erişim fiyatı, sezon koşulu ve güncel büyük ödül havuzunu modern ayrıntı penceresinde gösterir,
+- gelecek sezon ödül ürün/model ve stokları kesinleşmeden uygulamada yeni fiziksel ürün vaadi oluşturulmaz; ekranda yayınlanan güncel liste esas alınır,
 - Web ve Android/Expo aynı davranışı paylaşır.
 
 ## Termux / Expo Go 57.x
@@ -67,6 +71,8 @@ Web senkronizasyonu DraBornGames kaynağını `DrabornEagle_Web/DraBornGames/Las
 ## Bulut ve ödeme
 
 Kariyer ve ödeme merkezi Supabase üzerinden ortak hesaba bağlıdır. Dekont gönderimi ödeme iş akışıdır; vardiya başlatma hatası olarak işlenmez. Yönetici ödeme panelinden bekleyen dekontlar görüntülenebilir, tam ekran incelenebilir, onaylanabilir veya reddedilebilir. IBAN, hesap sahibi, kullanıcı notu ve sezon fiyatları yönetici panelinden güncellenir.
+
+Sezonluk Ödeme ekranında aktif sezon, seçilen ödül ve sonraki sezon ayrıntıları aynı ortak kaynaktan gösterilir. Gelecek sezon detay penceresi buluttaki tarih/fiyat bilgileriyle oyun içindeki sezon tema ve ödül verisini birleştirir.
 
 ## Doğrulama
 
