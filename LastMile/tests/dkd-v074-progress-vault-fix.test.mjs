@@ -10,3 +10,8 @@ dkd_test('Reward Vault uses the same stable Final progress as home/result', () =
   dkd_assert.match(dkd_patch, /dkd_v074GameplayFinalProgress/);
   dkd_assert.match(dkd_patch, /dkd_vaultFinalProgressStable: true/);
 });
+
+dkd_test('drive utility controls return to the original shared CSS sizing', () => {
+  dkd_assert.match(dkd_patch, /getElementById\('dkd-v074-gameplay-account-style'\)\?\.remove\(\)/);
+  dkd_assert.match(dkd_patch, /dkd_driveToolsOriginalSize: true/);
+});
