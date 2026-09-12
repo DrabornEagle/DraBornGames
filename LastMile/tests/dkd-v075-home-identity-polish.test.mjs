@@ -11,11 +11,13 @@ test('v0.7.5 Courier Center identity polish is the final shared Android/Web UI l
   assert.match(dkd_patch, /dkd_seasonBadgeAboveName: true/);
 });
 
-test('identity cluster moves lower while season badge stays close above player name', () => {
-  assert.match(dkd_patch, /\.dkd-home-header \.dkd-player-name\{margin:92px 0 8px!important\}/);
-  assert.match(dkd_patch, /\.dkd-home-header \.dkd-season-pill\{position:absolute!important;left:20px!important;top:65px!important/);
-  assert.match(dkd_patch, /dkd_compactNameMargin: 76/);
-  assert.match(dkd_patch, /dkd_compactSeasonBadgeTop: 48/);
+test('complete identity cluster is materially lower and season badge is immediately above player name', () => {
+  assert.match(dkd_patch, /\.dkd-home-header \.dkd-player-name\{margin:150px 0 8px!important\}/);
+  assert.match(dkd_patch, /\.dkd-home-header \.dkd-season-pill\{position:absolute!important;left:20px!important;top:122px!important/);
+  assert.match(dkd_patch, /\.dkd-home-header \.dkd-profile-pills\{gap:9px!important;margin-top:8px!important/);
+  assert.match(dkd_patch, /dkd_compactNameMargin: 128/);
+  assert.match(dkd_patch, /dkd_compactSeasonBadgeTop: 100/);
+  assert.match(dkd_patch, /dkd_identityClusterLoweredFurther: true/);
 });
 
 test('level and rating badges keep modern colorful flat motion', () => {
