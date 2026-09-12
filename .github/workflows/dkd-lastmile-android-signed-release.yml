@@ -1,4 +1,4 @@
-name: DKD Last Mile Signed Android Release v0.7.4
+name: DKD Last Mine Signed Android Release v0.7.5
 
 on:
   push:
@@ -25,7 +25,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: dkd-lastmile-signed-v074-${{ inputs.dkd_format || 'apk' }}
+  group: dkd-lastmine-signed-v075-${{ inputs.dkd_format || 'apk' }}
   cancel-in-progress: false
 
 jobs:
@@ -127,13 +127,13 @@ jobs:
           cd android
           if [[ "$DKD_OUTPUT_FORMAT" == 'apk' ]]; then
             ./gradlew :app:assembleRelease --no-daemon --stacktrace -PreactNativeArchitectures=arm64-v8a
-            cp app/build/outputs/apk/release/app-release.apk ../dist-android/LastMile-v${DKD_VERSION}-release-vc1.apk
+            cp app/build/outputs/apk/release/app-release.apk ../dist-android/Last-Mine-v${DKD_VERSION}-release-vc1.apk
           else
             ./gradlew :app:bundleRelease --no-daemon --stacktrace -PreactNativeArchitectures=arm64-v8a
-            cp app/build/outputs/bundle/release/app-release.aab ../dist-android/LastMile-v${DKD_VERSION}-release-vc1.aab
+            cp app/build/outputs/bundle/release/app-release.aab ../dist-android/Last-Mine-v${DKD_VERSION}-release-vc1.aab
           fi
 
-      - name: Verify signed APK and version
+      - name: Verify signed APK version name and icon
         if: env.DKD_OUTPUT_FORMAT == 'apk'
         run: |
           set -euo pipefail
@@ -144,6 +144,8 @@ jobs:
           grep -q "versionCode='1'" dist-android/BUILD-INFO.txt
           grep -q "versionName='$DKD_VERSION'" dist-android/BUILD-INFO.txt
           grep -q "name='com.draborneagle.lastmile'" dist-android/BUILD-INFO.txt
+          grep -q "application-label:'Last Mine'" dist-android/BUILD-INFO.txt
+          grep -q "application-icon-" dist-android/BUILD-INFO.txt
           if grep -q "application-debuggable" dist-android/BUILD-INFO.txt; then exit 46; fi
 
       - name: Record hashes and certificate identity
@@ -152,14 +154,14 @@ jobs:
           DKD_LASTMILE_KEY_ALIAS: ${{ secrets.DKD_LASTMILE_KEY_ALIAS }}
         run: |
           set -euo pipefail
-          sha256sum dist-android/LastMile-v${DKD_VERSION}-release-vc1.* > dist-android/SHA256SUMS.txt
+          sha256sum dist-android/Last-Mine-v${DKD_VERSION}-release-vc1.* > dist-android/SHA256SUMS.txt
           keytool -list -v -keystore "$DKD_LASTMILE_KEYSTORE_PATH" -storepass "$DKD_LASTMILE_KEYSTORE_PASSWORD" -alias "$DKD_LASTMILE_KEY_ALIAS" | grep -E 'Alias name:|SHA256:' > dist-android/SIGNING-IDENTITY.txt
-          printf 'versionName=%s\nversionCode=1\nsourceCommit=%s\ndistribution=web-and-github\n' "$DKD_VERSION" "$GITHUB_SHA" > dist-android/RELEASE-INFO.txt
+          printf 'appName=Last Mine\nversionName=%s\nversionCode=1\nsourceCommit=%s\ndistribution=web-and-github\n' "$DKD_VERSION" "$GITHUB_SHA" > dist-android/RELEASE-INFO.txt
 
       - name: Upload signed output
         uses: actions/upload-artifact@v4
         with:
-          name: dkd-lastmile-v${{ env.DKD_VERSION }}-signed-${{ env.DKD_OUTPUT_FORMAT }}-vc1
+          name: dkd-lastmine-v${{ env.DKD_VERSION }}-signed-${{ env.DKD_OUTPUT_FORMAT }}-vc1
           path: LastMile/dist-android/*
           if-no-files-found: error
           retention-days: 30
@@ -171,5 +173,5 @@ jobs:
         run: |
           set -euo pipefail
           dkd_version="$(node -p "require('./app.json').expo.version")"
-          dkd_tag="lastmile-v${dkd_version}-${GITHUB_SHA:0:12}"
-          gh release create "$dkd_tag" dist-android/* --target "$GITHUB_SHA" --title "Last Mile v${dkd_version} · Android Release" --notes-file dist-android/RELEASE-INFO.txt --latest
+          dkd_tag="lastmine-v${dkd_version}-${GITHUB_SHA:0:12}"
+          gh release create "$dkd_tag" dist-android/* --target "$GITHUB_SHA" --title "Last Mine v${dkd_version} · Android Release" --notes-file dist-android/RELEASE-INFO.txt --latest
