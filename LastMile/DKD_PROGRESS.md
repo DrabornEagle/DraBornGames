@@ -13,6 +13,7 @@ Tamamlanan son tur:
 - Gradient, shadow ve glow kullanılmıyor.
 - Önceki turdaki yağmur sesi azaltma, efekt aç/kapat düğmesi, rota merkezi hayalet engel/çarpışma düzeltmeleri, Ödül Kasası hedef detayları, Apple iPad PRO adı, Mira profil düzeltmesi ve premium kurye modeli korunuyor.
 - Android ve Web aynı oyun kaynağından üretiliyor.
+- Ortak Android/Web oyun paketi son UI kaynağından deterministik olarak yeniden üretildi.
 - APK/AAB bu turda oluşturulmuyor veya yayınlanmıyor.
 
 Doğrulama hedefi: test paketi, TypeScript, Expo SDK 57, Android JavaScript export smoke testi ve Web ortak-kaynak build'i temiz geçmeden checkpoint tamamlanmış sayılmaz.
