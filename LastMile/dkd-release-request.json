@@ -5,6 +5,6 @@
   "dkd_publishGithubRelease": true,
   "dkd_channel": "web-and-github",
   "dkd_requestedAt": "2026-09-12",
-  "dkd_attempt": 4,
-  "dkd_reason": "Per-login seasonal payment ACELE ET notice fix and synchronized Web/Android release"
+  "dkd_attempt": 5,
+  "dkd_reason": "Stable Final progress, tighter visible-obstacle collision, smaller drive tools, persistent account progress and new-registration-only seasonal notice"
 }
