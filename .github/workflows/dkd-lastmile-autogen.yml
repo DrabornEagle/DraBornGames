@@ -10,6 +10,7 @@ on:
       - 'LastMile/tests/**'
       - 'LastMile/scripts/dkd-build-game.mjs'
       - 'LastMile/scripts/dkd-build-game-v07.mjs'
+      - 'LastMile/supabase/functions/dkd-last-mile-api/**'
       - 'LastMile/package.json'
       - 'LastMile/app.json'
       - '.github/workflows/dkd-lastmile-autogen.yml'
