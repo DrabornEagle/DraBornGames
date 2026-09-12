@@ -54,13 +54,13 @@ dkd_test('new reward selection visit includes the requested seasonal reward noti
   dkd_assert.match(dkd_hotfix, /String\(dkd_page \|\| ''\) === 'choose'/);
 });
 
-dkd_test('receipt persistence has an explicit path and production API reports v0.7.4', () => {
+dkd_test('receipt persistence has an explicit path and current API reports v0.7.5', () => {
   dkd_assert.match(dkd_migration, /alter column dkd_receipt_path set default 'database:\/\/receipt'/);
   dkd_assert.match(dkd_migration, /'database:\/\/receipt',left\(\$3,4200000\)/);
-  dkd_assert.match(dkd_edge, /const dkd_version = '0\.7\.4'/);
+  dkd_assert.match(dkd_edge, /const dkd_version = '0\.7\.5'/);
 });
 
-dkd_test('README and Termux guide are current and do not build an APK', () => {
+dkd_test('README and Termux guide preserve the v0.7.4 payment documentation and do not build an APK', () => {
   dkd_assert.match(dkd_readme, /Last Mile — v0\.7\.4/);
   dkd_assert.match(dkd_readme, /Android `versionCode 1`/);
   dkd_assert.match(dkd_readme, /APK\/AAB üretmez/);
