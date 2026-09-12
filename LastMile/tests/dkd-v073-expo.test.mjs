@@ -63,8 +63,8 @@ test('v0.7.3 drive music button toggles complete game audio', () => {
   assert.match(dkd_v073, /Oyun sesleri açıldı/);
 });
 
-test('plate bootstrap keeps its public RPC while the compatibility API remains deployed', () => {
-  assert.match(dkd_edge, /const dkd_version = '0\.7\.4'/);
+test('plate bootstrap keeps its public RPC while the v0.7.5 compatibility API remains deployed', () => {
+  assert.match(dkd_edge, /const dkd_version = '0\.7\.5'/);
   assert.match(dkd_edge, /rpc\('dkd_lastmile_set_plate'/);
   assert.doesNotMatch(dkd_edge, /schema\('Last-Mile'\)\.from\('dkd_lastmile_profiles'\)/);
   assert.match(dkd_plateMigration, /function public\.dkd_lastmile_set_plate/);
