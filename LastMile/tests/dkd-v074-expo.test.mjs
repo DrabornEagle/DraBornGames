@@ -10,12 +10,12 @@ const dkd_app = JSON.parse(await dkd_read('app.json'));
 const dkd_migration = await dkd_read('supabase/migrations/20260911221000_dkd_lastmile_v074_season_payments.sql');
 const dkd_publicNoteMigration = await dkd_read('supabase/migrations/20260911224000_dkd_lastmile_v074_public_payment_note.sql');
 
-test('v0.7.4 stays on Android versionCode 1 and Web/Android synchronized release', () => {
-  assert.equal(dkd_app.expo.version, '0.7.4');
+test('v0.7.5 stays on Android versionCode 1 and Web/Android synchronized release', () => {
+  assert.equal(dkd_app.expo.version, '0.7.5');
   assert.equal(dkd_app.expo.android.versionCode, 1);
   assert.equal(dkd_app.expo.extra.dkd_expoGoTestVersion, '57.0.9');
   assert.equal(dkd_app.expo.extra.dkd_expoCandidateOnly, false);
-  assert.equal(dkd_app.expo.extra.dkd_webPublishedVersion, '0.7.4');
+  assert.equal(dkd_app.expo.extra.dkd_webPublishedVersion, '0.7.5');
   assert.equal(dkd_app.expo.extra.dkd_releaseChannel, 'web-and-github-release');
 });
 
