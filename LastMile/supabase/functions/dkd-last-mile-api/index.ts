@@ -8,6 +8,14 @@ const dkd_cors = {
   'Content-Type': 'application/json; charset=utf-8',
 };
 const dkd_json = (dkd_body: unknown, dkd_status = 200) => new Response(JSON.stringify(dkd_body), { status: dkd_status, headers: dkd_cors });
+const dkd_errorText = (dkd_issue: unknown) => {
+  if (dkd_issue instanceof Error) return dkd_issue.message || 'server_error';
+  if (dkd_issue && typeof dkd_issue === 'object') {
+    const dkd_record = dkd_issue as Record<string, unknown>;
+    return String(dkd_record.message ?? dkd_record.details ?? dkd_record.hint ?? dkd_record.code ?? 'server_error');
+  }
+  return String(dkd_issue || 'server_error');
+};
 const dkd_plate = (dkd_value: unknown) => {
   const dkd_text = String(dkd_value ?? '').trim().toLocaleUpperCase('tr-TR').replace(/\s+/g, ' ');
   return /^[0-9]{2} [A-ZÇĞİÖŞÜ]{1,3} [0-9]{2,4}$/u.test(dkd_text) ? dkd_text : '';
@@ -113,6 +121,6 @@ Deno.serve(async (dkd_request: Request) => {
     return dkd_json({ dkd_error: 'unknown_action' }, 400);
   } catch (dkd_error) {
     console.error('dkd-last-mile-api', dkd_error);
-    return dkd_json({ dkd_error: dkd_error instanceof Error ? dkd_error.message : 'server_error' }, 500);
+    return dkd_json({ dkd_error: dkd_errorText(dkd_error) }, 500);
   }
 });
