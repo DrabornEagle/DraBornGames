@@ -2,7 +2,7 @@
   "expo": {
     "name": "DraBornGo / Son Kilometre",
     "slug": "dkd-draborngo-lastmile",
-    "version": "0.7.4",
+    "version": "0.7.5",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#080e15",
@@ -24,7 +24,7 @@
       ]
     },
     "extra": {
-      "dkd_versionLabel": "v0.7.4",
+      "dkd_versionLabel": "v0.7.5",
       "dkd_demo": false,
       "dkd_backendEnabled": true,
       "dkd_adminPreviewOnly": false,
@@ -37,8 +37,11 @@
       "dkd_seasonPaymentGate": true,
       "dkd_googlePlayPrep": false,
       "dkd_webUrl": "https://www.draborneagle.com/DraBornGames/LastMile/",
-      "dkd_webPublishedVersion": "0.7.4",
-      "dkd_expoCandidateOnly": false
+      "dkd_webPublishedVersion": "0.7.5",
+      "dkd_expoCandidateOnly": false,
+      "dkd_durableCloudSave": true,
+      "dkd_eventJournal": true,
+      "dkd_driveCheckpointSeconds": 5
     },
     "plugins": [
       "expo-sharing"
