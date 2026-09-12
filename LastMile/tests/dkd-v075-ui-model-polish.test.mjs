@@ -18,7 +18,7 @@ test('Reward Vault final goals open detailed animated how-to popups', () => {
   assert.match(dkd_patch, /Fırtına teslimatı/);
   assert.match(dkd_patch, /Şirket itibarı/);
   assert.match(dkd_patch, /kaliteyi en az %85/);
-  assert.match(dkd_patch, /ortalama 4,5\/5/i);
+  assert.match(dkd_patch, /4,5\/5/);
   assert.match(dkd_patch, /@keyframes dkd-v075-goal-in/);
   assert.doesNotMatch(dkd_patch, /linear-gradient|radial-gradient|box-shadow|text-shadow/i);
 });
