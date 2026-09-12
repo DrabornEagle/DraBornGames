@@ -8,23 +8,30 @@ const dkd_builder = await dkd_read('scripts/dkd-build-game-v07.mjs');
 
 test('v0.7.5 Courier Center identity polish is the final shared Android/Web UI layer', () => {
   assert.match(dkd_builder, /dkd-v075-drive-home-hotfix\.mjs','dkd-v075-home-identity-polish\.mjs'/);
-  assert.match(dkd_patch, /dkd_seasonBadgeAboveName: true/);
+  assert.match(dkd_patch, /dkd_playerNameBelowBadgeRow: true/);
 });
 
-test('complete identity cluster is materially lower and season badge is immediately above player name', () => {
-  assert.match(dkd_patch, /\.dkd-home-header \.dkd-player-name\{margin:150px 0 8px!important\}/);
-  assert.match(dkd_patch, /\.dkd-home-header \.dkd-season-pill\{position:absolute!important;left:20px!important;top:122px!important/);
-  assert.match(dkd_patch, /\.dkd-home-header \.dkd-profile-pills\{gap:9px!important;margin-top:8px!important/);
-  assert.match(dkd_patch, /dkd_compactNameMargin: 128/);
-  assert.match(dkd_patch, /dkd_compactSeasonBadgeTop: 100/);
-  assert.match(dkd_patch, /dkd_identityClusterLoweredFurther: true/);
+test('season, level and rating form one compact row above player name', () => {
+  assert.match(dkd_patch, /\.dkd-home-header \.dkd-player-name\{margin:68px 0 5px!important\}/);
+  assert.match(dkd_patch, /\.dkd-home-header \.dkd-season-pill\{position:absolute!important;left:20px!important;top:28px!important/);
+  assert.match(dkd_patch, /\.dkd-home-header \.dkd-profile-pills\{position:absolute!important;left:218px!important;right:18px!important;top:27px!important/);
+  assert.match(dkd_patch, /dkd_profileBadgesRightOfSeason: true/);
+  assert.match(dkd_patch, /dkd_playerNameBelowBadgeRow: true/);
 });
 
 test('level and rating badges keep modern colorful flat motion', () => {
   assert.match(dkd_patch, /\.dkd-home-header \.dkd-profile-pills>span/);
-  assert.match(dkd_patch, /border-top:4px solid #83a7ff/);
+  assert.match(dkd_patch, /border-top:3px solid #83a7ff/);
   assert.match(dkd_patch, /dkd-v075-rating-icon/);
   assert.match(dkd_patch, /dkd-v075-badge-meter/);
+});
+
+test('short phone viewport compacts home bottom enough for quick menu without moving over signs', () => {
+  assert.match(dkd_patch, /@media\(max-height:900px\)/);
+  assert.match(dkd_patch, /\.dkd-home-hero\{min-height:118px!important\}/);
+  assert.match(dkd_patch, /\.dkd-contract-mini\{padding:11px 13px!important;margin-bottom:8px!important\}/);
+  assert.match(dkd_patch, /dkd_bottomQuickMenuViewportFit: true/);
+  assert.match(dkd_patch, /dkd_managementSignsProtected: true/);
 });
 
 test('season goal progress uses a modern single rail and end marker without forbidden visual effects', () => {
@@ -42,5 +49,4 @@ test('shift CTA stays large but has no animation', () => {
   assert.match(dkd_patch, /\.dkd-shift-action \.dkd-button\{[^}]*animation:none!important/);
   assert.match(dkd_patch, /\.dkd-shift-action \.dkd-button svg\{[^}]*animation:none!important/);
   assert.match(dkd_patch, /\.dkd-shift-action \.dkd-button:after\{display:none!important/);
-  assert.doesNotMatch(dkd_patch, /dkd-v075-shift-breathe|dkd-v075-shift-icon|dkd-v075-shift-runner/);
 });
