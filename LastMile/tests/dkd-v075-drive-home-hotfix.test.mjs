@@ -19,7 +19,8 @@ test('rain ambience is reduced while preserving the weather effects bus', () => 
 
 test('speaker tool immediately above the phone becomes a persistent sound-effects toggle', () => {
   assert.match(dkd_patch, /data-dkd-action=\"dkd-v075-effects-toggle\"/);
-  assert.match(dkd_patch, /data-dkd-action=\\\"horn\\\"/);
+  assert.match(dkd_patch, /dkd_html = dkd_html\.replace/);
+  assert.match(dkd_patch, /horn/);
   assert.match(dkd_patch, /dkd_state\.dkd_settings\.dkd_effects = 0/);
   assert.match(dkd_patch, /dkd_audio\.dkd_effects\.gain\.setTargetAtTime/);
   assert.match(dkd_patch, /this\.dkd_save\(\)/);
