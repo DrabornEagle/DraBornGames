@@ -11,6 +11,17 @@ dkd_initTraffic = function dkd_v04RouteFocusedTraffic(dkd_run, dkd_graph, dkd_co
     : Math.max(dkd_requestedCount, 54);
   dkd_v04RouteTrafficPreviousInit(dkd_run, dkd_graph, dkd_initialCount);
 
+  // The first delivery teaches steering and route following. Static roadwork used to be
+  // generated 1.15–2.15 m from the route centre, so a wide barrier hitbox could overlap
+  // the navigation-arrow line even when the visible object was outside the camera view.
+  // Keep tutorial traffic, but do not generate static collision obstacles for this run.
+  if (dkd_isTutorial) {
+    dkd_run.dkd_obstacles = [];
+    if (typeof dkd_v04TrafficRouteKey === 'function') {
+      dkd_run.dkd_obstacleRouteKey = dkd_v04TrafficRouteKey(dkd_run);
+    }
+  }
+
   const dkd_startPosition = Array.isArray(dkd_run?.dkd_position) ? [...dkd_run.dkd_position] : null;
   if (dkd_isTutorial && dkd_startPosition && Array.isArray(dkd_run.dkd_traffic)) {
     dkd_run.dkd_traffic = dkd_run.dkd_traffic.filter(dkd_car => {
