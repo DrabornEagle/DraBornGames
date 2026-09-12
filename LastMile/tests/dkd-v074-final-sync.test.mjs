@@ -60,10 +60,10 @@ dkd_test('receipt persistence has an explicit path and current API reports v0.7.
   dkd_assert.match(dkd_edge, /const dkd_version = '0\.7\.5'/);
 });
 
-dkd_test('README and Termux guide are current at v0.7.5 and do not build an APK', () => {
+dkd_test('README and Termux guide are current at v0.7.5 and normal development does not auto-build an APK', () => {
   dkd_assert.match(dkd_readme, /Last Mile — v0\.7\.5/);
   dkd_assert.match(dkd_readme, /Android `versionCode 1`/);
-  dkd_assert.match(dkd_readme, /APK\/AAB üretmez/);
+  dkd_assert.match(dkd_readme, /normal geliştirme checkpoint'leri APK üretmez/);
   dkd_assert.match(dkd_readme, /tam ekran dekont görüntüleyici/);
   dkd_assert.match(dkd_readme, /dkd_lastmile_game_events/);
   dkd_assert.match(dkd_readme, /dkd_lastmile_season_order_stats/);
