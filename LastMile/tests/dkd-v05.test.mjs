@@ -11,11 +11,11 @@ const dkd_build = dkd_read('scripts/dkd-build-game.mjs');
 const dkd_package = JSON.parse(dkd_read('package.json'));
 const dkd_app = JSON.parse(dkd_read('app.json'));
 
-test('v0.7.4 is active while the v0.5 runtime layer remains bundled', () => {
-  assert.equal(dkd_package.version, '0.7.4');
-  assert.equal(dkd_app.expo.version, '0.7.4');
+test('v0.7.5 is active while the v0.5 runtime layer remains bundled', () => {
+  assert.equal(dkd_package.version, '0.7.5');
+  assert.equal(dkd_app.expo.version, '0.7.5');
   assert.equal(dkd_app.expo.android.versionCode, 1);
-  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.7.4');
+  assert.equal(dkd_app.expo.extra.dkd_versionLabel, 'v0.7.5');
   assert.match(dkd_build, /dkd_version = 'v0\.6\.1'/);
   assert.match(dkd_build, /SON KİLOMETRE · v0\.6\.1/);
   assert.match(dkd_build, /dkd-v05-style\.mjs/);
