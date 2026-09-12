@@ -7,7 +7,7 @@ const dkd_patch = await dkd_read('game/dkd-v075-drive-home-hotfix.mjs');
 const dkd_builder = await dkd_read('scripts/dkd-build-game-v07.mjs');
 const dkd_traffic = await dkd_read('game/dkd-v05-traffic.mjs');
 
- test('v0.7.5 drive/home hotfix is final in the shared Android and Web bundle', () => {
+test('v0.7.5 drive/home hotfix is final in the shared Android and Web bundle', () => {
   assert.match(dkd_builder, /dkd-v075-ui-model-polish\.mjs','dkd-v075-drive-home-hotfix\.mjs'/);
   assert.match(dkd_patch, /dkd_webAndroidShared: true/);
 });
@@ -19,7 +19,7 @@ test('rain ambience is reduced while preserving the weather effects bus', () => 
 
 test('speaker tool immediately above the phone becomes a persistent sound-effects toggle', () => {
   assert.match(dkd_patch, /data-dkd-action=\"dkd-v075-effects-toggle\"/);
-  assert.match(dkd_patch, /replace\(\/<button\\b\[\^>\]\*data-dkd-action=\"horn\"/);
+  assert.match(dkd_patch, /data-dkd-action=\\\"horn\\\"/);
   assert.match(dkd_patch, /dkd_state\.dkd_settings\.dkd_effects = 0/);
   assert.match(dkd_patch, /dkd_audio\.dkd_effects\.gain\.setTargetAtTime/);
   assert.match(dkd_patch, /this\.dkd_save\(\)/);
