@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
+// Final v0.7.5 source checkpoint: shared Android/Web navigation treatment; no APK request.
 const dkd_read = dkd_path => readFile(new URL(`../${dkd_path}`, import.meta.url), 'utf8');
 const dkd_app = JSON.parse(await dkd_read('app.json')).expo;
 const dkd_releaseWorkflow = await readFile(new URL('../../.github/workflows/dkd-lastmile-android-signed-release.yml', import.meta.url), 'utf8');
