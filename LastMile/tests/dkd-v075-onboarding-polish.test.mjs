@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
+// Final v0.7.5 checkpoint after deterministic Android/Web bundle regeneration; no APK build requested.
 const dkd_read = dkd_path => readFile(new URL(`../${dkd_path}`, import.meta.url), 'utf8');
 const dkd_patch = await dkd_read('game/dkd-v075-onboarding-polish.mjs');
 const dkd_builder = await dkd_read('scripts/dkd-build-game-v07.mjs');
