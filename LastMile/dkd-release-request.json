@@ -4,7 +4,7 @@
   "dkd_format": "apk",
   "dkd_publishGithubRelease": true,
   "dkd_channel": "web-and-github",
-  "dkd_requestedAt": "2026-09-13",
-  "dkd_attempt": 11,
-  "dkd_reason": "Last Mine deterministic launcher and branded startup generated before prebuild; compact Season 01 + level/rating row; restored bottom quick menu; synchronized Android/Web shared source"
+  "dkd_requestedAt": "2026-09-13T04:39:00+03:00",
+  "dkd_attempt": 12,
+  "dkd_reason": "Restore previous Courier Center wallet; restore previous New Beginning company-registration design while collapsing only large spacer gaps; restore database receipt previews and fullscreen receipt viewer; keep collapsible payment categories and admin payment deletion; synchronize Android and Web and refresh Vardiyan Cebinde APK."
 }
