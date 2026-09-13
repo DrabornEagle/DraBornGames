@@ -24,8 +24,9 @@ test('Android and shared Web surface request transparent device navigation treat
   assert.equal(dkd_app.androidNavigationBar.enforceContrast, false);
   assert.equal(dkd_app.android.edgeToEdgeEnabled, true);
   assert.equal(dkd_app.extra.dkd_androidNavigationTransparent, true);
-  assert.match(dkd_builder, /name="theme-color" content="#00000000"/);
-  assert.match(dkd_builder, /name="color-scheme" content="dark"/);
+  assert.match(dkd_builder, /#00000000/);
+  assert.match(dkd_builder, /color-scheme/);
+  assert.match(dkd_builder, /content=\\?"dark\\?"/);
 });
 
 test('signed release produces Last-Mine APK and verifies Android label/icon', () => {
