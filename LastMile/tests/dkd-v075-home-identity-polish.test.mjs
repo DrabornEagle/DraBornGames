@@ -6,28 +6,48 @@ const dkd_read = dkd_path => readFile(new URL(`../${dkd_path}`, import.meta.url)
 const dkd_patch = await dkd_read('game/dkd-v075-home-identity-polish.mjs');
 const dkd_builder = await dkd_read('scripts/dkd-build-game-v07.mjs');
 
-test('v0.7.5 Courier Center identity polish is the final shared Android/Web UI layer', () => {
+test('v0.7.5 Courier Center identity polish remains the final shared Android/Web UI layer', () => {
   assert.match(dkd_builder, /dkd-v075-drive-home-hotfix\.mjs','dkd-v075-home-identity-polish\.mjs'/);
-  assert.match(dkd_patch, /dkd_playerNameBelowBadgeRow: true/);
+  assert.match(dkd_patch, /dkd_seasonLevelRatingSingleRow: true/);
+  assert.match(dkd_patch, /dkd_badgeRowCenteredBelowCourierSign: true/);
 });
 
-test('season, level and rating form one compact row above player name', () => {
-  assert.match(dkd_patch, /\.dkd-home-header \.dkd-player-name\{margin:68px 0 5px!important\}/);
-  assert.match(dkd_patch, /\.dkd-home-header \.dkd-season-pill\{position:absolute!important;left:20px!important;top:28px!important/);
-  assert.match(dkd_patch, /\.dkd-home-header \.dkd-profile-pills\{position:absolute!important;left:218px!important;right:18px!important;top:27px!important/);
-  assert.match(dkd_patch, /dkd_profileBadgesRightOfSeason: true/);
-  assert.match(dkd_patch, /dkd_playerNameBelowBadgeRow: true/);
+test('season, level and rating are moved into one centered lower badge row', () => {
+  assert.match(dkd_patch, /\.dkd-v075-badge-row\{position:absolute!important;left:50%!important;top:188px!important/);
+  assert.match(dkd_patch, /transform:translateX\(-50%\)!important/);
+  assert.match(dkd_patch, /dkd_row\.appendChild\(dkd_season\)/);
+  assert.match(dkd_patch, /dkd_row\.appendChild\(dkd_pills\)/);
+  assert.match(dkd_patch, /dkd_badgeRowTop: 188/);
 });
 
-test('level and rating badges keep modern colorful flat motion', () => {
-  assert.match(dkd_patch, /\.dkd-home-header \.dkd-profile-pills>span/);
+test('level and rating badges remain colorful flat controls with the requested actions', () => {
+  assert.match(dkd_patch, /dkd_levelBadge\.dataset\.dkdAction = 'v075-level-detail'/);
+  assert.match(dkd_patch, /dkd_ratingBadge\.dataset\.dkdAction = 'reputation'/);
+  assert.match(dkd_patch, /dkd_levelBadgeOpensDetail: true/);
+  assert.match(dkd_patch, /dkd_ratingBadgeOpensReputation: true/);
   assert.match(dkd_patch, /border-top:3px solid #83a7ff/);
   assert.match(dkd_patch, /dkd-v075-rating-icon/);
   assert.match(dkd_patch, /dkd-v075-badge-meter/);
 });
 
-test('short phone viewport compacts home bottom enough for quick menu without moving over signs', () => {
+test('level badge opens a detailed modern information sheet', () => {
+  assert.match(dkd_patch, /function dkd_v075HomeIdentityOpenLevel/);
+  assert.match(dkd_patch, /BİR SONRAKİ SEVİYE/);
+  assert.match(dkd_patch, /KALAN XP/);
+  assert.match(dkd_patch, /ZAMANINDA/);
+  assert.match(dkd_patch, /HASARSIZ/);
+  assert.match(dkd_patch, /SEVİYE NASIL YÜKSELİR\?/);
+  assert.match(dkd_patch, /dkd_v075HomeIdentityOpenLevel\(this\)/);
+});
+
+test('vehicle badge sits immediately above the reward vault control', () => {
+  assert.match(dkd_patch, /\.dkd-home-hero \.dkd-vehicle-label\{top:auto!important;right:18px!important;bottom:68px!important/);
+  assert.match(dkd_patch, /dkd_vehicleBadgeAboveVault: true/);
+});
+
+test('short phone viewport keeps lower row and complete quick menu visible', () => {
   assert.match(dkd_patch, /@media\(max-height:900px\)/);
+  assert.match(dkd_patch, /\.dkd-v075-badge-row\{top:170px!important\}/);
   assert.match(dkd_patch, /\.dkd-home-hero\{min-height:118px!important\}/);
   assert.match(dkd_patch, /\.dkd-contract-mini\{padding:11px 13px!important;margin-bottom:8px!important\}/);
   assert.match(dkd_patch, /dkd_bottomQuickMenuViewportFit: true/);
