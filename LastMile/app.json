@@ -17,9 +17,15 @@
       "barStyle": "light-content",
       "translucent": false
     },
+    "androidNavigationBar": {
+      "backgroundColor": "#00000000",
+      "barStyle": "light-content",
+      "enforceContrast": false
+    },
     "android": {
       "package": "com.draborneagle.lastmile",
       "versionCode": 1,
+      "edgeToEdgeEnabled": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/dkd-last-mine-icon.png",
         "backgroundColor": "#080e15"
@@ -58,7 +64,8 @@
       "dkd_eventJournal": true,
       "dkd_driveCheckpointSeconds": 5,
       "dkd_androidDisplayName": "Last Mine",
-      "dkd_androidBrandedSplash": true
+      "dkd_androidBrandedSplash": true,
+      "dkd_androidNavigationTransparent": true
     },
     "plugins": [
       "expo-sharing"
