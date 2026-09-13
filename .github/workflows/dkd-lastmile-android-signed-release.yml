@@ -42,10 +42,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
-
       - name: Read shared version
         run: echo "DKD_VERSION=$(node -p "require('./app.json').expo.version")" >> "$GITHUB_ENV"
-
       - name: Require permanent signing identity
         env:
           DKD_LASTMILE_KEYSTORE_B64: ${{ secrets.DKD_LASTMILE_KEYSTORE_B64 }}
@@ -57,18 +55,17 @@ jobs:
           for dkd_secret in DKD_LASTMILE_KEYSTORE_B64 DKD_LASTMILE_KEYSTORE_PASSWORD DKD_LASTMILE_KEY_ALIAS DKD_LASTMILE_KEY_PASSWORD; do
             test -n "${!dkd_secret:-}" || { echo "$dkd_secret secret eksik."; exit 20; }
           done
-
       - uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: npm
           cache-dependency-path: LastMile/package-lock.json
-
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
-
+      - name: Generate deterministic Last Mine Android icon
+        run: python3 scripts/dkd-generate-android-icon.py
       - name: Verify JavaScript release state
         run: |
           npm ci --no-audit --no-fund
@@ -76,16 +73,13 @@ jobs:
           npm test
           npm run typecheck
           EXPO_OFFLINE=1 npx expo install --check
-
       - name: Remove development client from standalone release
         run: npm uninstall expo-dev-client --no-audit --no-fund
-
       - name: Generate Android project
         env:
           CI: '1'
           NODE_ENV: production
         run: npx expo prebuild --platform android --clean
-
       - name: Restore and verify permanent key
         env:
           DKD_LASTMILE_KEYSTORE_B64: ${{ secrets.DKD_LASTMILE_KEYSTORE_B64 }}
@@ -95,7 +89,6 @@ jobs:
           printf '%s' "$DKD_LASTMILE_KEYSTORE_B64" | base64 --decode > "$DKD_LASTMILE_KEYSTORE_PATH"
           chmod 600 "$DKD_LASTMILE_KEYSTORE_PATH"
           keytool -list -keystore "$DKD_LASTMILE_KEYSTORE_PATH" -storepass "$DKD_LASTMILE_KEYSTORE_PASSWORD" -alias "$DKD_LASTMILE_KEY_ALIAS" >/dev/null
-
       - name: Force generated Android signing config to permanent key
         run: |
           python3 - <<'PY'
@@ -114,7 +107,6 @@ jobs:
               dkd_source = dkd_source.replace(dkd_old, dkd_new, 1)
           dkd_file.write_text(dkd_source)
           PY
-
       - name: Build signed Android output
         env:
           DKD_LASTMILE_KEYSTORE_PASSWORD: ${{ secrets.DKD_LASTMILE_KEYSTORE_PASSWORD }}
@@ -132,7 +124,6 @@ jobs:
             ./gradlew :app:bundleRelease --no-daemon --stacktrace -PreactNativeArchitectures=arm64-v8a
             cp app/build/outputs/bundle/release/app-release.aab ../dist-android/Last-Mine-v${DKD_VERSION}-release-vc1.aab
           fi
-
       - name: Verify signed APK version name and icon
         if: env.DKD_OUTPUT_FORMAT == 'apk'
         run: |
@@ -147,7 +138,6 @@ jobs:
           grep -q "application-label:'Last Mine'" dist-android/BUILD-INFO.txt
           grep -q "application-icon-" dist-android/BUILD-INFO.txt
           if grep -q "application-debuggable" dist-android/BUILD-INFO.txt; then exit 46; fi
-
       - name: Record hashes and certificate identity
         env:
           DKD_LASTMILE_KEYSTORE_PASSWORD: ${{ secrets.DKD_LASTMILE_KEYSTORE_PASSWORD }}
@@ -157,7 +147,6 @@ jobs:
           sha256sum dist-android/Last-Mine-v${DKD_VERSION}-release-vc1.* > dist-android/SHA256SUMS.txt
           keytool -list -v -keystore "$DKD_LASTMILE_KEYSTORE_PATH" -storepass "$DKD_LASTMILE_KEYSTORE_PASSWORD" -alias "$DKD_LASTMILE_KEY_ALIAS" | grep -E 'Alias name:|SHA256:' > dist-android/SIGNING-IDENTITY.txt
           printf 'appName=Last Mine\nversionName=%s\nversionCode=1\nsourceCommit=%s\ndistribution=web-and-github\n' "$DKD_VERSION" "$GITHUB_SHA" > dist-android/RELEASE-INFO.txt
-
       - name: Upload signed output
         uses: actions/upload-artifact@v4
         with:
@@ -165,7 +154,6 @@ jobs:
           path: LastMile/dist-android/*
           if-no-files-found: error
           retention-days: 30
-
       - name: Publish APK release for website download
         if: env.DKD_OUTPUT_FORMAT == 'apk' && (github.event_name == 'push' || inputs.dkd_publish_github_release)
         env:
