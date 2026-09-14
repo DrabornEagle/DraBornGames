@@ -4,8 +4,8 @@
   "dkd_format": "apk",
   "dkd_publishGithubRelease": true,
   "dkd_channel": "web-and-github",
-  "dkd_requestedAt": "2026-09-14T11:14:00+03:00",
-  "dkd_attempt": 15,
-  "dkd_sourceCommit": "00c97772c2a5a0ca92e81ea308c40c39f2c5ff0d",
-  "dkd_reason": "Replace the Android 12 system splash adaptive-icon/grid with a forced transparent starting icon; ship the new animated colorful Son Kilometre native loader; add the matching modern animated Web bootstrap loader; rebuild and republish the signed v0.7.5 APK and synchronize Vardiyan Cebinde."
+  "dkd_requestedAt": "2026-09-14T11:25:00+03:00",
+  "dkd_attempt": 16,
+  "dkd_sourceCommit": "77f575e0ae6e7536dc128f5839ac23bf9c897ff3",
+  "dkd_reason": "Final startup fix: Android 12 framework splash attributes use a transparent icon and dark background without the adaptive-icon grid; native loader is the modern colorful animated Son Kilometre card; legacy Web loader is disabled and replaced by the matching animated bootstrap; rebuild signed APK and synchronize Vardiyan Cebinde."
 }
