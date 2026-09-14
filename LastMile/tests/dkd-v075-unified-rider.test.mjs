@@ -18,10 +18,12 @@ test('all garage vehicle families receive the City 50 premium courier', () => {
   assert.match(dkd_source, /dkd_city50_v07_clean_scooter_premium_rider/);
 });
 
-test('vehicle accessories are restored after old courier removal', () => {
+test('vehicle accessories are restored without duplicating base motorcycle geometry', () => {
   assert.match(dkd_source, /dkd_v075_phone_mount/);
   assert.match(dkd_source, /dkd_v075_vehicle_plate/);
-  assert.match(dkd_source, /dkd_v075_motorcycle_tank/);
+  assert.match(dkd_source, /including tank, fork, cargo and wheels/);
+  assert.doesNotMatch(dkd_source, /dkd_v075_motorcycle_tank/);
+  assert.match(dkd_source, /dkd_preserveVehicleGeometry: true/);
 });
 
 test('unified rider ships in the common Android and Web bundle', () => {
