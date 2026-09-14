@@ -4,8 +4,8 @@
   "dkd_format": "apk",
   "dkd_publishGithubRelease": true,
   "dkd_channel": "web-and-github",
-  "dkd_requestedAt": "2026-09-14T10:42:00+03:00",
-  "dkd_attempt": 14,
-  "dkd_sourceCommit": "691d85059583e87950ed7333e9fcd9b3d07a40a6",
-  "dkd_reason": "Final v0.7.5 package: clean Android system splash without guide/grid flash; modern colorful Son Kilometre loader; preserve each vehicle geometry while removing obsolete courier layers; use the İlk Motorum premium courier consistently across the full garage; synchronize Android/Web and refresh Vardiyan Cebinde signed APK."
+  "dkd_requestedAt": "2026-09-14T11:14:00+03:00",
+  "dkd_attempt": 15,
+  "dkd_sourceCommit": "00c97772c2a5a0ca92e81ea308c40c39f2c5ff0d",
+  "dkd_reason": "Replace the Android 12 system splash adaptive-icon/grid with a forced transparent starting icon; ship the new animated colorful Son Kilometre native loader; add the matching modern animated Web bootstrap loader; rebuild and republish the signed v0.7.5 APK and synchronize Vardiyan Cebinde."
 }
