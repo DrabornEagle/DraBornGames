@@ -61,8 +61,10 @@ for dkd_styles in dkd_res.glob('values*/styles.xml'):
         dkd_styles.write_text(dkd_text, encoding='utf-8')
         dkd_changed += 1
 
-# Expo normally creates the SplashScreen style. If its current template did not emit an
-# explicit animated-icon item, add one so Android cannot fall back to the launcher icon.
+# Expo's generated splash theme may not declare the Android 12 framework attributes.
+# In that case Android falls back to the adaptive launcher icon, which is exactly the
+# white safe-zone/grid screen seen on device. Use *framework-qualified* android: attrs;
+# unqualified names are app/library attrs and fail AAPT resource linking.
 for dkd_styles in dkd_res.glob('values*/styles.xml'):
     dkd_text = dkd_styles.read_text(encoding='utf-8')
     if 'SplashScreen' not in dkd_text or 'windowSplashScreenAnimatedIcon' in dkd_text:
@@ -72,8 +74,9 @@ for dkd_styles in dkd_res.glob('values*/styles.xml'):
     if not dkd_match:
         continue
     dkd_body = dkd_match.group(2)
-    dkd_body += '\n    <item name="windowSplashScreenAnimatedIcon">@drawable/dkd_transparent_splash</item>\n'
-    dkd_body += '    <item name="windowSplashScreenBackground">@color/dkd_startup_background</item>\n'
+    dkd_body += '\n    <item name="android:windowSplashScreenAnimatedIcon">@drawable/dkd_transparent_splash</item>\n'
+    dkd_body += '    <item name="android:windowSplashScreenBackground">@color/dkd_startup_background</item>\n'
+    dkd_body += '    <item name="android:windowSplashScreenIconBackgroundColor">@android:color/transparent</item>\n'
     dkd_text = dkd_text[:dkd_match.start()] + dkd_match.group(1) + dkd_body + dkd_match.group(3) + dkd_text[dkd_match.end():]
     dkd_styles.write_text(dkd_text, encoding='utf-8')
     dkd_changed += 1
@@ -93,5 +96,7 @@ dkd_style_dump = '\n'.join(dkd_file.read_text(encoding='utf-8') for dkd_file in 
 for dkd_match in re.finditer(r'<item\s+name="(?:android:)?windowSplashScreenAnimatedIcon"\s*>(.*?)</item>', dkd_style_dump, re.S):
     if '@drawable/dkd_transparent_splash' not in dkd_match.group(1):
         raise SystemExit(f'Visible Android splash icon remains: {dkd_match.group(1).strip()}')
+if 'name="windowSplashScreenAnimatedIcon"' in dkd_style_dump:
+    raise SystemExit('Unqualified splash attribute remains; Android framework namespace is required.')
 
-print(f'DKD Android system splash fixed: transparent icon + dark background ({dkd_changed} style files patched).')
+print(f'DKD Android system splash fixed: transparent framework icon + dark background ({dkd_changed} style files patched).')
