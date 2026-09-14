@@ -80,6 +80,14 @@ jobs:
           CI: '1'
           NODE_ENV: production
         run: npx expo prebuild --platform android --clean
+      - name: Remove Android system splash grid icon
+        run: |
+          python3 scripts/dkd-fix-generated-android-splash.py
+          grep -R "windowSplashScreenAnimatedIcon.*dkd_transparent_splash" android/app/src/main/res/values* >/dev/null
+          if grep -R "windowSplashScreenAnimatedIcon" android/app/src/main/res/values* | grep -v "dkd_transparent_splash"; then
+            echo 'Görünür Android sistem splash ikonu kaldı.'
+            exit 47
+          fi
       - name: Restore and verify permanent key
         env:
           DKD_LASTMILE_KEYSTORE_B64: ${{ secrets.DKD_LASTMILE_KEYSTORE_B64 }}
