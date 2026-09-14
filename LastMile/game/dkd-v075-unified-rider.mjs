@@ -29,7 +29,7 @@ function dkd_v075RemoveLegacyRiderTail(dkd_scene, dkd_bike) {
   return dkd_tail.length > 0;
 }
 
-function dkd_v075RestoreVehicleAccessories(dkd_scene, dkd_bike, dkd_kind) {
+function dkd_v075RestoreVehicleAccessories(dkd_scene, dkd_bike) {
   const dkd_wearing = Array.isArray(dkd_scene.dkd_state?.dkd_wearing) ? dkd_scene.dkd_state.dkd_wearing : [];
   const dkd_brand = dkd_scene.dkd_state?.dkd_brand || {};
   if (dkd_wearing.includes('dkd_mount')) {
@@ -39,10 +39,6 @@ function dkd_v075RestoreVehicleAccessories(dkd_scene, dkd_bike, dkd_kind) {
   if (dkd_wearing.includes('dkd_plate') && dkd_brand.dkd_plate) {
     const dkd_plate = dkd_scene.dkd_sign(dkd_brand.dkd_plate, .38, '#18232b', .11);
     dkd_plate.material.color?.set?.('#f6f1d9'); dkd_plate.position.set(0, .70, -1.09); dkd_plate.rotation.y = Math.PI; dkd_plate.name = 'dkd_v075_vehicle_plate'; dkd_bike.add(dkd_plate);
-  }
-  if (dkd_kind === 'motorcycle') {
-    const dkd_tank = new dkd_three.Mesh(new dkd_three.SphereGeometry(.30, 16, 10), dkd_v07Mat(dkd_brand.dkd_color || '#e4ff5e', .28, .45));
-    dkd_tank.scale.set(1, .65, 1.6); dkd_tank.position.set(0, .96, .28); dkd_tank.name = 'dkd_v075_motorcycle_tank'; dkd_bike.add(dkd_tank);
   }
 }
 
@@ -69,8 +65,10 @@ dkd_Scene.prototype.dkd_buildBike = function dkd_v075UnifiedRiderBuild(dkd_kind 
   if (String(dkd_bike.name || '').includes('dkd_city50_v07_clean_scooter_premium_rider')) return dkd_bike;
 
   if (dkd_kind !== 'car' && dkd_kind !== 'van') {
+    // Base motorcycle/scooter geometry (including tank, fork, cargo and wheels) is before
+    // the company-logo boundary. Only accessories + the obsolete rider are after it.
     dkd_v075RemoveLegacyRiderTail(this, dkd_bike);
-    dkd_v075RestoreVehicleAccessories(this, dkd_bike, dkd_kind);
+    dkd_v075RestoreVehicleAccessories(this, dkd_bike);
   }
   dkd_v075AttachCanonicalRider(this, dkd_bike, dkd_kind);
   return dkd_bike;
@@ -79,6 +77,7 @@ dkd_Scene.prototype.dkd_buildBike = function dkd_v075UnifiedRiderBuild(dkd_kind 
 window.dkd_lastMileV075UnifiedRider = {
   dkd_city50CanonicalRider: true,
   dkd_removeLegacyRider: true,
+  dkd_preserveVehicleGeometry: true,
   dkd_allGarageVehicles: true,
   dkd_androidWebShared: true,
 };
