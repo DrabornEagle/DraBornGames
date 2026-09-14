@@ -8,7 +8,7 @@
     "userInterfaceStyle": "dark",
     "backgroundColor": "#080e15",
     "splash": {
-      "image": "./assets/dkd-last-mine-icon.png",
+      "image": "./assets/dkd-last-mine-splash-blank.png",
       "resizeMode": "contain",
       "backgroundColor": "#080e15"
     },
@@ -64,7 +64,8 @@
       "dkd_eventJournal": true,
       "dkd_driveCheckpointSeconds": 5,
       "dkd_androidDisplayName": "Last Mine",
-      "dkd_androidBrandedSplash": true,
+      "dkd_androidBrandedSplash": false,
+      "dkd_androidBlankSystemSplash": true,
       "dkd_androidNavigationTransparent": true
     },
     "plugins": [
