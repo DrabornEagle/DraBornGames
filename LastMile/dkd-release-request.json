@@ -4,8 +4,8 @@
   "dkd_format": "apk",
   "dkd_publishGithubRelease": true,
   "dkd_channel": "web-and-github",
-  "dkd_requestedAt": "2026-09-14T10:29:00+03:00",
-  "dkd_attempt": 13,
-  "dkd_sourceCommit": "4f6d86a4e8c35aeed068d7ba8ed0662f229fe4ac",
-  "dkd_reason": "Remove Android adaptive-icon grid flash with a blank system splash; replace bootstrap loader with the modern colorful Son Kilometre loading card; remove legacy courier overlap and use the İlk Motorum premium courier on every garage vehicle; synchronize Android/Web and refresh the Vardiyan Cebinde signed Release APK."
+  "dkd_requestedAt": "2026-09-14T10:42:00+03:00",
+  "dkd_attempt": 14,
+  "dkd_sourceCommit": "691d85059583e87950ed7333e9fcd9b3d07a40a6",
+  "dkd_reason": "Final v0.7.5 package: clean Android system splash without guide/grid flash; modern colorful Son Kilometre loader; preserve each vehicle geometry while removing obsolete courier layers; use the İlk Motorum premium courier consistently across the full garage; synchronize Android/Web and refresh Vardiyan Cebinde signed APK."
 }
