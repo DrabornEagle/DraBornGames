@@ -9,7 +9,9 @@ dkd_size = 1024
 dkd_dark = (8, 14, 21)
 dkd_lime = (228, 255, 94)
 dkd_mark = (13, 33, 46)
-dkd_output = pathlib.Path(__file__).resolve().parents[1] / 'assets' / 'dkd-last-mine-icon.png'
+dkd_assets = pathlib.Path(__file__).resolve().parents[1] / 'assets'
+dkd_output = dkd_assets / 'dkd-last-mine-icon.png'
+dkd_splash_output = dkd_assets / 'dkd-last-mine-splash-blank.png'
 
 
 def dkd_inside_round_square(dkd_x, dkd_y):
@@ -45,6 +47,14 @@ def dkd_chunk(dkd_name, dkd_payload):
     return struct.pack('>I', len(dkd_payload)) + dkd_name_bytes + dkd_payload + struct.pack('>I', binascii.crc32(dkd_name_bytes + dkd_payload) & 0xFFFFFFFF)
 
 
+def dkd_write_png(dkd_path, dkd_width, dkd_height, dkd_color_type, dkd_rows):
+    dkd_header = struct.pack('>IIBBBBB', dkd_width, dkd_height, 8, dkd_color_type, 0, 0, 0)
+    dkd_png = b'\x89PNG\r\n\x1a\n' + dkd_chunk('IHDR', dkd_header) + dkd_chunk('IDAT', zlib.compress(bytes(dkd_rows), 9)) + dkd_chunk('IEND', b'')
+    dkd_path.parent.mkdir(parents=True, exist_ok=True)
+    dkd_path.write_bytes(dkd_png)
+    return len(dkd_png)
+
+
 dkd_rows = bytearray()
 for dkd_y in range(dkd_size):
     dkd_rows.append(0)
@@ -56,8 +66,16 @@ for dkd_y in range(dkd_size):
             dkd_color = dkd_lime
         dkd_rows.extend(dkd_color)
 
-dkd_header = struct.pack('>IIBBBBB', dkd_size, dkd_size, 8, 2, 0, 0, 0)
-dkd_png = b'\x89PNG\r\n\x1a\n' + dkd_chunk('IHDR', dkd_header) + dkd_chunk('IDAT', zlib.compress(bytes(dkd_rows), 9)) + dkd_chunk('IEND', b'')
-dkd_output.parent.mkdir(parents=True, exist_ok=True)
-dkd_output.write_bytes(dkd_png)
-print(f'DKD Android icon ready: {dkd_output} · {len(dkd_png)} bytes')
+dkd_icon_bytes = dkd_write_png(dkd_output, dkd_size, dkd_size, 2, dkd_rows)
+
+# Android launch screen intentionally uses a transparent 4x4 asset. This prevents
+# the adaptive-icon guide/grid artwork from flashing before the real DKD loader.
+dkd_splash_rows = bytearray()
+for dkd_y in range(4):
+    dkd_splash_rows.append(0)
+    for dkd_x in range(4):
+        dkd_splash_rows.extend((0, 0, 0, 0))
+dkd_splash_bytes = dkd_write_png(dkd_splash_output, 4, 4, 6, dkd_splash_rows)
+
+print(f'DKD Android icon ready: {dkd_output} · {dkd_icon_bytes} bytes')
+print(f'DKD blank Android splash ready: {dkd_splash_output} · {dkd_splash_bytes} bytes')
