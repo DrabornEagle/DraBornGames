@@ -2,21 +2,21 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-// Final v0.7.5 source checkpoint: shared Android/Web navigation treatment; no APK request.
 const dkd_read = dkd_path => readFile(new URL(`../${dkd_path}`, import.meta.url), 'utf8');
 const dkd_app = JSON.parse(await dkd_read('app.json')).expo;
 const dkd_releaseWorkflow = await readFile(new URL('../../.github/workflows/dkd-lastmile-android-signed-release.yml', import.meta.url), 'utf8');
 const dkd_builder = await dkd_read('scripts/dkd-build-game.mjs');
 
-test('Android display name and launcher/splash use Last Mine branding', () => {
+test('Android display name and launcher use Last Mine branding while system splash stays clean', () => {
   assert.equal(dkd_app.name, 'Last Mine');
   assert.equal(dkd_app.icon, './assets/dkd-last-mine-icon.png');
   assert.equal(dkd_app.android.adaptiveIcon.foregroundImage, './assets/dkd-last-mine-icon.png');
   assert.equal(dkd_app.android.adaptiveIcon.backgroundColor, '#080e15');
-  assert.equal(dkd_app.splash.image, './assets/dkd-last-mine-icon.png');
+  assert.equal(dkd_app.splash.image, './assets/dkd-last-mine-splash-blank.png');
   assert.equal(dkd_app.splash.backgroundColor, '#080e15');
   assert.equal(dkd_app.extra.dkd_androidDisplayName, 'Last Mine');
-  assert.equal(dkd_app.extra.dkd_androidBrandedSplash, true);
+  assert.equal(dkd_app.extra.dkd_androidBrandedSplash, false);
+  assert.equal(dkd_app.extra.dkd_androidBlankSystemSplash, true);
 });
 
 test('Android and shared Web surface request transparent device navigation treatment', () => {
