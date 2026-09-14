@@ -13,12 +13,14 @@ test('Android startup splash uses the transparent generated asset instead of ico
   assert.match(dkd_generator, /0, 0, 0, 0/);
 });
 
-test('native bootstrap loader becomes a modern colorful Last Mile card', () => {
+test('native bootstrap loader becomes a modern colorful animated Last Mile card', () => {
   assert.match(dkd_polish, /function dkd_LoadingScreen/);
   assert.match(dkd_polish, /SON KİLOMETRE/);
   assert.match(dkd_polish, /Şehrin hazırlanıyor/);
-  assert.match(dkd_polish, /#70e0d2/);
-  assert.match(dkd_polish, /#7fa9ff/);
-  assert.match(dkd_polish, /#b89cff/);
+  assert.match(dkd_polish, /#67dfd1/);
+  assert.match(dkd_polish, /#78a6ff/);
+  assert.match(dkd_polish, /#dc8ebe/);
+  assert.match(dkd_polish, /#e4ff5e/);
   assert.match(dkd_polish, /dkd_ActivityIndicator/);
+  assert.match(dkd_polish, /dkd_Animated\.loop/);
 });
