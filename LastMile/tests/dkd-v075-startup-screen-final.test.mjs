@@ -8,11 +8,14 @@ const dkd_loadingPatch = await dkd_read('scripts/dkd-native-startup-polish.py');
 const dkd_webBuild = await dkd_read('scripts/dkd-build-web.mjs');
 const dkd_releaseWorkflow = await dkd_read('../.github/workflows/dkd-lastmile-android-signed-release.yml');
 
-test('Android 12 system splash is forced to a transparent icon', () => {
-  assert.match(dkd_nativePatch, /windowSplashScreenAnimatedIcon/);
+test('Android 12 system splash is forced to a transparent framework icon', () => {
+  assert.match(dkd_nativePatch, /android:windowSplashScreenAnimatedIcon/);
+  assert.match(dkd_nativePatch, /android:windowSplashScreenBackground/);
+  assert.match(dkd_nativePatch, /android:windowSplashScreenIconBackgroundColor/);
   assert.match(dkd_nativePatch, /@drawable\/dkd_transparent_splash/);
   assert.match(dkd_nativePatch, /@color\/dkd_startup_background/);
   assert.match(dkd_nativePatch, /#081426/);
+  assert.match(dkd_nativePatch, /Unqualified splash attribute remains/);
   assert.match(dkd_releaseWorkflow, /Remove Android system splash grid icon/);
   assert.match(dkd_releaseWorkflow, /dkd-fix-generated-android-splash\.py/);
 });
@@ -27,7 +30,8 @@ test('native React bootstrap is replaced every run with modern animated UI', () 
   assert.match(dkd_loadingPatch, /dkd_source\[:dkd_start\]/);
 });
 
-test('web output has its own modern animated bootstrap screen', () => {
+test('web output replaces the legacy loader with the modern animated bootstrap screen', () => {
+  assert.match(dkd_webBuild, /#dkd-loading\{display:none!important\}/);
   assert.match(dkd_webBuild, /dkd-web-bootstrap/);
   assert.match(dkd_webBuild, /dkd-web-loader-spin/);
   assert.match(dkd_webBuild, /dkd-web-loader-route/);
