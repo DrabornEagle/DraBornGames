@@ -1,0 +1,164 @@
+{
+  "started": "2026-10-06T19:12:17.324Z",
+  "finished": "2026-10-06T19:19:29.537Z",
+  "url": "http://127.0.0.1:4173/DraBornGames/DraBornLand/?qa=1",
+  "environment": "Headless Chromium / software WebGL; Android hardware not available",
+  "notes": [
+    "Long travel is accelerated with the qa=1 relocation hook. Actual input and normal survival rules are exercised.",
+    "Attack cooldowns and extended survival time are advanced through regular .05-second simulation ticks to keep software-renderer testing practical. No inventory grants or enemy/player damage overrides are used."
+  ],
+  "checks": [
+    {
+      "name": "Boot / WebGL / no broken HTTP references",
+      "passed": true,
+      "ms": 15376,
+      "detail": {
+        "fps": 1,
+        "frameMs": 3.800000000046566,
+        "calls": 244,
+        "triangles": 159274,
+        "meshes": 201,
+        "quality": "medium"
+      }
+    },
+    {
+      "name": "Menu starts a fresh playable scene",
+      "passed": true,
+      "ms": 20245
+    },
+    {
+      "name": "Keyboard walk, sprint, jump and smooth camera",
+      "passed": true,
+      "ms": 69002,
+      "detail": {
+        "walkMetres": 1.7709749999999786,
+        "sprintMetres": 2.860440000000043,
+        "cameraYawChange": -0.8499999999999999
+      }
+    },
+    {
+      "name": "Real resource gathering, upgraded tools and food",
+      "passed": true,
+      "ms": 32239,
+      "detail": {
+        "inventory": {
+          "wood": 11,
+          "stone": 8,
+          "berries": 10,
+          "crystal": 0,
+          "fiber": 6
+        },
+        "upgrades": {
+          "axe": true,
+          "pickaxe": true
+        }
+      }
+    },
+    {
+      "name": "Inventory, crafting and build panels remain dismissible",
+      "passed": true,
+      "ms": 31905
+    },
+    {
+      "name": "Shelter floor, wall, door, roof and campfire",
+      "passed": true,
+      "ms": 71513,
+      "detail": {
+        "pieces": [
+          {
+            "kind": "floor",
+            "x": 0,
+            "z": 31
+          },
+          {
+            "kind": "wall",
+            "x": -3,
+            "z": 31
+          },
+          {
+            "kind": "door",
+            "x": 3,
+            "z": 31
+          },
+          {
+            "kind": "roof",
+            "x": 0,
+            "z": 31
+          },
+          {
+            "kind": "campfire",
+            "x": 6,
+            "z": 31
+          }
+        ]
+      }
+    },
+    {
+      "name": "Local save survives browser reload",
+      "passed": true,
+      "ms": 15847,
+      "detail": {
+        "persistedGathered": 107,
+        "persistedBuildings": 5
+      }
+    },
+    {
+      "name": "Night changes lighting and spawns additional threats",
+      "passed": true,
+      "ms": 13669,
+      "detail": {
+        "daytimeEnemies": 6,
+        "nightEnemies": 8
+      }
+    },
+    {
+      "name": "Enemy damage, death overlay, respawn and resource penalty",
+      "passed": true,
+      "ms": 28999,
+      "detail": {
+        "deathsObserved": 1,
+        "resourceRetention": "80%",
+        "restoredOwnSaveForIndependentProgression": true
+      }
+    },
+    {
+      "name": "Normal enemy combat with real keyboard attacks",
+      "passed": true,
+      "ms": 36998
+    },
+    {
+      "name": "Lighthouse repair consumes gathered wood and stone; rewards sword",
+      "passed": true,
+      "ms": 17169
+    },
+    {
+      "name": "Three regional relics open temple",
+      "passed": true,
+      "ms": 9024
+    },
+    {
+      "name": "Temple boss telegraphs, can be fought, and full quest loop completes",
+      "passed": true,
+      "ms": 31614,
+      "detail": {
+        "telegraphObserved": true,
+        "health": 100,
+        "kills": 2,
+        "relics": 3
+      }
+    }
+  ],
+  "passed": true,
+  "errors": [],
+  "initialRunNote": "The desktop core completed all 13 scenarios. The following mobile boot timed out while two software WebGL contexts were active. The original failure is preserved in browser-report.json; mobile-only retry passed all 3 checks in mobile-report.json. The test harness now releases the desktop context before mobile QA.",
+  "metrics": {
+    "desktopMenuMedium": {
+      "fps": 1,
+      "frameMs": 3.800000000046566,
+      "calls": 244,
+      "triangles": 159274,
+      "meshes": 201,
+      "quality": "medium"
+    }
+  }
+}

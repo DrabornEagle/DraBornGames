@@ -1,0 +1,58 @@
+name: DraBornLand web and Expo Go checks
+
+on:
+  push:
+    branches: [main, 'work/drabornland-*']
+    paths:
+      - 'DraBornLand/**'
+      - '.github/workflows/drabornland.yml'
+  pull_request:
+    paths:
+      - 'DraBornLand/**'
+      - '.github/workflows/drabornland.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: drabornland-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: DraBornLand
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: DraBornLand/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Check TypeScript, survival tests and shared build
+        run: npm run check
+      - name: Check Expo Go dependencies
+        run: EXPO_OFFLINE=1 npx expo install --check
+      - name: Export Android JavaScript without APK
+        run: EXPO_OFFLINE=1 npm run export:android
+      - name: Check generated web and Expo content
+        run: |
+          test -s web/index.html
+          test -s generated/game-html.ts
+          git diff --exit-code -- web generated
+      - name: Upload independent web output
+        uses: actions/upload-artifact@v4
+        with:
+          name: DraBornLand-web
+          path: DraBornLand/web/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Check repository whitespace
+        working-directory: .
+        run: git diff --check

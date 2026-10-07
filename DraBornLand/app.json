@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "DraBornLand",
+    "slug": "drabornland",
+    "version": "1.0.0",
+    "orientation": "landscape",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#071419",
+    "android": {
+      "package": "com.draborneagle.drabornland"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "extra": {
+      "webUrl": "https://www.draborneagle.com/DraBornGames/DraBornLand/",
+      "storage": "local",
+      "expoGoTarget": "58.0.2"
+    }
+  }
+}

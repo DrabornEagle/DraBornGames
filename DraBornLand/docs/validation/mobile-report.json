@@ -1,0 +1,38 @@
+{
+  "started": "2026-10-06T19:26:49.919Z",
+  "url": "http://127.0.0.1:4173/DraBornGames/DraBornLand/?qa=1",
+  "environment": "Headless Chromium / software WebGL; Android hardware not available",
+  "checks": [
+    {
+      "name": "Mobile landscape viewport, actual touch action and joystick",
+      "passed": true,
+      "ms": 115635
+    },
+    {
+      "name": "QA hooks are absent from the normal shipped URL",
+      "passed": true,
+      "ms": 7329
+    },
+    {
+      "name": "Runtime remains free of JavaScript, WebGL and missing-file errors",
+      "passed": true,
+      "ms": 0
+    }
+  ],
+  "errors": [],
+  "metrics": {
+    "mobile": {
+      "fps": 5,
+      "frameMs": 2.4000000001396984,
+      "calls": 66,
+      "triangles": 83846,
+      "meshes": 201,
+      "quality": "low"
+    }
+  },
+  "notes": [
+    "Long travel is accelerated with the qa=1 relocation hook. Actual input and normal survival rules are exercised.",
+    "Attack cooldowns and extended survival time are advanced through regular .05-second simulation ticks to keep software-renderer testing practical. No inventory grants or enemy/player damage overrides are used."
+  ],
+  "finished": "2026-10-06T19:28:54.440Z"
+}

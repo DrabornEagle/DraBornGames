@@ -1,0 +1,37 @@
+{
+  "name": "drabornland",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "DraBornLand — çevrimdışı ada survival oyunu, Expo Go ve web",
+  "main": "index.js",
+  "engines": { "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0" },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "start": "npm run build && expo start --go",
+    "android": "npm run build && expo start --go --android",
+    "web": "npm run build && node scripts/preview.mjs",
+    "preview": "node scripts/preview.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "check": "npm run typecheck && npm run test && npm run build",
+    "export:android": "npm run build && expo export --platform android --output-dir dist-android",
+    "termux": "bash scripts/termux-setup.sh"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "expo": "58.0.2",
+    "expo-status-bar": "58.0.3",
+    "react": "19.3.0",
+    "react-native": "0.88.0-rc.3",
+    "react-native-webview": "14.0.1",
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.0",
+    "@types/react": "19.3.0",
+    "@types/three": "0.186.0",
+    "esbuild": "0.28.2",
+    "typescript": "5.9.3"
+  }
+}
