@@ -10,7 +10,7 @@ Tarih: 6 Ekim 2026. Ortam: Linux, Node 24.19.0, Chromium ve yazılımsal WebGL/S
 | Saf oyun simülasyonu | 12/12 test geçti |
 | Expo SDK 58 bağımlılıkları | Resmi bundledNativeModules sürümleriyle birebir eşleşti |
 | Expo config | SDK 58, yatay ekran, doğru Android paket adı |
-| Android Metro/Hermes export | 630 modül; 3.047.584; APK üretilmedi |
+| Android Metro/Hermes export | 630 modül; 3.047.584 bayt; APK üretilmedi |
 | Masaüstü tarayıcı oynanışı | 13/13 senaryo geçti; iki görev ve zafer ekranı tamamlandı |
 | Mobil tarayıcı | 3/3 kontrol grubu geçti; gerçek dokunma olayları, yatay/dikey ekran ve hatasız başlangıç |
 | Native WebView sözleşmesi, Chromium emülasyonu | 4/4 kontrol geçti; JavaScript hatası yok |
