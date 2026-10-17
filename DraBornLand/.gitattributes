@@ -1,3 +1,0 @@
-# Embedded Three.js shader strings preserve upstream whitespace verbatim.
-web/index.html whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab linguist-generated=true
-generated/game-html.ts linguist-generated=true
