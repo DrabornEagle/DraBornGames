@@ -1,0 +1,233 @@
+{
+  "failed": 0,
+  "metrics": {
+    "elapsed_ms": 14617,
+    "hardware": "Linux container; no Android hardware",
+    "max_chunk_install_ms": 10.095,
+    "renderer": "mobile",
+    "static_memory_bytes": 60989178.0
+  },
+  "passed": 55,
+  "results": [
+    {
+      "passed": true,
+      "test": "offline JSON registry"
+    },
+    {
+      "passed": true,
+      "test": "seed determinism and variation"
+    },
+    {
+      "passed": true,
+      "test": "safe camp and lake basin"
+    },
+    {
+      "passed": true,
+      "test": "negative chunk coordinate flooring"
+    },
+    {
+      "passed": true,
+      "test": "insufficient crafting leaves inventory unchanged"
+    },
+    {
+      "passed": true,
+      "test": "full inventory transaction rollback"
+    },
+    {
+      "passed": true,
+      "test": "stack overflow uses next slot"
+    },
+    {
+      "passed": true,
+      "test": "reject invalid inventory restore"
+    },
+    {
+      "passed": true,
+      "test": "initial async chunk queue completes"
+    },
+    {
+      "passed": true,
+      "test": "medium profile loads 5x5 chunks"
+    },
+    {
+      "passed": true,
+      "test": "mesh cache remains bounded"
+    },
+    {
+      "passed": true,
+      "test": "character stands on voxel collider"
+    },
+    {
+      "passed": true,
+      "test": "spawn camera keeps third-person character visible"
+    },
+    {
+      "passed": true,
+      "test": "terrain winding and ray collision"
+    },
+    {
+      "passed": true,
+      "test": "physical walking preserves ground contact"
+    },
+    {
+      "passed": true,
+      "test": "jump raises character"
+    },
+    {
+      "passed": true,
+      "test": "jump lands on terrain"
+    },
+    {
+      "passed": true,
+      "test": "simultaneous joystick and camera fingers"
+    },
+    {
+      "passed": true,
+      "test": "third touch activates jump while joystick held"
+    },
+    {
+      "passed": true,
+      "test": "touch release clears control ownership"
+    },
+    {
+      "passed": true,
+      "test": "spring arm responds to wall collision"
+    },
+    {
+      "passed": true,
+      "test": "Kora dialogue accepts quest"
+    },
+    {
+      "passed": true,
+      "test": "tree and rock depletion grant persistent resources"
+    },
+    {
+      "passed": true,
+      "test": "stone axe crafting consumes exact resources"
+    },
+    {
+      "passed": true,
+      "test": "all remaining recipes produce usable items"
+    },
+    {
+      "passed": true,
+      "test": "inventory exposes slots and actions"
+    },
+    {
+      "passed": true,
+      "test": "real target placement consumes a block"
+    },
+    {
+      "passed": true,
+      "test": "placement inside player rejected"
+    },
+    {
+      "passed": true,
+      "test": "mining placed block returns correct item"
+    },
+    {
+      "passed": true,
+      "test": "campfire placement creates persistent 3D structure"
+    },
+    {
+      "passed": true,
+      "test": "overlapping campfires rejected"
+    },
+    {
+      "passed": true,
+      "test": "edge edit invalidates only affected neighbors"
+    },
+    {
+      "passed": true,
+      "test": "negative coordinate block editing"
+    },
+    {
+      "passed": true,
+      "test": "quest hand-in consumes resources and grants reward"
+    },
+    {
+      "passed": true,
+      "test": "quest reward cannot be duplicated"
+    },
+    {
+      "passed": true,
+      "test": "completed quest lights beacon"
+    },
+    {
+      "passed": true,
+      "test": "food restores hunger and health once"
+    },
+    {
+      "passed": true,
+      "test": "dropped item can be collected"
+    },
+    {
+      "passed": true,
+      "test": "checksummed atomic save writes to disk"
+    },
+    {
+      "passed": true,
+      "test": "save envelope round trip"
+    },
+    {
+      "passed": true,
+      "test": "malformed structure position rejected"
+    },
+    {
+      "passed": true,
+      "test": "unsupported save schema rejected"
+    },
+    {
+      "passed": true,
+      "test": "truncated save rejected"
+    },
+    {
+      "passed": true,
+      "test": "second save maintains backup"
+    },
+    {
+      "passed": true,
+      "test": "corrupt main save recovers last valid backup"
+    },
+    {
+      "passed": true,
+      "test": "stream queue at (150.0, 30.0, 150.0)"
+    },
+    {
+      "passed": true,
+      "test": "stream queue at (-170.0, 30.0, 130.0)"
+    },
+    {
+      "passed": true,
+      "test": "stream queue at (3.0, 20.2, 8.0)"
+    },
+    {
+      "passed": true,
+      "test": "streaming unloads chunks and bounds cache"
+    },
+    {
+      "passed": true,
+      "test": "terrain edits survive streaming"
+    },
+    {
+      "passed": true,
+      "test": "harvested resources do not respawn after chunk reload"
+    },
+    {
+      "passed": true,
+      "test": "fresh session restores inventory, quest and world deltas"
+    },
+    {
+      "passed": true,
+      "test": "low profile changes chunk count, scale and shadows"
+    },
+    {
+      "passed": true,
+      "test": "high profile changes chunk count and shadows"
+    },
+    {
+      "passed": true,
+      "test": "Android renderer preference writes startup override"
+    }
+  ]
+}

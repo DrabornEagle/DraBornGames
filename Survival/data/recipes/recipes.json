@@ -1,0 +1,1 @@
+{"axe":{"name":"Taş balta","cost":{"wood":3,"stone":2},"output":{"axe":1}},"pickaxe":{"name":"Taş kazma","cost":{"wood":3,"stone":3},"output":{"pickaxe":1}},"campfire":{"name":"Kamp ateşi","cost":{"wood":5,"stone":3},"output":{"campfire":1}},"plank":{"name":"Yapı bloğu × 4","cost":{"wood":2},"output":{"plank":4}}}

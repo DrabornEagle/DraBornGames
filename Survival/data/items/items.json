@@ -1,0 +1,12 @@
+{
+ "wood":{"name":"Odun","icon":"wood","stack":99,"block":6},
+ "stone":{"name":"Taş","icon":"stone","stack":99,"block":3},
+ "dirt":{"name":"Toprak","icon":"dirt","stack":99,"block":2},
+ "sand":{"name":"Kum","icon":"sand","stack":99,"block":4},
+ "plank":{"name":"Yapı bloğu","icon":"plank","stack":99,"block":5},
+ "berry":{"name":"Yaban meyvesi","icon":"berry","stack":30,"hunger":24,"heal":12},
+ "axe":{"name":"Taş balta","icon":"axe","stack":1,"tool":"axe"},
+ "pickaxe":{"name":"Taş kazma","icon":"pickaxe","stack":1,"tool":"pickaxe"},
+ "campfire":{"name":"Kamp ateşi","icon":"campfire","stack":10,"structure":"campfire"},
+ "coin":{"name":"Sınır sikkesi","icon":"coin","stack":999}
+}

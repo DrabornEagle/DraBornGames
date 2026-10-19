@@ -1,0 +1,1 @@
+{"dying_beacon":{"name":"Sönen Fener","giver":"kora","description":"Kora'ya 12 odun ve 8 taş getir. Yerleşimin işaret fenerini yeniden yak.","requirements":{"wood":12,"stone":8},"rewards":{"coin":20,"berry":5},"xp":50,"prerequisites":[],"world_flag":"beacon_lit"}}

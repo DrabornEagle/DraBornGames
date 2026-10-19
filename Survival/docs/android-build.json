@@ -1,0 +1,20 @@
+{
+  "package": "com.draborngames.survival",
+  "version": "0.1.0",
+  "version_code": 1,
+  "godot": "4.5.2.stable.official.6ce3de25a",
+  "format": "debug-signed APK",
+  "abi": [
+    "arm64-v8a"
+  ],
+  "min_sdk": 24,
+  "target_sdk": 35,
+  "size_bytes": 28170630,
+  "sha256": "cdee999d215f641673ddf7cf77c756fe69cd4ef27faa0920e984eaa212fad66e",
+  "signatures": [
+    "v2",
+    "v3"
+  ],
+  "native_alignment": "16 KiB",
+  "device_tested": false
+}
